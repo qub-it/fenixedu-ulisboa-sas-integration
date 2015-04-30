@@ -1,6 +1,7 @@
 package org.fenixedu.ulisboa.integration.sas.webservices;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,9 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 import org.fenixedu.academic.domain.Degree;
+import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveDegreeBean;
@@ -25,8 +28,7 @@ public class ActiveDegreesWebService extends BennuWebService {
 
     //Consider moving this logic to a different place
     private Collection<ActiveDegreeBean> populateActiveDegrees() {
-        return Bennu.getInstance().getDegreesSet().stream().filter(d -> d.isActive()).map(d -> populateActiveDegree(d))
-                .collect(Collectors.toList());
+        return Bennu.getInstance().getDegreesSet().stream().map(d -> populateActiveDegree(d)).collect(Collectors.toList());
     }
 
     private ActiveDegreeBean populateActiveDegree(Degree degree) {
@@ -37,8 +39,8 @@ public class ActiveDegreesWebService extends BennuWebService {
         activeDegreeBean.setDegreeCode(degree.getCode());
         activeDegreeBean.setDesignation(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault()));
 
-        activeDegreeBean.setSchoolLevel(SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType())
-                .getFullyQualifiedName());
+        SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType());
+        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getFullyQualifiedName() : "?");
         //TOOD analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycle(getDegreeCyclesString(degree));
 
@@ -52,7 +54,13 @@ public class ActiveDegreesWebService extends BennuWebService {
     // In this case we are assuming that diferent curricular plans for the same degree will have the same duration
     // This is usually valid since changing the duration of a degree may imply the creation of a new degree (with a different degree code)
     private int getDegreeDuration(Degree degree, ExecutionYear currentExecutionYear) {
-        return degree.getDegreeCurricularPlansForYear(currentExecutionYear).iterator().next().getDurationInYears();
+        List<DegreeCurricularPlan> degreeCurricularPlansForYear = degree.getDegreeCurricularPlansForYear(currentExecutionYear);
+        if (degreeCurricularPlansForYear.isEmpty()) {
+            System.out.println("Degree " + degree.getName()
+                    + " has no degree curricular plans for the current execution year. Unable to calculate duration");
+            return 0;
+        }
+        return degreeCurricularPlansForYear.iterator().next().getDurationInYears();
     }
 
     private String[] getDegreeCyclesString(Degree degree) {

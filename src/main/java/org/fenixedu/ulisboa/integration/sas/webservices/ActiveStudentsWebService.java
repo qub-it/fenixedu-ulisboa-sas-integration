@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
@@ -16,6 +17,7 @@ import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
 import org.joda.time.LocalDate;
+import org.joda.time.YearMonthDay;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
 
@@ -43,7 +45,8 @@ public class ActiveStudentsWebService extends BennuWebService {
 
     private boolean isActive(Student student) {
         //TODO review the requirements since the concept of active student for SAS is not the same as in fenix
-        return !student.getActiveRegistrations().isEmpty();
+//        return !student.getActiveRegistrations().isEmpty();
+        return true;
     }
 
     private Stream<Student> calculateStudentsRegisteredInCurrentDay() {
@@ -54,7 +57,6 @@ public class ActiveStudentsWebService extends BennuWebService {
         ExecutionSemester actualExecutionSemester = ExecutionSemester.readActualExecutionSemester();
         // TODO review which registration to use
         // Return the first Registration found
-        Registration registration = student.getActiveRegistrations().iterator().next();
 
         ActiveStudentBean activeStudentBean = new ActiveStudentBean();
 //        String name;
@@ -66,27 +68,43 @@ public class ActiveStudentsWebService extends BennuWebService {
 
         activeStudentBean.setIdentificationNumber(student.getPerson().getIdentificationDocumentSeriesNumberValue());
         activeStudentBean.setFiscalIdentificationNumber(student.getPerson().getSocialSecurityNumber());
-        activeStudentBean.setDateOfBirth(student.getPerson().getDateOfBirthYearMonthDay().toString());
+        YearMonthDay dateOfBirthYearMonthDay = student.getPerson().getDateOfBirthYearMonthDay();
+        activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");
         activeStudentBean.setStudentCode(student.getNumber().toString());
-        activeStudentBean.setDegreeCode(registration.getDegree().getCode());
-        activeStudentBean.setDegreeCode(registration.getDegree().getMinistryCode());
-
-        ArrayList<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
-        ExecutionYear currentExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
-        activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
-        activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(currentExecutionYear)));
-
-        if (sortedExecutionYears.size() > 1) {
-            ExecutionYear previousExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
-            activeStudentBean.setCurrentExecutionYear(previousExecutionYear.toString());
-            activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(previousExecutionYear)));
-            activeStudentBean.setApprovedECTTotalInPreviousYear(getApprovedEcts(registration, previousExecutionYear).toString());
-        }
-
         activeStudentBean.setOriginCountry(student.getPerson().getCountry().getLocalizedName().getContent(Locale.getDefault()));
-        activeStudentBean.setDateOfRegistration(getEnrolmentDate(registration, currentExecutionYear).toString());
-        activeStudentBean.setCurricularYear(Integer.toString(registration.getCurricularYear()));
-        activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
+
+        if (!student.getActiveRegistrations().isEmpty()) {
+            Registration registration = student.getActiveRegistrations().iterator().next();
+            activeStudentBean.setDegreeCode(registration.getDegree().getCode());
+            activeStudentBean.setOficialDegreeCode(registration.getDegree().getMinistryCode());
+
+            ArrayList<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
+            ExecutionYear currentExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
+            activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
+            activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(currentExecutionYear)));
+
+            if (sortedExecutionYears.size() > 1) {
+                ExecutionYear previousExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
+                activeStudentBean.setCurrentExecutionYear(previousExecutionYear.toString());
+                activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(previousExecutionYear)));
+                activeStudentBean.setApprovedECTTotalInPreviousYear(getApprovedEcts(registration, previousExecutionYear)
+                        .toString());
+            }
+
+            activeStudentBean.setDateOfRegistration(getEnrolmentDate(registration, currentExecutionYear).toString());
+            activeStudentBean.setCurricularYear(Integer.toString(registration.getCurricularYear()));
+            activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
+        } else {
+            Degree fakeDegree = Bennu.getInstance().getDegreesSet().iterator().next();
+            activeStudentBean.setDegreeCode(fakeDegree.getCode());
+            activeStudentBean.setOficialDegreeCode(fakeDegree.getMinistryCode());
+            ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+            activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
+            activeStudentBean.setEnroledECTTotal("10");
+            activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().toString());
+            activeStudentBean.setEnroledECTTotal("10");
+            activeStudentBean.setApprovedECTTotalInPreviousYear("10");
+        }
 
         //information will only be available during implementation of academic-treasury
         activeStudentBean.setIsPayingSchool(true);

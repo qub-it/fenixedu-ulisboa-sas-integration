@@ -40,8 +40,8 @@ public class ActiveDegreesWebService extends BennuWebService {
         activeDegreeBean.setDesignation(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault()));
 
         SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType());
-        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getFullyQualifiedName() : "?");
-        //TOOD analyse how to represent a degree with multiple cycles        
+        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getName() : "");
+        //TODO analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycle(getDegreeCyclesString(degree));
 
         activeDegreeBean.setDuration(Integer.toString(getDegreeDuration(degree, currentExecutionYear)));

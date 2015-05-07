@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -37,10 +38,10 @@ public class ActiveDegreesWebService extends BennuWebService {
         ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
 
         activeDegreeBean.setDegreeCode(degree.getCode());
-        activeDegreeBean.setDesignation(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault()));
+        activeDegreeBean.setDesignation(normalizeString(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault())));
 
         SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType());
-        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getName() : "");
+        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getLocalizedName() : "");
         //TODO analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycle(getDegreeCyclesString(degree));
 
@@ -73,5 +74,26 @@ public class ActiveDegreesWebService extends BennuWebService {
         }
 
         return values;
+    }
+
+    //Some schools may have degrees with fully capitalized names. Normalize it 
+    private String normalizeString(String string) {
+        if (!StringUtils.isEmpty(string)) {
+            String[] split = string.split(" ");
+            String output = "";
+            for (int i = 0; i < split.length; i++) {
+                if (i != 0) {
+                    output += " ";
+                }
+                String part = split[i];
+                output += part.substring(0, 1).toUpperCase();
+
+                if (part.length() > 1) {
+                    output += part.substring(1, part.length()).toLowerCase();
+                }
+            }
+            return output;
+        }
+        return "";
     }
 }

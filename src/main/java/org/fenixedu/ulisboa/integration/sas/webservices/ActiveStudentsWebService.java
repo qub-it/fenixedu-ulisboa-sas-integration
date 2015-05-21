@@ -73,7 +73,7 @@ public class ActiveStudentsWebService extends BennuWebService {
         activeStudentBean.setStudentCode(student.getNumber().toString());
         activeStudentBean.setOriginCountry(student.getPerson().getCountry().getLocalizedName().getContent(Locale.getDefault()));
 
-        if (!student.getActiveRegistrations().isEmpty()) {
+    /*    if (!student.getActiveRegistrations().isEmpty()) {
             Registration registration = student.getActiveRegistrations().iterator().next();
             activeStudentBean.setDegreeCode(registration.getDegree().getCode());
             activeStudentBean.setOficialDegreeCode(registration.getDegree().getMinistryCode());
@@ -95,6 +95,7 @@ public class ActiveStudentsWebService extends BennuWebService {
             activeStudentBean.setCurricularYear(Integer.toString(registration.getCurricularYear()));
             activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
         } else {
+    */
             Degree fakeDegree = Bennu.getInstance().getDegreesSet().iterator().next();
             activeStudentBean.setDegreeCode(fakeDegree.getCode());
             activeStudentBean.setOficialDegreeCode(fakeDegree.getMinistryCode());
@@ -104,7 +105,7 @@ public class ActiveStudentsWebService extends BennuWebService {
             activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().toString());
             activeStudentBean.setEnroledECTTotal("10");
             activeStudentBean.setApprovedECTTotalInPreviousYear("10");
-        }
+//        }
 
         //information will only be available during implementation of academic-treasury
         activeStudentBean.setIsPayingSchool(true);

@@ -7,13 +7,21 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.signals.DomainObjectEvent;
 import org.fenixedu.bennu.signals.Signal;
 
+import pt.ist.fenixframework.FenixFramework;
+import pt.ist.fenixframework.dml.DeletionListener;
+
 //Operations to allow "caching"/"indexing" which enrolments were performed in the current day
 public class DailyEnrolmentsIndexing {
 
     public static void bindToSignals() {
         Signal.register(Enrolment.SIGNAL_CREATED, associateWithBennu());
-        // We need a deleted signal which was not created yet
-        //Signal.register(Enrolment.SIGNAL_DELETED, associateWithBennu());
+        FenixFramework.getDomainModel().registerDeletionListener(Enrolment.class, new DeletionListener<Enrolment>() {
+
+            @Override
+            public void deleting(Enrolment arg0) {
+                arg0.setBennuForWhichIsDaily(null);
+            }
+        });
     }
 
     private static Consumer<DomainObjectEvent<Enrolment>> associateWithBennu() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.jws.WebMethod;
@@ -31,7 +32,10 @@ public class ActiveDegreesWebService extends BennuWebService {
 
     //Consider moving this logic to a different place
     private Collection<ActiveDegreeBean> populateActiveDegrees() {
-        return Bennu.getInstance().getDegreesSet().stream().map(d -> populateActiveDegree(d)).collect(Collectors.toList());
+        Predicate<? super Degree> hasSchoolLevel =
+                degree -> SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType()) != null;
+        return Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel).map(d -> populateActiveDegree(d))
+                .collect(Collectors.toList());
     }
 
     private ActiveDegreeBean populateActiveDegree(Degree degree) {

@@ -1,5 +1,6 @@
 package org.fenixedu.ulisboa.integration.sas.webservices;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +17,7 @@ import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveDegreeBean;
+import org.fenixedu.ulisboa.integration.sas.dto.CycleBean;
 import org.fenixedu.ulisboa.integration.sas.service.process.SchoolLevelTypeMapping;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
@@ -43,7 +45,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType());
         activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getLocalizedName() : "");
         //TODO analyse how to represent a degree with multiple cycles        
-        activeDegreeBean.setCycle(getDegreeCyclesString(degree));
+        activeDegreeBean.setCycles(getDegreeCycles(degree));
 
         activeDegreeBean.setDuration(Integer.toString(getDegreeDuration(degree, currentExecutionYear)));
 
@@ -64,13 +66,29 @@ public class ActiveDegreesWebService extends BennuWebService {
         return degreeCurricularPlansForYear.iterator().next().getDurationInYears();
     }
 
-    private String[] getDegreeCyclesString(Degree degree) {
+    private List<CycleBean> getDegreeCycles(Degree degree) {
+        ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+        List<DegreeCurricularPlan> degreeCurricularPlansForYear = degree.getDegreeCurricularPlansForYear(currentExecutionYear);
+        DegreeCurricularPlan currentDegreeCurricularPlan = null;
+        if (!degreeCurricularPlansForYear.isEmpty()) {
+            currentDegreeCurricularPlan = degreeCurricularPlansForYear.get(0);
+        }
         Collection<CycleType> cycleTypes = degree.getDegreeType().getCycleTypes();
-        String[] values = new String[cycleTypes.size()];
+        List<CycleBean> values = new ArrayList<CycleBean>();
 
         int i = 0;
         for (CycleType ct : cycleTypes) {
-            values[i++] = ct.getWeight().toString();
+            // This "if" check is only valid in tests with inconsistent data, 
+            // we should not be taking care of degrees without degrees without curricular plans for the current year
+            int duration;
+            if (currentDegreeCurricularPlan != null) {
+                duration = currentDegreeCurricularPlan.getDurationInYears(ct);
+            } else {
+                //Value for test purposes only
+                duration = 3;
+            }
+
+            values.add(new CycleBean("" + ct.getWeight(), duration));
         }
 
         return values;

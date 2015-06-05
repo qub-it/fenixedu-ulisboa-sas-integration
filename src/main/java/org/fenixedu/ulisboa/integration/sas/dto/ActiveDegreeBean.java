@@ -1,12 +1,13 @@
 package org.fenixedu.ulisboa.integration.sas.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ActiveDegreeBean implements Serializable {
     String degreeCode;
     String designation;
     String schoolLevel;
-    String[] cycle;
+    List<CycleBean> cycles;
     String duration;
     String oficialCode;
 
@@ -34,12 +35,12 @@ public class ActiveDegreeBean implements Serializable {
         this.schoolLevel = schoolLevel;
     }
 
-    public String[] getCycle() {
-        return cycle;
+    public List<CycleBean> getCycles() {
+        return cycles;
     }
 
-    public void setCycle(String[] cycle) {
-        this.cycle = cycle;
+    public void setCycles(List<CycleBean> cycles) {
+        this.cycles = cycles;
     }
 
     public String getDuration() {

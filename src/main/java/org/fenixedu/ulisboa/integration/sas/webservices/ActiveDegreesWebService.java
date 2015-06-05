@@ -15,12 +15,11 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveDegreeBean;
 import org.fenixedu.ulisboa.integration.sas.dto.CycleBean;
-import org.fenixedu.ulisboa.integration.sas.service.process.SchoolLevelTypeMapping;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
 
@@ -37,8 +36,7 @@ public class ActiveDegreesWebService extends BennuWebService {
 
     //Consider moving this logic to a different place
     private Collection<ActiveDegreeBean> populateActiveDegrees() {
-        Predicate<? super Degree> hasSchoolLevel =
-                degree -> SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType()) != null;
+        Predicate<? super Degree> hasSchoolLevel = degree -> degree.getDegreeType().getSchoolLevelTypeMapping() != null;
         List<ActiveDegreeBean> collect =
                 Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel).map(d -> populateActiveDegree(d))
                         .collect(Collectors.toList());
@@ -54,8 +52,9 @@ public class ActiveDegreesWebService extends BennuWebService {
         activeDegreeBean.setDegreeCode(degree.getCode());
         activeDegreeBean.setDesignation(normalizeString(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault())));
 
-        SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType());
-        activeDegreeBean.setSchoolLevel(schoolLevelTypeFor != null ? schoolLevelTypeFor.getLocalizedName() : "");
+        SchoolLevelTypeMapping schoolLevelTypeMapping = degree.getDegreeType().getSchoolLevelTypeMapping();
+        activeDegreeBean.setSchoolLevel(schoolLevelTypeMapping != null ? schoolLevelTypeMapping.getSchoolLevel()
+                .getLocalizedName() : "");
         //TODO analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycles(getDegreeCycles(degree));
 

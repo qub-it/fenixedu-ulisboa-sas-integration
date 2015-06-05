@@ -32,6 +32,7 @@ import org.fenixedu.academic.domain.student.registrationStates.RegistrationState
 import org.fenixedu.academic.util.Money;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.domain.ScholarshipReportRequest;
+import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
 import org.fenixedu.ulisboa.integration.sas.service.registration.report.RegistrationHistoryReport;
@@ -213,32 +214,28 @@ public class AbstractFillScholarshipService {
     }
 
     private void checkIfRegistrationDegreeIsCompleted(AbstractScholarshipStudentBean bean, Registration registration) {
-        if (bean.getCetQualificationOwner()
-                && SchoolLevelTypeMapping.isCET(SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType()))) {
+        SchoolLevelTypeMapping schoolLevelTypeMapping = registration.getDegreeType().getSchoolLevelTypeMapping();
+        SchoolLevelType schoolLevelType = schoolLevelTypeMapping == null ? null : schoolLevelTypeMapping.getSchoolLevel();
+        if (bean.getCetQualificationOwner() && SchoolLevelTypeMapping.isCET(schoolLevelType)) {
             addWarning(bean, "O grau da qualificação concluida (CET) é igual ao grau que o aluno frequenta.");
         }
 
-        if (bean.getCtspQualificationOwner()
-                && SchoolLevelTypeMapping.isCTSP(SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType()))) {
+        if (bean.getCtspQualificationOwner() && SchoolLevelTypeMapping.isCTSP(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
             addWarning(bean, "O grau da qualificação concluida (CTSP) é igual ao grau que o aluno frequenta.");
         }
 
-        if (bean.getDegreeQualificationOwner()
-                && SchoolLevelTypeMapping.isDegree(SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType()))) {
+        if (bean.getDegreeQualificationOwner() && SchoolLevelTypeMapping.isDegree(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
             addWarning(bean, "O grau da qualificação concluida (licenciatura) é igual ao grau que o aluno frequenta.");
         }
 
-        if (bean.getMasterQualificationOwner()
-                && SchoolLevelTypeMapping.isMasterDegree(SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration
-                        .getDegreeType()))) {
+        if (bean.getMasterQualificationOwner() && SchoolLevelTypeMapping.isMasterDegree(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
             addWarning(bean, "O grau da qualificação concluida (mestrado) é igual ao grau que o aluno frequenta.");
         }
 
-        if (bean.getPhdQualificationOwner()
-                && SchoolLevelTypeMapping.isPhd(SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType()))) {
+        if (bean.getPhdQualificationOwner() && SchoolLevelTypeMapping.isPhd(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
             addWarning(bean, "O grau da qualificação concluida (douturamento) é igual ao grau que o aluno frequenta.");
         }
@@ -331,10 +328,9 @@ public class AbstractFillScholarshipService {
             }
 
             if (registration.isConcluded() || registration.hasConcluded()) {
-                final SchoolLevelType schoolLevelType =
-                        SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType());
-                if (schoolLevelType != null) {
-                    result.add(schoolLevelType);
+                final SchoolLevelTypeMapping schoolLevelTypeMapping = registration.getDegreeType().getSchoolLevelTypeMapping();
+                if (schoolLevelTypeMapping != null) {
+                    result.add(schoolLevelTypeMapping.getSchoolLevel());
                 }
             }
 

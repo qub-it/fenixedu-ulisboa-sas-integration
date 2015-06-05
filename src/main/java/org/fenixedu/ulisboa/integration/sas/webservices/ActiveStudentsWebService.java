@@ -17,7 +17,6 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
-import org.fenixedu.ulisboa.integration.sas.service.process.SchoolLevelTypeMapping;
 import org.joda.time.LocalDate;
 import org.joda.time.YearMonthDay;
 

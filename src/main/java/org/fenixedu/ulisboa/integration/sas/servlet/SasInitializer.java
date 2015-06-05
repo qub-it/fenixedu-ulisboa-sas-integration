@@ -5,6 +5,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.service.DailyEnrolmentsIndexing;
 
@@ -22,6 +23,7 @@ public class SasInitializer implements ServletContextListener {
             SocialServicesConfiguration socialServicesConfiguration = new SocialServicesConfiguration();
         }
         DailyEnrolmentsIndexing.bindToSignals();
+        SchoolLevelTypeMapping.registerEvents();
     }
 
     @Override

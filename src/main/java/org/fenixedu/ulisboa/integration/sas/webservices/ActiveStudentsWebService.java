@@ -12,10 +12,12 @@ import javax.jws.WebService;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
+import org.fenixedu.ulisboa.integration.sas.service.process.SchoolLevelTypeMapping;
 import org.joda.time.LocalDate;
 import org.joda.time.YearMonthDay;
 
@@ -73,38 +75,43 @@ public class ActiveStudentsWebService extends BennuWebService {
         activeStudentBean.setStudentCode(student.getNumber().toString());
         activeStudentBean.setOriginCountry(student.getPerson().getCountry().getLocalizedName().getContent(Locale.getDefault()));
 
-    /*    if (!student.getActiveRegistrations().isEmpty()) {
+        /*if (!student.getActiveRegistrations().isEmpty()) {
             Registration registration = student.getActiveRegistrations().iterator().next();
-            activeStudentBean.setDegreeCode(registration.getDegree().getCode());
-            activeStudentBean.setOficialDegreeCode(registration.getDegree().getMinistryCode());
+            SchoolLevelType schoolLevelTypeFor = SchoolLevelTypeMapping.getSchoolLevelTypeFor(registration.getDegreeType());
+            if (schoolLevelTypeFor == null) {
+                //Consider all courses without school level as the free course 
+                activeStudentBean.setDegreeCode(ActiveDegreesWebService.FREE_COURSES_CODE);
+            } else {
+                activeStudentBean.setDegreeCode(registration.getDegree().getCode());
+                activeStudentBean.setOficialDegreeCode(registration.getDegree().getMinistryCode());
 
-            ArrayList<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
-            ExecutionYear currentExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
-            activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
-            activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(currentExecutionYear)));
+                ArrayList<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
+                ExecutionYear currentExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
+                activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
+                activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(currentExecutionYear)));
 
-            if (sortedExecutionYears.size() > 1) {
-                ExecutionYear previousExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
-                activeStudentBean.setCurrentExecutionYear(previousExecutionYear.toString());
-                activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(previousExecutionYear)));
-                activeStudentBean.setApprovedECTTotalInPreviousYear(getApprovedEcts(registration, previousExecutionYear)
-                        .toString());
+                if (sortedExecutionYears.size() > 1) {
+                    ExecutionYear previousExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
+                    activeStudentBean.setCurrentExecutionYear(previousExecutionYear.toString());
+                    activeStudentBean.setEnroledECTTotal(Double.toString(registration.getEnrolmentsEcts(previousExecutionYear)));
+                    activeStudentBean.setApprovedECTTotalInPreviousYear(getApprovedEcts(registration, previousExecutionYear)
+                            .toString());
+                }
+
+                activeStudentBean.setDateOfRegistration(getEnrolmentDate(registration, currentExecutionYear).toString());
+                activeStudentBean.setCurricularYear(Integer.toString(registration.getCurricularYear()));
+                activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
             }
-
-            activeStudentBean.setDateOfRegistration(getEnrolmentDate(registration, currentExecutionYear).toString());
-            activeStudentBean.setCurricularYear(Integer.toString(registration.getCurricularYear()));
-            activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
-        } else {
-    */
-            Degree fakeDegree = Bennu.getInstance().getDegreesSet().iterator().next();
-            activeStudentBean.setDegreeCode(fakeDegree.getCode());
-            activeStudentBean.setOficialDegreeCode(fakeDegree.getMinistryCode());
-            ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
-            activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
-            activeStudentBean.setEnroledECTTotal("10");
-            activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().toString());
-            activeStudentBean.setEnroledECTTotal("10");
-            activeStudentBean.setApprovedECTTotalInPreviousYear("10");
+        } else {*/
+        Degree fakeDegree = Bennu.getInstance().getDegreesSet().iterator().next();
+        activeStudentBean.setDegreeCode(fakeDegree.getCode());
+        activeStudentBean.setOficialDegreeCode(fakeDegree.getMinistryCode());
+        ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+        activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
+        activeStudentBean.setEnroledECTTotal("10");
+        activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().toString());
+        activeStudentBean.setEnroledECTTotal("10");
+        activeStudentBean.setApprovedECTTotalInPreviousYear("10");
 //        }
 
         //information will only be available during implementation of academic-treasury

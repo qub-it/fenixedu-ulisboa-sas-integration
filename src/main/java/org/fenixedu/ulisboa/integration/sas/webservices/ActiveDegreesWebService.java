@@ -2,6 +2,7 @@ package org.fenixedu.ulisboa.integration.sas.webservices;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
@@ -25,6 +26,10 @@ import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebSer
 
 @WebService
 public class ActiveDegreesWebService extends BennuWebService {
+    //We need a placeholder to represent courses without a related school level
+    static final String FREE_COURSES_CODE = "XXXXX";
+    private static final String FREE_COURSES_DESIGNATION = "Formação Livre";
+
     @WebMethod
     public Collection<ActiveDegreeBean> getActiveDegrees() {
         return populateActiveDegrees();
@@ -34,8 +39,11 @@ public class ActiveDegreesWebService extends BennuWebService {
     private Collection<ActiveDegreeBean> populateActiveDegrees() {
         Predicate<? super Degree> hasSchoolLevel =
                 degree -> SchoolLevelTypeMapping.getSchoolLevelTypeFor(degree.getDegreeType()) != null;
-        return Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel).map(d -> populateActiveDegree(d))
-                .collect(Collectors.toList());
+        List<ActiveDegreeBean> collect =
+                Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel).map(d -> populateActiveDegree(d))
+                        .collect(Collectors.toList());
+
+        return collect;
     }
 
     private ActiveDegreeBean populateActiveDegree(Degree degree) {
@@ -117,5 +125,19 @@ public class ActiveDegreesWebService extends BennuWebService {
             return output;
         }
         return "";
+    }
+
+    public ActiveDegreeBean getFreeCoursesPlaceholder() {
+        ActiveDegreeBean freeCoursesPlaceHolder = new ActiveDegreeBean();
+
+        freeCoursesPlaceHolder.setDegreeCode(FREE_COURSES_CODE);
+        freeCoursesPlaceHolder.setDesignation(FREE_COURSES_DESIGNATION);
+
+        //Empty values
+        freeCoursesPlaceHolder.setOficialCode("");
+        freeCoursesPlaceHolder.setCycles(Collections.<CycleBean> emptyList());
+        freeCoursesPlaceHolder.setDuration("-1");
+
+        return freeCoursesPlaceHolder;
     }
 }

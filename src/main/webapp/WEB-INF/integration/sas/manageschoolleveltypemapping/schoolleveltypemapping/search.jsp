@@ -69,6 +69,34 @@ ${portal.toolkit()}
 			</c:if>
 
 
+<script type="text/javascript">
+	  function processDelete(externalId) {
+	    url = "${pageContext.request.contextPath}/integration/sas/manageschoolleveltypemapping/schoolleveltypemapping/search/delete/" + externalId;
+	    $("#deleteForm").attr("action", url);
+	    $('#deleteModal').modal('toggle')
+	  }
+</script>
+
+
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form id ="deleteForm" action="#" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
+      </div>
+      <div class="modal-body">
+        <p><spring:message code = "label.manageSchoolLevelTypeMapping.searchSchoolLevelTypeMapping.confirmDelete"/></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 
@@ -106,6 +134,7 @@ ${portal.toolkit()}
 "schoollevel" : "<c:out value='${searchResult.schoolLevel.localizedName}'/>",
 "degreetype" : "<c:out value='${searchResult.degreeType.name.content}'/>",
 "actions" :
+" <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/integration/sas/manageschoolleveltypemapping/schoolleveltypemapping/update/${searchResult.externalId}\"><spring:message code='label.manageSchoolLevelTypeMapping.update'/></a>" +
                 "" 
 			},
@@ -127,7 +156,7 @@ ${portal.toolkit()}
 			
 		],
 		"columnDefs": [
-		               { "width": "74px", "targets": 2 } 
+		               { "width": "148px", "targets": 2 } 
 		             ],
 		"data" : searchschoolleveltypemappingDataSet,
 "dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip',

@@ -127,6 +127,26 @@ public class SchoolLevelTypeMappingController extends SasBaseController {
         }
     }
 
+    private static final String _SEARCH_TO_DELETE_ACTION_URI = "/search/delete/";
+    public static final String SEARCH_TO_DELETE_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_DELETE_ACTION_URI;
+
+    @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{oid}", method = RequestMethod.POST)
+    public String processSearchToDeleteAction(@PathVariable("oid") SchoolLevelTypeMapping schoolLevelTypeMapping, Model model,
+            RedirectAttributes redirectAttributes) {
+        setSchoolLevelTypeMapping(schoolLevelTypeMapping, model);
+        try {
+            deleteSchoolLevelTypeMapping(schoolLevelTypeMapping);
+
+            addInfoMessage("Sucess deleting SchoolLevelTypeMapping ...", model);
+            return redirect("/integration/sas/manageschoolleveltypemapping/schoolleveltypemapping/", model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(SasSpringConfiguration.BUNDLE, "label.error.update") + ex.getLocalizedMessage(),
+                    model);
+        }
+
+        return "integration/sas/manageschoolleveltypemapping/schoolleveltypemapping/search";
+    }
+
     @Atomic
     public SchoolLevelTypeMapping createSchoolLevelTypeMapping(SchoolLevelType schoolLevel, DegreeType degreeType) {
 

@@ -40,6 +40,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         List<ActiveDegreeBean> collect =
                 Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel).map(d -> populateActiveDegree(d))
                         .collect(Collectors.toList());
+        collect.add(getFreeCoursesPlaceholder());
 
         return collect;
     }

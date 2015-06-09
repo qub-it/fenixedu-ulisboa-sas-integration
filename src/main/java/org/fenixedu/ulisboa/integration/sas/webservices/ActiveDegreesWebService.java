@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
@@ -127,7 +128,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         return "";
     }
 
-    public ActiveDegreeBean getFreeCoursesPlaceholder() {
+    private ActiveDegreeBean getFreeCoursesPlaceholder() {
         ActiveDegreeBean freeCoursesPlaceHolder = new ActiveDegreeBean();
 
         freeCoursesPlaceHolder.setDegreeCode(FREE_COURSES_CODE);
@@ -137,6 +138,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         freeCoursesPlaceHolder.setOficialCode("");
         freeCoursesPlaceHolder.setCycles(Collections.<CycleBean> emptyList());
         freeCoursesPlaceHolder.setDuration("-1");
+        freeCoursesPlaceHolder.setSchoolLevel(SchoolLevelType.UNKNOWN.getLocalizedName());
 
         return freeCoursesPlaceHolder;
     }

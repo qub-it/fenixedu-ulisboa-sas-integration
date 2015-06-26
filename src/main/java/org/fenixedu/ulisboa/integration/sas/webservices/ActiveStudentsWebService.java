@@ -12,8 +12,8 @@ import javax.jws.WebService;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
@@ -67,7 +67,7 @@ public class ActiveStudentsWebService extends BennuWebService {
         //String mifare;
         activeStudentBean.setMifare("123456789");
 
-        activeStudentBean.setIdentificationNumber(student.getPerson().getIdentificationDocumentSeriesNumberValue());
+        activeStudentBean.setIdentificationNumber(student.getPerson().getDocumentIdNumber());
         activeStudentBean.setFiscalIdentificationNumber(student.getPerson().getSocialSecurityNumber());
         YearMonthDay dateOfBirthYearMonthDay = student.getPerson().getDateOfBirthYearMonthDay();
         activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");
@@ -102,15 +102,20 @@ public class ActiveStudentsWebService extends BennuWebService {
                 activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
             }
         } else {*/
-        Degree fakeDegree = Bennu.getInstance().getDegreesSet().iterator().next();
+        Degree fakeDegree =
+                Bennu.getInstance().getDegreesSet().stream().filter(x -> x.getCode() != null && x.getMinistryCode() != null)
+                        .findAny().get();
         activeStudentBean.setDegreeCode(fakeDegree.getCode());
         activeStudentBean.setOficialDegreeCode(fakeDegree.getMinistryCode());
         ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
-        activeStudentBean.setCurrentExecutionYear(currentExecutionYear.toString());
+        activeStudentBean.setCurrentExecutionYear(currentExecutionYear.getName());
         activeStudentBean.setEnroledECTTotal("10");
-        activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().toString());
-        activeStudentBean.setEnroledECTTotal("10");
+        activeStudentBean.setPreviousExecutionYear(currentExecutionYear.getPreviousExecutionYear().getName());
+        activeStudentBean.setEnroledECTTotalInPreviousYear("10");
         activeStudentBean.setApprovedECTTotalInPreviousYear("10");
+        activeStudentBean.setDateOfRegistration("10");
+        activeStudentBean.setCurricularYear("2");
+        activeStudentBean.setRegime(RegistrationRegimeType.FULL_TIME.toString());
 //        }
 
         //information will only be available during implementation of academic-treasury

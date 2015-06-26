@@ -11,15 +11,16 @@ public class ActiveStudentBean implements Serializable {
     String fiscalIdentificationNumber;
     String dateOfBirth;
     String studentCode;
+    String originCountry;
+
     String degreeCode;
+    String oficialDegreeCode;
     String currentExecutionYear;
     String previousExecutionYear;
     String enroledECTTotal;
     String enroledECTTotalInPreviousYear;
     String approvedECTTotalInPreviousYear;
-    String originCountry;
     String dateOfRegistration;
-    String oficialDegreeCode;
     String curricularYear;
     String regime;
     // Due to shared degrees, a student may be frequenting a school, but the payment is performed in another school

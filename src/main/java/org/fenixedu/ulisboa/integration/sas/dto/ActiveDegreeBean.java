@@ -1,6 +1,7 @@
 package org.fenixedu.ulisboa.integration.sas.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActiveDegreeBean implements Serializable {
@@ -20,7 +21,7 @@ public class ActiveDegreeBean implements Serializable {
     }
 
     public String getDesignation() {
-        return designation;
+        return designation != null ? designation : "";
     }
 
     public void setDesignation(String designation) {
@@ -28,7 +29,7 @@ public class ActiveDegreeBean implements Serializable {
     }
 
     public String getSchoolLevel() {
-        return schoolLevel;
+        return schoolLevel != null ? schoolLevel : "";
     }
 
     public void setSchoolLevel(String schoolLevel) {
@@ -36,7 +37,7 @@ public class ActiveDegreeBean implements Serializable {
     }
 
     public List<CycleBean> getCycles() {
-        return cycles;
+        return cycles != null ? cycles : new ArrayList<CycleBean>();
     }
 
     public void setCycles(List<CycleBean> cycles) {
@@ -44,7 +45,7 @@ public class ActiveDegreeBean implements Serializable {
     }
 
     public String getDuration() {
-        return duration;
+        return duration != null ? duration : "";
     }
 
     public void setDuration(String duration) {
@@ -52,7 +53,7 @@ public class ActiveDegreeBean implements Serializable {
     }
 
     public String getOficialCode() {
-        return oficialCode;
+        return oficialCode != null ? oficialCode : "";
     }
 
     public void setOficialCode(String oficialCode) {

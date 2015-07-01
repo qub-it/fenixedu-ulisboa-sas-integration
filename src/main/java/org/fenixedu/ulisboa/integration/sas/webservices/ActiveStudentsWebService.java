@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import org.fenixedu.academic.domain.Country;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -72,7 +73,8 @@ public class ActiveStudentsWebService extends BennuWebService {
         YearMonthDay dateOfBirthYearMonthDay = student.getPerson().getDateOfBirthYearMonthDay();
         activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");
         activeStudentBean.setStudentCode(student.getNumber().toString());
-        activeStudentBean.setOriginCountry(student.getPerson().getCountry().getLocalizedName().getContent(Locale.getDefault()));
+        Country country = student.getPerson().getCountry();
+        activeStudentBean.setOriginCountry(country != null ? country.getLocalizedName().getContent(Locale.getDefault()) : "");
 
         /*if (!student.getActiveRegistrations().isEmpty()) {
             Registration registration = student.getActiveRegistrations().iterator().next();

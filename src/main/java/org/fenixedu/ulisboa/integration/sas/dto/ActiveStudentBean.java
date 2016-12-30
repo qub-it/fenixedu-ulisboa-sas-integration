@@ -13,6 +13,7 @@ public class ActiveStudentBean implements Serializable {
     String cardIssueDate;
     String isTemporaryCard;
     String identificationNumber;
+    String fiscalCountryCode;
     String fiscalIdentificationNumber;
     String dateOfBirth;
     String studentCode;
@@ -100,6 +101,14 @@ public class ActiveStudentBean implements Serializable {
 
     public void setIdentificationNumber(String identificationNumber) {
         this.identificationNumber = identificationNumber;
+    }
+    
+    public String getFiscalCountryCode() {
+        return fiscalCountryCode;
+    }
+    
+    public void setFiscalCountryCode(String fiscalCountryCode) {
+        this.fiscalCountryCode = fiscalCountryCode;
     }
 
     public String getFiscalIdentificationNumber() {

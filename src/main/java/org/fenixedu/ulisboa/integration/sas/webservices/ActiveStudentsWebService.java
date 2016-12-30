@@ -300,6 +300,7 @@ public class ActiveStudentsWebService extends BennuWebService {
             }
 
             activeStudentBean.setIdentificationNumber(student.getPerson().getDocumentIdNumber());
+            activeStudentBean.setFiscalCountryCode(student.getPerson().getFiscalCountry() != null ? student.getPerson().getFiscalCountry().getCode() : "PT");
             activeStudentBean.setFiscalIdentificationNumber(student.getPerson().getSocialSecurityNumber());
             YearMonthDay dateOfBirthYearMonthDay = student.getPerson().getDateOfBirthYearMonthDay();
             activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");

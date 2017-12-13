@@ -63,6 +63,10 @@ public class AbstractFillScholarshipService {
     private static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
 
     private static final String REGIME_PROFESSIONAL_INTERNSHIP = "Estágio Profissional";
+    
+    public static final String ERROR_OBSERVATION = "ERRO";
+    
+    public static final String WARNING_OBSERVATION = "AVISO";
 
     static {
 
@@ -398,15 +402,16 @@ public class AbstractFillScholarshipService {
     private Registration findRegistration(Student student, AbstractScholarshipStudentBean bean,
             ScholarshipReportRequest request) {
 
-        
         final Set<Degree> degrees = findDegree(bean);
-        
+
         // TODO: erasmus dismissal should also be considered
-        final Predicate<Registration> hasActiveEnrolments = r -> r.getEnrolments(request.getExecutionYear()).stream().anyMatch(e -> !e.isAnnulled());
+        final Predicate<Registration> hasActiveEnrolments =
+                r -> r.getEnrolments(request.getExecutionYear()).stream().anyMatch(e -> !e.isAnnulled());
 
         final Set<Registration> registrations = Sets.newHashSet();
         for (final Degree degree : degrees) {
-            registrations.addAll(student.getRegistrationsFor(degree).stream().filter(hasActiveEnrolments).collect(Collectors.toSet()));
+            registrations
+                    .addAll(student.getRegistrationsFor(degree).stream().filter(hasActiveEnrolments).collect(Collectors.toSet()));
         }
 
         if (registrations.size() == 1) {
@@ -419,8 +424,7 @@ public class AbstractFillScholarshipService {
 
             final DegreeType degreeType = DEGREE_TYPE_MAPPING.get(bean.getDegreeTypeName());
             final Collection<Registration> registrationsByDegreeTypes = student.getRegistrationsByDegreeTypes(degreeType).stream()
-                    .filter(hasActiveEnrolments)
-                    .collect(Collectors.toSet());
+                    .filter(hasActiveEnrolments).collect(Collectors.toSet());
 
             if (registrationsByDegreeTypes.size() == 1) {
                 final Registration registration = registrationsByDegreeTypes.iterator().next();
@@ -430,9 +434,9 @@ public class AbstractFillScholarshipService {
                 return registration;
             } else if (registrationsByDegreeTypes.size() > 1) {
                 addError(bean,
-                        "Não foi encontrada a matrícula para o curso indicado no ficheiro e não foi possível determinar a matrícula porque existe mais do que uma com inscrições no ano lectivo do inquérito");
+                        "Não foi encontrada a matrícula para o curso indicado no ficheiro e não foi possível determinar a matrícula porque existe mais do que uma com inscrições no ano lectivo do inquérito.");
             } else {
-                addError(bean, "Nao foi possível encontrar a matrícula para o curso indicado no ficheiro.");
+                addError(bean, "Não foi possível encontrar a matrícula para o curso indicado no ficheiro ou o aluno não se encontra inscrito no corrente ano letivo.");
             }
 
             throw new FillScholarshipException();
@@ -443,7 +447,7 @@ public class AbstractFillScholarshipService {
     private Set<Degree> findDegree(AbstractScholarshipStudentBean bean) {
 
         Set<Degree> degrees = Bennu.getInstance().getDegreesSet().stream()
-                .filter(d -> d.getDegreeType() == DEGREE_TYPE_MAPPING.get(bean.getDegreeTypeName())
+                .filter(d -> (bean.getDegreeTypeName() != null ? d.getDegreeType() == DEGREE_TYPE_MAPPING.get(bean.getDegreeTypeName()) : true)
                         && (bean.getDegreeCode().equals(d.getMinistryCode()) || bean.getDegreeCode().equals(d.getCode())))
                 .collect(Collectors.toSet());
 
@@ -577,7 +581,8 @@ public class AbstractFillScholarshipService {
 
     private Person ensureDocumentIdType(final Person person, final AbstractScholarshipStudentBean bean) {
 
-        if (person.getIdDocumentType() != ID_DOCUMENT_TYPE_MAPPING.get(bean.getDocumentTypeName())) {
+        if (person.getIdDocumentType() != ID_DOCUMENT_TYPE_MAPPING.get(bean.getDocumentTypeName())
+                && !person.getIdDocumentType().name().equalsIgnoreCase(bean.getDocumentTypeName())) {
             addError(bean, "O tipo de documento não corresponde com o tipo definido no sistema.");
             throw new FillScholarshipException();
         }
@@ -592,11 +597,11 @@ public class AbstractFillScholarshipService {
     }
 
     protected void addError(AbstractScholarshipStudentBean bean, String message) {
-        messages.put(bean, "ERRO: " + message);
+        messages.put(bean, ERROR_OBSERVATION + ": " + message);
     }
 
     protected void addWarning(AbstractScholarshipStudentBean bean, String message) {
-        messages.put(bean, "AVISO: " + message);
+        messages.put(bean, WARNING_OBSERVATION + ": " + message);
     }
 
     // TODO Methods should be inserted into Registration@academic

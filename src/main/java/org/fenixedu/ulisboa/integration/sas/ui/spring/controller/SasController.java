@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/integration/sas")
 @SpringApplication(group = "logged", path = "sas-integration", title = "title.sas")
-@SpringFunctionality(app = SasController.class, title = "title.sas")
 public class SasController {
 
 }

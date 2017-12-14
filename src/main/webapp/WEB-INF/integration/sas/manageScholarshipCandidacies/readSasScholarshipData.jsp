@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -106,7 +107,7 @@ ${portal.toolkit()}
 		<form method="post" class="form-horizontal">
 			<table class="table">
 				<tbody>
-
+				
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipCandidacy.studentNumber" /></th>
@@ -169,6 +170,37 @@ ${portal.toolkit()}
 						<td><c:out value='${sasScholarshipData.sasScholarshipCandidacy.candidacyState.localizedName}' />
 						</td>
 					</tr>
+					
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.submissionDate" /></th>
+						<td><joda:format value='${sasScholarshipData.sasScholarshipCandidacy.submissionDate}' pattern='yyyy-MM-dd' />
+						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.importDate" /></th>
+						<td><joda:format value='${sasScholarshipData.sasScholarshipCandidacy.importDate}' pattern='yyyy-MM-dd' />
+						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.exportDate" /></th>
+						<td><joda:format value='${sasScholarshipData.sasScholarshipCandidacy.exportDate}' pattern='yyyy-MM-dd' />
+						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.firstTime" /></th>
+						<td>
+							<c:if test="${sasScholarshipData.sasScholarshipCandidacy.firstYear}"><spring:message code="label.true" /></c:if>
+							<c:if test="${not sasScholarshipData.sasScholarshipCandidacy.firstYear}"><spring:message code="label.false" /></c:if>
+						</td>
+					</tr>
+					
 					
 				</tbody>
 			</table>

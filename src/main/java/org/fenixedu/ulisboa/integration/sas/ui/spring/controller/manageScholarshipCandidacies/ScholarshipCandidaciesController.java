@@ -130,7 +130,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear.getBeginCivilYear(), TEMP_INSTITUTION_CODE);
+        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear, TEMP_INSTITUTION_CODE);
 
         model.addAttribute("infoMessages", sasScholarshipCandidacies.size() + " candidaturas sincronizadas com sucesso.");
 
@@ -146,7 +146,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             Model model, RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillAllSasScholarshipCandidacies(executionYear.getBeginCivilYear(), TEMP_INSTITUTION_CODE);
+        sicabe.fillAllSasScholarshipCandidacies(executionYear, TEMP_INSTITUTION_CODE);
 
         model.addAttribute("infoMessages", "Todas as candidaturas foram sincronizadas com sucesso.");
 

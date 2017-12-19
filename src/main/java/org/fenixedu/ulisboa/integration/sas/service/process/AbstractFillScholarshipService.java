@@ -401,7 +401,7 @@ public class AbstractFillScholarshipService {
                 .subtract(tuitionForRegistrationTreasuryEvent.getInterestsAmountToPay());
     }
 
-    private String formatObservations(final AbstractScholarshipStudentBean bean) {
+    public String formatObservations(final AbstractScholarshipStudentBean bean) {
         if (!messages.containsKey(bean)) {
             return "";
         }

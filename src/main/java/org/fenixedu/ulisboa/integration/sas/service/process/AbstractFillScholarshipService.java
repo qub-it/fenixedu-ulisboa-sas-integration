@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,8 +52,6 @@ public class AbstractFillScholarshipService {
 
     protected static final Map<String, IDDocumentType> ID_DOCUMENT_TYPE_MAPPING = Maps.newHashMap();
 
-    protected static final Map<String, DegreeType> DEGREE_TYPE_MAPPING = Maps.newHashMap();
-
     private static final String REGIME_FULL_TIME = "Tempo integral";
 
     private static final String REGIME_FULL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo integral";
@@ -63,9 +61,9 @@ public class AbstractFillScholarshipService {
     private static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
 
     private static final String REGIME_PROFESSIONAL_INTERNSHIP = "Estágio Profissional";
-    
+
     public static final String ERROR_OBSERVATION = "ERRO";
-    
+
     public static final String WARNING_OBSERVATION = "AVISO";
 
     static {
@@ -74,15 +72,18 @@ public class AbstractFillScholarshipService {
         ID_DOCUMENT_TYPE_MAPPING.put("BI / N.º ID CIVIL", IDDocumentType.IDENTITY_CARD);
         ID_DOCUMENT_TYPE_MAPPING.put("Autorização de residência", IDDocumentType.RESIDENCE_AUTHORIZATION);
 
-        // degree types mapping
-
-        DEGREE_TYPE_MAPPING.put("Mestrado Integrado", findDegreeTypeByPredicate(DegreeType::isIntegratedMasterDegree));
-        DEGREE_TYPE_MAPPING.put("Licenciatura 1º Ciclo", findDegreeTypeByPredicate(DegreeType::isBolonhaDegree));
-        DEGREE_TYPE_MAPPING.put("Mestrado 2º Ciclo", findDegreeTypeByPredicate(DegreeType::isBolonhaMasterDegree));
     }
 
     private static DegreeType findDegreeTypeByPredicate(Predicate<? super DegreeType> predicate) {
         return Bennu.getInstance().getDegreeTypeSet().stream().filter(predicate).findAny().orElse(null);
+    }
+
+    public Registration getRegistrationByAbstractScholarshipStudentBean(AbstractScholarshipStudentBean bean,
+            ScholarshipReportRequest request) {
+
+        final Student student = findStudent(bean, request);
+        return findRegistration(student, bean, request);
+
     }
 
     public void fillAllInfo(Collection<AbstractScholarshipStudentBean> scholarshipStudentBeans,
@@ -91,22 +92,31 @@ public class AbstractFillScholarshipService {
         messages.clear();
 
         for (final AbstractScholarshipStudentBean bean : scholarshipStudentBeans) {
-            try {
-                final Student student = findStudent(bean, request);
-                final Registration registration = findRegistration(student, bean, request);
-                validateStudentNumber(bean, registration);
-                checkPreconditions(bean, registration, request);
-                final RegistrationHistoryReport currentYearRegistrationReport =
-                        new RegistrationHistoryReportService().generateReport(registration, request.getExecutionYear());
 
-                fillCommonInfo(bean, currentYearRegistrationReport, request);
-                fillSpecificInfo(bean, currentYearRegistrationReport, request);
-            } catch (FillScholarshipException e) {
-                // ignore FillScholarshipException
-            } finally {
-                bean.setObservations(formatObservations(bean));
-            }
+            Registration registration = getRegistrationByAbstractScholarshipStudentBean(bean, request);
 
+            fillAllInfo(request, bean, registration);
+
+        }
+    }
+
+    public void fillAllInfo(ScholarshipReportRequest request, final AbstractScholarshipStudentBean bean,
+            Registration registration) {
+
+        try {
+
+            validateStudentNumber(bean, registration);
+            checkPreconditions(bean, registration, request);
+            final RegistrationHistoryReport currentYearRegistrationReport =
+                    new RegistrationHistoryReportService().generateReport(registration, request.getExecutionYear());
+
+            fillCommonInfo(bean, currentYearRegistrationReport, request);
+            fillSpecificInfo(bean, currentYearRegistrationReport, request);
+
+        } catch (FillScholarshipException e) {
+            // ignore FillScholarshipException
+        } finally {
+            bean.setObservations(formatObservations(bean));
         }
     }
 
@@ -402,7 +412,7 @@ public class AbstractFillScholarshipService {
     private Registration findRegistration(Student student, AbstractScholarshipStudentBean bean,
             ScholarshipReportRequest request) {
 
-        final Set<Degree> degrees = findDegree(bean);
+        final Collection<Degree> degrees = findDegree(bean);
 
         // TODO: erasmus dismissal should also be considered
         final Predicate<Registration> hasActiveEnrolments =
@@ -422,21 +432,24 @@ public class AbstractFillScholarshipService {
             throw new FillScholarshipException();
         } else {
 
-            final DegreeType degreeType = DEGREE_TYPE_MAPPING.get(bean.getDegreeTypeName());
-            final Collection<Registration> registrationsByDegreeTypes = student.getRegistrationsByDegreeTypes(degreeType).stream()
-                    .filter(hasActiveEnrolments).collect(Collectors.toSet());
+            final Collection<DegreeType> possibleDegreeTypes =
+                    degrees.stream().map(d -> d.getDegreeType()).collect(Collectors.toSet());
+            final Predicate<Registration> degreeTypePredicate = r -> possibleDegreeTypes.contains(r.getDegreeType());
+            final Collection<Registration> registrationsWithActiveEnrolments = student.getRegistrationsSet().stream()
+                    .filter(hasActiveEnrolments.and(degreeTypePredicate)).collect(Collectors.toSet());
 
-            if (registrationsByDegreeTypes.size() == 1) {
-                final Registration registration = registrationsByDegreeTypes.iterator().next();
+            if (registrationsWithActiveEnrolments.size() == 1) {
+                final Registration registration = registrationsWithActiveEnrolments.iterator().next();
                 addWarning(bean,
                         "O curso indicado no ficheiro não coincide com o curso onde o aluno tem inscrições no ano lectivo do inquérito. Seleccionado o curso "
                                 + registration.getDegree().getCode());
                 return registration;
-            } else if (registrationsByDegreeTypes.size() > 1) {
+            } else if (registrationsWithActiveEnrolments.size() > 1) {
                 addError(bean,
                         "Não foi encontrada a matrícula para o curso indicado no ficheiro e não foi possível determinar a matrícula porque existe mais do que uma com inscrições no ano lectivo do inquérito.");
             } else {
-                addError(bean, "Não foi possível encontrar a matrícula para o curso indicado no ficheiro ou o aluno não se encontra inscrito no corrente ano letivo.");
+                addError(bean,
+                        "Não foi possível encontrar a matrícula para o curso indicado no ficheiro ou o aluno não se encontra inscrito no corrente ano letivo.");
             }
 
             throw new FillScholarshipException();
@@ -444,12 +457,9 @@ public class AbstractFillScholarshipService {
 
     }
 
-    private Set<Degree> findDegree(AbstractScholarshipStudentBean bean) {
-
-        Set<Degree> degrees = Bennu.getInstance().getDegreesSet().stream()
-                .filter(d -> (bean.getDegreeTypeName() != null ? d.getDegreeType() == DEGREE_TYPE_MAPPING.get(bean.getDegreeTypeName()) : true)
-                        && (bean.getDegreeCode().equals(d.getMinistryCode()) || bean.getDegreeCode().equals(d.getCode())))
-                .collect(Collectors.toSet());
+    private Collection<Degree> findDegree(AbstractScholarshipStudentBean bean) {
+        final Collection<Degree> degrees = Bennu.getInstance().getDegreesSet().stream()
+                .filter(d -> Objects.equals(d.getMinistryCode(), bean.getDegreeCode())).collect(Collectors.toSet());
 
         if (degrees.isEmpty()) {
             addError(bean, "Não foi possível encontrar o curso.");

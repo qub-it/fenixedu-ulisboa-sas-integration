@@ -451,17 +451,17 @@ ${portal.toolkit()}
 						<td><c:out value='${sasScholarshipData.numberOfApprovedEcts}' /></td>
 					</tr>
 
-					<tr>
+					<%-- <tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.stateDate" /></th>
 						<td><c:out value='${sasScholarshipData.stateDate}' /></td>
-					</tr>
+					</tr> 
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.state" /></th>
 						<td><c:out value='${sasScholarshipData.state.localizedName}' /></td>
-					</tr>
+					</tr>--%>
 
 				</tbody>
 			</table>

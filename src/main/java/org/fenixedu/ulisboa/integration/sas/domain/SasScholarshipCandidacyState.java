@@ -6,10 +6,22 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import pt.ist.fenixWebFramework.rendererExtensions.util.IPresentableEnum;
 
-public enum SasScholarshipDataState implements IPresentableEnum {
+public enum SasScholarshipCandidacyState implements IPresentableEnum {
 
-    PENDING, PROCESSED, PROCESSED_WARNINGS, PROCESSED_ERRORS, SENT, MODIFIED, ANNULLED;
-    
+    PENDING,
+
+    PROCESSED,
+
+    PROCESSED_WARNINGS,
+
+    PROCESSED_ERRORS,
+
+    SENT,
+
+    MODIFIED,
+
+    ANNULLED;
+
     public String getName() {
         return name();
     }
@@ -24,7 +36,8 @@ public enum SasScholarshipDataState implements IPresentableEnum {
     }
 
     public LocalizedString getLocalizedNameI18N() {
-        return BundleUtil.getLocalizedString("resources.SasResources", SasScholarshipDataState.class.getSimpleName() + "." + name());
+        return BundleUtil.getLocalizedString("resources.SasResources",
+                SasScholarshipCandidacyState.class.getSimpleName() + "." + name());
     }
 
 }

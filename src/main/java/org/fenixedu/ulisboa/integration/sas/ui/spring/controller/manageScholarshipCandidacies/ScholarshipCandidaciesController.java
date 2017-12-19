@@ -29,6 +29,7 @@ package org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholars
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
@@ -44,13 +45,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
-
 @SpringFunctionality(app = SasController.class, title = "label.title.manageScholarships", accessGroup = "#academicAdmOffice")
 @RequestMapping(ScholarshipCandidaciesController.CONTROLLER_URL)
 public class ScholarshipCandidaciesController extends SasBaseController {
-    
-    private final int TEMP_CANDIDACY_YEAR = 2017;
+
     private final int TEMP_INSTITUTION_CODE = 1501;
 
     public static final String CONTROLLER_URL = "/integration/sas/manageScholarshipCandidacies";
@@ -61,12 +59,18 @@ public class ScholarshipCandidaciesController extends SasBaseController {
     }
 
     @RequestMapping(value = "/")
-    public String search(Model model) {
-        final List<SasScholarshipCandidacy> scholarshipCandidacies =
-                Bennu.getInstance().getSasScholarshipCandidaciesSet().stream()
+    public String search(Model model, @RequestParam(value = "executionYearId", required = false) ExecutionYear executionYearParam) {
+        
+        final ExecutionYear executionYear = executionYearParam != null ? executionYearParam : ExecutionYear.readCurrentExecutionYear();
+
+        final List<SasScholarshipCandidacy> scholarshipCandidacies = SasScholarshipCandidacy.findAll().stream().filter(c -> c.getExecutionYear() == executionYear)
                         .sorted((x, y) -> -(x.getSubmissionDate().compareTo(y.getSubmissionDate()))).collect(Collectors.toList());
 
         model.addAttribute("scholarshipCandidacies", scholarshipCandidacies);
+        model.addAttribute("executionYears", ExecutionYear.readNotClosedExecutionYears().stream()
+                .sorted(ExecutionYear.COMPARATOR_BY_BEGIN_DATE.reversed()).collect(Collectors.toList()));
+        model.addAttribute("executionYear", executionYear);
+
         return jspPath("search");
     }
 
@@ -121,59 +125,65 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
     @RequestMapping(value = _SYNC_ENTRIES_URI, method = RequestMethod.POST)
     public String syncSearchEntries(
-            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies, Model model,
+            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies,
+            @PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, TEMP_CANDIDACY_YEAR, TEMP_INSTITUTION_CODE);
-        
+        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear.getBeginCivilYear(), TEMP_INSTITUTION_CODE);
+
         model.addAttribute("infoMessages", sasScholarshipCandidacies.size() + " candidaturas sincronizadas com sucesso.");
 
-        return search(model);
+        return search(model, executionYear);
     }
-
+        
+        
     private static final String _SYNC_ALL_ENTRIES_URI = "/syncAll";
     public static final String SYNC_ALL_ENTRIES_URL = CONTROLLER_URL + _SYNC_ALL_ENTRIES_URI;
 
     @RequestMapping(value = _SYNC_ALL_ENTRIES_URI, method = RequestMethod.GET)
-    public String syncAllEntries(Model model, RedirectAttributes redirectAttributes) {
+    public String syncAllEntries(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear,
+            Model model, RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillAllSasScholarshipCandidacies(TEMP_CANDIDACY_YEAR, TEMP_INSTITUTION_CODE);
-        
+        sicabe.fillAllSasScholarshipCandidacies(executionYear.getBeginCivilYear(), TEMP_INSTITUTION_CODE);
+
         model.addAttribute("infoMessages", "Todas as candidaturas foram sincronizadas com sucesso.");
 
-        return search(model);
+        return search(model, executionYear);
     }
-
+    
     private static final String _PROCESS_ENTRIES_URI = "/process";
     public static final String PROCESS_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ENTRIES_URI;
 
     @RequestMapping(value = _PROCESS_ENTRIES_URI, method = RequestMethod.POST)
     public String processSearchEntries(
-            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies, Model model,
+            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies,
+            @RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear, Model model,
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processSasScholarshipCandidacies(sasScholarshipCandidacies);
 
-        model.addAttribute("infoMessages", "TODO: " + sasScholarshipCandidacies.size() + " candidaturas processadas com sucesso.");
-        
-        return search(model);
+        model.addAttribute("infoMessages",
+                "TODO: " + sasScholarshipCandidacies.size() + " candidaturas processadas com sucesso.");
+
+        return search(model, executionYear);
     }
 
     private static final String _PROCESS_ALL_ENTRIES_URI = "/processAll";
     public static final String PROCESS_ALL_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ALL_ENTRIES_URI;
 
     @RequestMapping(value = _PROCESS_ALL_ENTRIES_URI, method = RequestMethod.GET)
-    public String processAllEntries(Model model, RedirectAttributes redirectAttributes) {
+    public String processAllEntries(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear,
+            Model model, RedirectAttributes redirectAttributes) {
 
         //process all entries
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processAllSasScholarshipCandidacies();
-        
+
         model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram processadas com sucesso.");
-        return search(model);
+        return search(model, executionYear);
     }
 
     private static final String _SEND_ENTRIES_URI = "/send";
@@ -181,36 +191,38 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
     @RequestMapping(value = _SEND_ENTRIES_URI, method = RequestMethod.POST)
     public String sendSearchEntries(
-            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies, Model model,
+            @PathVariable(value = "executionYearId") List<SasScholarshipCandidacy> sasScholarshipCandidacies,
+            @RequestParam(value = "executionYear", required = false) ExecutionYear executionYear, Model model,
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.sendSasScholarshipsData(sasScholarshipCandidacies);
 
         model.addAttribute("infoMessages", "TODO: " + sasScholarshipCandidacies.size() + " candidaturas enviadas com sucesso.");
-        
-        return search(model);
+
+        return search(model, executionYear);
     }
 
     private static final String _SEND_ALL_ENTRIES_URI = "/sendAll";
     public static final String SEND_ALL_ENTRIES_URL = CONTROLLER_URL + _SEND_ALL_ENTRIES_URI;
 
     @RequestMapping(value = _SEND_ALL_ENTRIES_URI, method = RequestMethod.GET)
-    public String sendSearchEntries(Model model, RedirectAttributes redirectAttributes) {
+    public String sendSearchEntries(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear,
+            Model model, RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.sendAllSasScholarshipsData();
-        
+
         model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram enviadas com sucesso.");
-        return search(model);
-        
+        return search(model, executionYear);
+
     }
-    
+
     private static final String _REMOVE_ENTRIES_URI = "/remove";
     public static final String REMOVE_ENTRIES_URL = CONTROLLER_URL + _REMOVE_ENTRIES_URI;
 
     @RequestMapping(value = _REMOVE_ENTRIES_URI, method = RequestMethod.POST)
-    public String removeSearchEntries(
+    public String removeSearchEntries(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear,
             @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -218,33 +230,35 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         sicabe.removeSasScholarshipsCandidacies(sasScholarshipCandidacies);
 
         model.addAttribute("infoMessages", "TODO: " + sasScholarshipCandidacies.size() + " candidaturas removidas com sucesso.");
-        
-        return search(model);
+
+        return search(model, executionYear);
     }
 
     private static final String _REMOVE_ALL_ENTRIES_URI = "/removeAll";
     public static final String REMOVE_ALL_ENTRIES_URL = CONTROLLER_URL + _REMOVE_ALL_ENTRIES_URI;
 
     @RequestMapping(value = _REMOVE_ALL_ENTRIES_URI, method = RequestMethod.GET)
-    public String removeSearchEntries(Model model, RedirectAttributes redirectAttributes) {
+    public String removeSearchEntries(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear,
+            Model model, RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeAllSasScholarshipsCandidacies();
-        
+
         model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram removidas com sucesso.");
-        return search(model);
-        
+        return search(model, executionYear);
+
     }
 
     private static final String _VIEW_LOGS_URI = "/logs";
     public static final String VIEW_LOGS_ENTRIES_URL = CONTROLLER_URL + _VIEW_LOGS_URI;
 
     @RequestMapping(value = _VIEW_LOGS_URI, method = RequestMethod.GET)
-    public String viewLogs(Model model, RedirectAttributes redirectAttributes) {
+    public String viewLogs(@RequestParam(value = "executionYearId", required = true) ExecutionYear executionYear, Model model,
+            RedirectAttributes redirectAttributes) {
 
         List<SasScholarshipDataChangeLog> logs = Bennu.getInstance().getSasScholarshipDataChangeLogsSet().stream()
                 .sorted((x, y) -> -(x.getDate().compareTo(y.getDate()))).collect(Collectors.toList());
-        
+
         model.addAttribute("sasScholarshipDataChangeLogs", logs);
         return jspPath("viewLogs");
     }

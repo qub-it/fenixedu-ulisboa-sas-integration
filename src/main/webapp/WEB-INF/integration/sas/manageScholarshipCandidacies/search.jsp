@@ -58,27 +58,27 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/syncAll"><spring:message
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/syncAll?executionYearId=${executionYear.externalId}"><spring:message
 			code="label.event.syncAll" /></a> |&nbsp;&nbsp;
 	<span
 		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/processAll"><spring:message
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/processAll?executionYearId=${executionYear.externalId}"><spring:message
 			code="label.event.processAll" /></a> |&nbsp;&nbsp;
 	<span
 		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/sendAll"><spring:message
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/sendAll?executionYearId=${executionYear.externalId}"><spring:message
 			code="label.event.sendAll" /></a> |&nbsp;&nbsp;
 	<span
 		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/logs"><spring:message
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/logs?executionYearId=${executionYear.externalId}"><spring:message
 			code="label.event.logs" /></a> |&nbsp;&nbsp;
 	<span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/removeAll"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/removeAll?executionYearId=${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
 			code="label.event.removeAll" /></a>
 
 
@@ -97,25 +97,34 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
-<!-- <script type="text/javascript">
-	function submitOptions(tableID, formID, attributeName) {
-	array = $("#" + tableID).DataTable().rows(".selected")[0];	
-	$("#" + formID).empty();
-	if (array.length>0) {
-		$.each(array,function(index, value) {
-			externalId = $("#" + tableID).DataTable().row(value).data()["DT_RowId"];
-			$("#" + formID).append("<input type='hidden' name='" + attributeName+ "' value='" + externalId + "'/>");
-		});
-		$("#" + formID).submit();
-	}
-	else
-	{
-		messageAlert('<spring:message code = "label.warning"/>','<spring:message code = "label.select.mustselect"/>');
-	}
-		
-	}
-</script> -->
+<div class="panel panel-default">
+    <form method="post" class="form-horizontal">
+        <div class="panel-body">    
+            <div class="form-group row">
+                <div class="col-sm-1 control-label">
+                    <spring:message code="label.executionYear" />
+                </div>
 
+                <div class="col-sm-1">
+                    <select id="executionYearSelect"
+                        class="js-example-basic-single"
+                        name="executionYearId" style="width:100%" onchange="this.form.submit();">
+                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+                        <c:forEach var="each" items="${executionYears}">
+                                <option value="${each.externalId}" ${each.externalId == executionYear.externalId ? 'selected' : ''}>${each.qualifiedName}</option>
+                        </c:forEach>
+                    </select>
+                    <script type="text/javascript">
+                        $("#executionYearSelect").select2({
+                            width: 'element'
+                          });
+                        
+                    </script>
+                </div>
+            </div>
+        </div>
+   	</form>
+</div>
 
 
 <c:choose>
@@ -167,7 +176,7 @@ ${portal.toolkit()}
 						<c:if test="${searchResult.firstYear}"><spring:message code="label.true" /></c:if>
 						<c:if test="${not searchResult.firstYear}"><spring:message code="label.false" /></c:if>
 					</td>
-					<td>${searchResult.sasScholarshipData.state.localizedName}</td>
+					<td>${searchResult.state.localizedName}</td>
 					<td width="12%">
 						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/search/viewSasScholarshipCandidacy/${searchResult.externalId}">
 							<spring:message code='label.details.SasScholarshipCandidacy'/>
@@ -305,9 +314,9 @@ ${portal.toolkit()}
 		
 		table.columns.adjust().draw();
 		
-		  $('#searchScholarshipCandidaciesTable tbody').on( 'click', 'tr', function () {
+		 /*  $('#searchScholarshipCandidaciesTable tbody').on( 'click', 'tr', function () {
 		        $(this).toggleClass('selected');
-		    } );
+		    } ); */
 		  
 	}); 
 </script>

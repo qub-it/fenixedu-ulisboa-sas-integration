@@ -1,8 +1,10 @@
 package org.fenixedu.ulisboa.integration.sas.domain;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -34,4 +36,9 @@ public class SasScholarshipCandidacy extends SasScholarshipCandidacy_Base {
         deleteDomainObject();
     }
 
+    
+    static public Collection<SasScholarshipCandidacy> findAll() {
+        return Bennu.getInstance().getSasScholarshipCandidaciesSet();
+    }
+    
 }

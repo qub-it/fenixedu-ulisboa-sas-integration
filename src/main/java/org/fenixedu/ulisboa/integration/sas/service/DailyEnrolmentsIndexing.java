@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.signals.DomainObjectEvent;
-import org.fenixedu.bennu.signals.Signal;
+import org.fenixedu.bennu.core.signals.DomainObjectEvent;
+import org.fenixedu.bennu.core.signals.Signal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class DailyEnrolmentsIndexing {
         FenixFramework.getDomainModel().registerDeletionListener(Enrolment.class, new DeletionListener<Enrolment>() {
 
             @Override
-            public void deleting(Enrolment arg0) {
+            public void deleting(final Enrolment arg0) {
                 arg0.setBennuForWhichIsDaily(null);
             }
         });
@@ -41,7 +41,7 @@ public class DailyEnrolmentsIndexing {
 
     public static void performDailyClean() {
         logger.info("Starting daily index clean for enrolments....");
-        List<Enrolment> dailyEnrolmentsSet = new ArrayList<Enrolment>(Bennu.getInstance().getDailyEnrolmentsSet());
+        List<Enrolment> dailyEnrolmentsSet = new ArrayList<>(Bennu.getInstance().getDailyEnrolmentsSet());
         int size = dailyEnrolmentsSet.size();
         int pageSize = 1000;
         int numberOfPages = size / pageSize + (size % pageSize > 0 ? 1 : 0);
@@ -56,7 +56,7 @@ public class DailyEnrolmentsIndexing {
     }
 
     @Atomic
-    private static void performDailyClean(List<Enrolment> enrolmentsToDissociate) {
+    private static void performDailyClean(final List<Enrolment> enrolmentsToDissociate) {
         enrolmentsToDissociate.forEach(dessociateWithBennu());
     }
 }

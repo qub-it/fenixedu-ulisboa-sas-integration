@@ -21,12 +21,13 @@ public class ProcessScholarshipReportRequests extends CronTask {
 
             } catch (final SASDomainException e) {
                 taskLog("Error processing scholarship request with oid " + request.getExternalId());
-                e.printStackTrace(getTaskLogWriter());
+                getLogger().error(
+                        e.getMessage() + " - " + "Error processing scholarship request with oid " + request.getExternalId(), e);
                 request.removeReport(e.getLocalizedString());
-
             } catch (final Throwable t) {
                 taskLog("Error processing scholarship request with oid " + request.getExternalId());
-                t.printStackTrace(getTaskLogWriter());
+                getLogger().error(
+                        t.getMessage() + " - " + "Error processing scholarship request with oid " + request.getExternalId(), t);
                 request.removeReport(null);
             }
         }

@@ -163,39 +163,34 @@ ${portal.toolkit()}
 			
 			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
 				<tr>
-					<td>	<strong>
+					<td>	
 						<c:choose>
 							
 							<c:when test="${searchResult.state.name == 'PENDING'}">
-<%-- 								<span>${searchResult.state.localizedName}</span>	 --%>
-									<span>Pendente</span>
+								<strong><span>${searchResult.state.localizedName}</span></strong>
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'PROCESSED'}">
-<%-- 								<span class="text-info">${searchResult.state.localizedName}</span>	 --%>
-								<span class="text-info">Processado</span>
+ 								<strong><span class="text-info">${searchResult.state.localizedName}</span></strong>
 							</c:when>
 							<c:when test="${searchResult.state.name == 'PROCESSED_WARNINGS'}">
-<%-- 								<span class="text-warning">${searchResult.state.localizedName}</span>	 --%>
-<span class="text-warning">Aviso</span>	
+ 								<strong><span class="text-warning">${searchResult.state.localizedName}</span></strong>
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'PROCESSED_ERRORS'}">
-<%-- 								<span class="text-danger">${searchResult.state.localizedName}</span>	 --%>
-<span class="text-danger">Erro</span>
+ 								<strong><span class="text-danger">${searchResult.state.localizedName}</span></strong>
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'SENT'}">
-<%-- 								<span class="text-success">${searchResult.state.localizedName}</span>	 --%>
-<span class="text-success">Enviado</span>
+ 								<strong><span class="text-success">${searchResult.state.localizedName}</span></strong>
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'MODIFIED'}">
-								<span class="text-warning">${searchResult.state.localizedName}</span>	
+								<strong><span class="text-warning">${searchResult.state.localizedName}</span></strong>	
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'ANNULLED'}">
-								<span class="text-mutted">${searchResult.state.localizedName}</span>	
+								<strong><span class="text-mutted">${searchResult.state.localizedName}</span></strong>	
 							</c:when>
 
 						</c:choose>
@@ -240,35 +235,6 @@ ${portal.toolkit()}
 </c:choose>
 
 <script>
-	<%-- var scholarshipCandidaciesDataSet = [
-			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
-			 
-				Field access / formatting  here CHANGE_ME
-				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-				"submissionDate" : "<joda:format value='${searchResult.submissionDate}' pattern='yyyy-MM-dd' />",
-				"studentNumber" : '${searchResult.studentNumber}',
-				"candidacyName" : '${searchResult.candidacyName}',
-				"fiscalNumber" : '${searchResult.fiscalNumber}',
-				"docIdNumber" : '${searchResult.docIdNumber}',
-				"docIdType" : '${searchResult.docIdType.localizedName}',
-				"degreeName" : '[${searchResult.degreeCode}] ${searchResult.degreeName}',
-				"importDate" : "<joda:format value='${searchResult.importDate}' pattern='yyyy-MM-dd' />",
-				"exportDate" : "<joda:format value='${searchResult.exportDate}' pattern='yyyy-MM-dd' />",
-				"firstTime" : '${searchResult.firstYear}',
-				"state" : '${searchResult.sasScholarshipData.state.localizedName}',
-				"actions" :
-					" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/search/viewSasScholarshipCandidacy/${searchResult.externalId}\"><spring:message code='label.details.SasScholarshipCandidacy'/></a>" +
-					                "" +
-					                <c:if test="${searchResult.sasScholarshipData != null}">
-					                	" <a class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/search/viewSasScholarshipData/${searchResult.sasScholarshipData.externalId}\">" + 
-					                		"<spring:message code='label.details.SasScholarshipData'/>" +
-					                	"</a>"
-					                + </c:if>
-					                "" 
-				},
-			</c:forEach>
-	]; --%>
 	
 	$(document).ready(function() {
 
@@ -306,10 +272,6 @@ ${portal.toolkit()}
 		});
 		
 		table.columns.adjust().draw();
-		
-		 /*  $('#searchScholarshipCandidaciesTable tbody').on( 'click', 'tr', function () {
-		        $(this).toggleClass('selected');
-		    } ); */
 		  
 	}); 
 </script>

@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -38,86 +39,7 @@ ${portal.toolkit()}
 
 
 
-<%-- TITLE --%>
-<div class="page-header">
-	<h1>
-		<spring:message
-			code="label.manageScholarshipCandidacies.readSasScholarshipData" />
-		<small></small>
-	</h1>
-</div>
-
-<!-- /.modal -->
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/academic-administration/sas-scholarship-management/integration-sas-manageScholarshipCandidacies/"><spring:message
-			code="label.event.back" /></a>
-	 |&nbsp;&nbsp; 
-		
-		
-	<span
-		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/process/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
-			code="label.event.process" /></a> |&nbsp;&nbsp;
-	<span
-		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/send/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
-			code="label.event.send" /></a> |&nbsp;&nbsp;
-	<span
-		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/log/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
-			code="label.event.logs" /></a> |&nbsp;&nbsp;
-	<span
-		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/remove/${sasScholarshipData.sasScholarshipCandidacy.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
-			code="label.event.delete" /></a>
-			
-			
-</div>
-<c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
-
-		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-<c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
-
-		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-<c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
-
-		<c:forEach items="${errorMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-
-<div class="panel panel-primary">
+<%-- <div class="panel panel-primary">
 	<div class="panel-heading">
 		<h3 class="panel-title">
 			<spring:message code="label.SasScholarshipCandidacy.mainInfo" />
@@ -179,13 +101,6 @@ ${portal.toolkit()}
 					
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipCandidacy.docIdNumber" /></th>
-						<td><c:out value='${sasScholarshipData.sasScholarshipCandidacy.docIdNumber}' />
-						</td>
-					</tr>
-					
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipCandidacy.candidacyState" /></th>
 						<td><c:out value='${sasScholarshipData.sasScholarshipCandidacy.candidacyState.localizedName}' />
 						</td>
@@ -228,14 +143,14 @@ ${portal.toolkit()}
 		</form>
 	</div>
 </div>
-				
+		 --%>		
 					
-<div class="panel panel-primary">
-	<div class="panel-heading">
+<div class="panel panel-default">
+	<%-- <div class="panel-heading">
 		<h3 class="panel-title">
 			<spring:message code="label.details" />
 		</h3>
-	</div>
+	</div> --%>
 	<div class="panel-body">
 		<form method="post" class="form-horizontal">
 			<table class="table">
@@ -244,102 +159,102 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.registrationYear" /></th>
-						<td><c:out value='${sasScholarshipData.registrationYear}' />
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.registrationYear}' />
 						</td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.curricularYear" /></th>
-						<td><c:out value='${sasScholarshipData.curricularYear}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.curricularYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.lastAcademicActDateLastYear" /></th>
 						<td><c:out
-								value='${sasScholarshipData.lastAcademicActDateLastYear}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.lastAcademicActDateLastYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.enrolmentDate" /></th>
-						<td><c:out value='${sasScholarshipData.enrolmentDate}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.enrolmentDate}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.firstMonthGratuity" /></th>
-						<td><c:out value='${sasScholarshipData.firstMonthGratuity}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.firstMonthGratuity}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfDegreeCurricularYears" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfDegreeCurricularYears}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfDegreeCurricularYears}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfEnrolledECTS" /></th>
-						<td><c:out value='${sasScholarshipData.numberOfEnrolledECTS}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.numberOfEnrolledECTS}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfApprovedEctsLastYear" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfApprovedEctsLastYear}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfApprovedEctsLastYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfEnrolledEctsLastYear" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfEnrolledEctsLastYear}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfEnrolledEctsLastYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfEnrolledEctsLastYear" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfEnrolledEctsLastYear}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfEnrolledEctsLastYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfEnrolmentsYears" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfEnrolmentsYears}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfEnrolmentsYears}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.cycleNumberOfEnrolmentYears" /></th>
 						<td><c:out
-								value='${sasScholarshipData.cycleNumberOfEnrolmentYears}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.cycleNumberOfEnrolmentYears}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfMonthsGratuity" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfMonthsGratuity}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfMonthsGratuity}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfDegreeChanges" /></th>
 						<td><c:out
-								value='${sasScholarshipData.numberOfDegreeChanges}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfDegreeChanges}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.observations" /></th>
 						<td>
-							<c:out value="${fn:replace(sasScholarshipData.observations, '.', '.<br/>')}" escapeXml="false"/>
+							<c:out value="${fn:replace(sasScholarshipCandidacy.sasScholarshipData.observations, '.', '.<br/>')}" escapeXml="false"/>
 						</td>
 					</tr>
 
@@ -348,7 +263,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.hasMadeDegreeChangeOnCurrentYear" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.hasMadeDegreeChangeOnCurrentYear}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.hasMadeDegreeChangeOnCurrentYear}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -362,7 +277,7 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.regime" /></th>
-						<td><c:out value='${sasScholarshipData.regime}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.regime}' /></td>
 					</tr>
 
 					<tr>
@@ -370,7 +285,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.cetQualificationOwner" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.cetQualificationOwner}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.cetQualificationOwner}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -385,7 +300,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.ctspQualificationOwner" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.ctspQualificationOwner}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.ctspQualificationOwner}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -400,7 +315,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.phdQualificationOwner" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.phdQualificationOwner}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.phdQualificationOwner}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -415,7 +330,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.degreeQualificationOwner" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.degreeQualificationOwner}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.degreeQualificationOwner}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -430,7 +345,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.masterQualificationOwner" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.masterQualificationOwner}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.masterQualificationOwner}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -443,13 +358,13 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.lastEnrolmentYear" /></th>
-						<td><c:out value='${sasScholarshipData.lastEnrolmentYear}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.lastEnrolmentYear}' /></td>
 					</tr>
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.gratuityAmount" /></th>
-						<td><c:out value='${sasScholarshipData.gratuityAmount}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.gratuityAmount}' /></td>
 					</tr>
 
 					<tr>
@@ -457,7 +372,7 @@ ${portal.toolkit()}
 								code="label.SasScholarshipData.registered" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipData.registered}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.registered}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>
@@ -470,20 +385,8 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfApprovedEcts" /></th>
-						<td><c:out value='${sasScholarshipData.numberOfApprovedEcts}' /></td>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.numberOfApprovedEcts}' /></td>
 					</tr>
-
-					<%-- <tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.stateDate" /></th>
-						<td><c:out value='${sasScholarshipData.stateDate}' /></td>
-					</tr> 
-
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.state" /></th>
-						<td><c:out value='${sasScholarshipData.state.localizedName}' /></td>
-					</tr>--%>
 
 				</tbody>
 			</table>

@@ -62,7 +62,7 @@ ${portal.toolkit()}
 	<c:choose>
 		<c:when test="${not empty sasScholarshipCandidacy}">
 			<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
-			<a class=""href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/readSasScholarshipData/${sasScholarshipCandidacy.sasScholarshipData.externalId}"><spring:message code="label.event.back" /></a>
+			<a class=""href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.READ_SAS_SCHOLARSHIP_CANDIDACY_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message code="label.event.back" /></a>
 		</c:when>
 		<c:otherwise>
 			<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;

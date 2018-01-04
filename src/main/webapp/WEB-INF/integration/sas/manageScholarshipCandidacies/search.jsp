@@ -59,28 +59,28 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/syncAll/${executionYear.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SYNC_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
 			code="label.event.syncAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/processAll/${executionYear.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.PROCESS_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
 			code="label.event.processAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/sendAll/${executionYear.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
 			code="label.event.sendAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/logs/${executionYear.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOGS_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
 			code="label.event.logs" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/removeAll/${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
-			code="label.event.removeAll" /></a>
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
+			code="label.event.deleteAll" /></a>
 
 
 </div>
@@ -135,6 +135,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+					<th><spring:message code="label.SasScholarshipData.state" /></th>
 					<th><spring:message
 							code="label.SasScholarshipCandidacy.submissionDate" /></th>
 					<th><spring:message
@@ -155,7 +156,6 @@ ${portal.toolkit()}
 							code="label.SasScholarshipCandidacy.exportDate" /></th>
 					<th><spring:message
 							code="label.SasScholarshipCandidacy.firstTime" /></th>
-					<th><spring:message code="label.SasScholarshipData.state" /></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -163,6 +163,45 @@ ${portal.toolkit()}
 			
 			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
 				<tr>
+					<td>	<strong>
+						<c:choose>
+							
+							<c:when test="${searchResult.state.name == 'PENDING'}">
+<%-- 								<span>${searchResult.state.localizedName}</span>	 --%>
+									<span>Pendente</span>
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'PROCESSED'}">
+<%-- 								<span class="text-info">${searchResult.state.localizedName}</span>	 --%>
+								<span class="text-info">Processado</span>
+							</c:when>
+							<c:when test="${searchResult.state.name == 'PROCESSED_WARNINGS'}">
+<%-- 								<span class="text-warning">${searchResult.state.localizedName}</span>	 --%>
+<span class="text-warning">Aviso</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'PROCESSED_ERRORS'}">
+<%-- 								<span class="text-danger">${searchResult.state.localizedName}</span>	 --%>
+<span class="text-danger">Erro</span>
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'SENT'}">
+<%-- 								<span class="text-success">${searchResult.state.localizedName}</span>	 --%>
+<span class="text-success">Enviado</span>
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'MODIFIED'}">
+								<span class="text-warning">${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'ANNULLED'}">
+								<span class="text-mutted">${searchResult.state.localizedName}</span>	
+							</c:when>
+
+						</c:choose>
+						</strong>
+						  
+					</td>
 					<td><joda:format value='${searchResult.submissionDate}' pattern='yyyy-MM-dd' /></td>
 					<td>${searchResult.studentNumber}</td>
 					<td>${searchResult.candidacyName}</td>
@@ -178,50 +217,10 @@ ${portal.toolkit()}
 						<c:if test="${not searchResult.firstYear}"><spring:message code="label.false" /></c:if>
 					</td>
 					
-					<td>
-						
-						<!-- .text-muted, .text-primary, .text-success, .text-info, .text-warning, and .text-danger: -->
-						<c:choose>
-							
-							<c:when test="${searchResult.state.name == 'PENDING'}">
-								<span>${searchResult.state.localizedName}</span>	
-							</c:when>
-							
-							<c:when test="${searchResult.state.name == 'PROCESSED'}">
-								<span class="text-info">${searchResult.state.localizedName}</span>	
-							</c:when>
-							<c:when test="${searchResult.state.name == 'PROCESSED_WARNINGS'}">
-								<span class="text-warning">${searchResult.state.localizedName}</span>	
-							</c:when>
-							
-							<c:when test="${searchResult.state.name == 'PROCESSED_ERRORS'}">
-								<span class="text-danger">${searchResult.state.localizedName}</span>	
-							</c:when>
-							
-							<c:when test="${searchResult.state.name == 'SENT'}">
-								<span class="text-success">${searchResult.state.localizedName}</span>	
-							</c:when>
-							
-							<c:when test="${searchResult.state.name == 'MODIFIED'}">
-								<span class="text-warning">${searchResult.state.localizedName}</span>	
-							</c:when>
-							
-							<c:when test="${searchResult.state.name == 'ANNULLED'}">
-								<span class="text-mutted">${searchResult.state.localizedName}</span>	
-							</c:when>
-
-						</c:choose>
-						  
-					</td>
-					<td width="12%">
-						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/search/viewSasScholarshipCandidacy/${searchResult.externalId}">
-							<spring:message code='label.details.SasScholarshipCandidacy'/>
+					<td style="width: 5%">
+						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.READ_SAS_SCHOLARSHIP_CANDIDACY_URL%>${searchResult.externalId}">
+							<spring:message code='label.details'/>
 						</a>
-		                <c:if test="${searchResult.sasScholarshipData != null}">
-		                	<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/search/viewSasScholarshipData/${searchResult.sasScholarshipData.externalId}"> 
-		                		<spring:message code='label.details.SasScholarshipData'/>
-		                	</a>
-		                </c:if>
 					</td>
 				</tr>
 			</c:forEach>
@@ -278,6 +277,7 @@ ${portal.toolkit()}
 				url : "${datatablesI18NUrl}",			
 			},
 			"columns": [
+				{ data: 'state' },
 				{ data: 'submissionDate' },
 				{ data: 'studentNumber' },
 				{ data: 'candidacyName' },
@@ -288,11 +288,10 @@ ${portal.toolkit()}
 				{ data: 'importDate' },
 				{ data: 'exportDate' },
 				{ data: 'firstTime' },
-				{ data: 'state' },
 				{ data: 'actions',className:"all", width: "12%" }
 				
 				],
-			"order": [[ 0, "desc" ]],
+			"order": [[ 1, "desc" ]],
 
 			"dom": '<"col-sm-6"l><"col-sm-6"f>rtip',
 			buttons: [

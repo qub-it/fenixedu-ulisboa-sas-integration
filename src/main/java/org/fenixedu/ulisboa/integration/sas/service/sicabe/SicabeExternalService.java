@@ -27,6 +27,7 @@ import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipServi
 import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
@@ -408,7 +409,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         c.setStateDate(new DateTime());
 
         c.getSasScholarshipDataChangeLogsSet().add(new SasScholarshipDataChangeLog(c.getStateDate(), c.getStudentNumber(),
-                c.getCandidacyName(), data.getObservations()));
+                c.getCandidacyName(), !StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : "Candidatura processada com sucesso."));
 
     }
 

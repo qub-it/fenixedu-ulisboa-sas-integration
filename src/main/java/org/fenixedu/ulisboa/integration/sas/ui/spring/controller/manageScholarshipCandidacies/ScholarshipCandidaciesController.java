@@ -34,7 +34,6 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
-import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipData;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipDataChangeLog;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasBaseController;
@@ -89,52 +88,21 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return JSP_PATH + "/" + page;
     }
 
-    private static final String _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_CANDIDACY_ACTION_URI = "/search/viewSasScholarshipCandidacy/";
-    public static final String SEARCH_TO_VIEW_SAS_SCHOLARSHIP_CANDIDACY_ACTION_URL =
-            CONTROLLER_URL + _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_CANDIDACY_ACTION_URI;
-
-    @RequestMapping(value = _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_CANDIDACY_ACTION_URI + "{oid}", method = RequestMethod.GET)
-    public String processSearchToViewSasScholarshipCandidacyAction(
-            @PathVariable("oid") SasScholarshipCandidacy sasScholarshipCandidacy, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        return redirect(READ_SAS_SCHOLARSHIP_CANDIDACY_URL + sasScholarshipCandidacy.getExternalId(), model, redirectAttributes);
-    }
-
-    private static final String _READ_SAS_SCHOLARSHIP_CANDIDACY_URI = "/readSasScholarshipCandidacy/";
+    private static final String _READ_SAS_SCHOLARSHIP_CANDIDACY_URI = "/readSasScholarshipCandidacy";
     public static final String READ_SAS_SCHOLARSHIP_CANDIDACY_URL = CONTROLLER_URL + _READ_SAS_SCHOLARSHIP_CANDIDACY_URI;
 
-    @RequestMapping(value = _READ_SAS_SCHOLARSHIP_CANDIDACY_URI + "{oid}", method = RequestMethod.GET)
-    public String readSasScholarshipCandidacy(@PathVariable("oid") SasScholarshipCandidacy sasScholarshipCandidacy, Model model) {
+    @RequestMapping(value = _READ_SAS_SCHOLARSHIP_CANDIDACY_URI + "/{oid}", method = RequestMethod.GET)
+    public String readResumeSasScholarshipCandidacy(@PathVariable("oid") SasScholarshipCandidacy sasScholarshipCandidacy,
+            Model model) {
         model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
 
-        return jspPath("readSasScholarshipCandidacy");
+        return jspPath("resume");
     }
 
-    private static final String _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_DATA_ACTION_URI = "/search/viewSasScholarshipData/";
-    public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_DATA_ACTION_URI;
+    private static final String _SYNC_ENTRY_URI = "/sync";
+    public static final String SYNC_ENTRY_URL = CONTROLLER_URL + _SYNC_ENTRY_URI;
 
-    @RequestMapping(value = _SEARCH_TO_VIEW_SAS_SCHOLARSHIP_DATA_ACTION_URI + "{oid}", method = RequestMethod.GET)
-    public String processSearchToViewSasScholarshipDataAction(@PathVariable("oid") SasScholarshipData sasScholarshipData,
-            Model model, RedirectAttributes redirectAttributes) {
-
-        return redirect(READ_SAS_SCHOLARSHIP_DATA_URL + sasScholarshipData.getExternalId(), model, redirectAttributes);
-    }
-
-    private static final String _READ_SAS_SCHOLARSHIP_DATA_URI = "/readSasScholarshipData/";
-    public static final String READ_SAS_SCHOLARSHIP_DATA_URL = CONTROLLER_URL + _READ_SAS_SCHOLARSHIP_DATA_URI;
-
-    @RequestMapping(value = _READ_SAS_SCHOLARSHIP_DATA_URI + "{oid}", method = RequestMethod.GET)
-    public String readSasScholarshipCandidacy(@PathVariable("oid") SasScholarshipData sasScholarshipData, Model model) {
-        model.addAttribute("sasScholarshipData", sasScholarshipData);
-
-        return jspPath("readSasScholarshipData");
-    }
-
-    private static final String _SYNC_ENTRIES_URI = "/sync";
-    public static final String SYNC_ENTRIES_URL = CONTROLLER_URL + _SYNC_ENTRIES_URI;
-
-    @RequestMapping(value = _SYNC_ENTRIES_URI, method = RequestMethod.POST)
+    @RequestMapping(value = _SYNC_ENTRY_URI, method = RequestMethod.POST)
     public String syncSearchEntries(
             @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies,
             @PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
@@ -158,24 +126,25 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.fillAllSasScholarshipCandidacies(executionYear, TEMP_INSTITUTION_CODE);
 
-        model.addAttribute("infoMessages", "Todas as candidaturas foram sincronizadas com sucesso.");
+        addInfoMessage("Todas as candidaturas foram sincronizadas com sucesso.", model);
 
         return search(model, executionYear);
     }
 
-    private static final String _PROCESS_ENTRIES_URI = "/process";
-    public static final String PROCESS_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ENTRIES_URI;
+    private static final String _PROCESS_ENTRY_URI = "/process";
+    public static final String PROCESS_ENTRY_URL = CONTROLLER_URL + _PROCESS_ENTRY_URI;
 
-    @RequestMapping(value = _PROCESS_ENTRIES_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
+    @RequestMapping(value = _PROCESS_ENTRY_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
     public String processSearchEntries(@PathVariable("sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,
             Model model, RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processSasScholarshipCandidacies(Collections.singletonList(sasScholarshipCandidacy));
 
-        model.addAttribute("infoMessages", "TODO Candidatura processada com sucesso.");
+        addInfoMessage("TODO Candidatura processada com sucesso.", model);
 
-        return jspPath("readSasScholarshipData");
+        return readResumeSasScholarshipCandidacy(sasScholarshipCandidacy, model);
+
     }
 
     private static final String _PROCESS_ALL_ENTRIES_URI = "/processAll";
@@ -193,10 +162,10 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return search(model, executionYear);
     }
 
-    private static final String _SEND_ENTRIES_URI = "/send";
-    public static final String SEND_ENTRIES_URL = CONTROLLER_URL + _SEND_ENTRIES_URI;
+    private static final String _SEND_ENTRY_URI = "/send";
+    public static final String SEND_ENTRY_URL = CONTROLLER_URL + _SEND_ENTRY_URI;
 
-    @RequestMapping(value = _SEND_ENTRIES_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
+    @RequestMapping(value = _SEND_ENTRY_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
     public String sendSearchEntries(
             @PathVariable(value = "sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy, Model model,
             RedirectAttributes redirectAttributes) {
@@ -224,11 +193,11 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
     }
 
-    private static final String _REMOVE_ENTRIES_URI = "/remove";
-    public static final String REMOVE_ENTRIES_URL = CONTROLLER_URL + _REMOVE_ENTRIES_URI;
+    private static final String _DELETE_ENTRY_URI = "/delete";
+    public static final String DELETE_ENTRY_URL = CONTROLLER_URL + _DELETE_ENTRY_URI;
 
-    @RequestMapping(value = _REMOVE_ENTRIES_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
-    public String remove(@PathVariable(value = "sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,
+    @RequestMapping(value = _DELETE_ENTRY_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
+    public String delete(@PathVariable(value = "sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,
             Model model, RedirectAttributes redirectAttributes) {
 
         String studentName = sasScholarshipCandidacy.getCandidacyName();
@@ -242,17 +211,17 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return search(model, executionYear);
     }
 
-    private static final String _REMOVE_ALL_ENTRIES_URI = "/removeAll";
-    public static final String REMOVE_ALL_ENTRIES_URL = CONTROLLER_URL + _REMOVE_ALL_ENTRIES_URI;
+    private static final String _DELETE_ALL_ENTRIES_URI = "/deleteAll";
+    public static final String DELETE_ALL_ENTRIES_URL = CONTROLLER_URL + _DELETE_ALL_ENTRIES_URI;
 
-    @RequestMapping(value = _REMOVE_ALL_ENTRIES_URI + "/{executionYearId}", method = RequestMethod.GET)
-    public String removeAll(@PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
+    @RequestMapping(value = _DELETE_ALL_ENTRIES_URI + "/{executionYearId}", method = RequestMethod.GET)
+    public String deleteAll(@PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeAllSasScholarshipsCandidacies();
 
-        model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram removidas com sucesso.");
+        model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram apagadas com sucesso.");
         return search(model, executionYear);
 
     }
@@ -272,7 +241,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
     }
 
     private static final String _VIEW_LOG_URI = "/log";
-    public static final String VIEW_LOG_ENTRIES_URL = CONTROLLER_URL + _VIEW_LOG_URI;
+    public static final String VIEW_LOG_URL = CONTROLLER_URL + _VIEW_LOG_URI;
 
     @RequestMapping(value = _VIEW_LOG_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
     public String viewLogs(@PathVariable("sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,

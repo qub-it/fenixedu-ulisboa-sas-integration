@@ -34,71 +34,12 @@ ${portal.toolkit()}
 	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 
 
-
-<%-- TITLE --%>
-<div class="page-header">
-	<h1>
-		<spring:message
-			code="label.manageScholarshipCandidacies.readSasScholarshipCandidacy" />
-		<small></small>
-	</h1>
-</div>
-
-<!-- /.modal -->
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/academic-administration/sas-scholarship-management/integration-sas-manageScholarshipCandidacies/"><spring:message
-			code="label.event.back" /></a>
-
-</div>
-
-
-
-<c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
-
-		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-<c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
-
-		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-<c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
-
-		<c:forEach items="${errorMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
-
-	</div>
-</c:if>
-
-<div class="panel panel-primary">
-	<div class="panel-heading">
+<div class="panel panel-default">
+	<%-- <div class="panel-heading">
 		<h3 class="panel-title">
 			<spring:message code="label.details" />
 		</h3>
-	</div>
+	</div> --%>
 	<div class="panel-body">
 		<form method="post" class="form-horizontal">
 			<table class="table">

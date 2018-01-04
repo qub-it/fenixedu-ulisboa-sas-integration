@@ -54,11 +54,31 @@ ${portal.toolkit()}
 		class=""
 		href="${pageContext.request.contextPath}/academic-administration/sas-scholarship-management/integration-sas-manageScholarshipCandidacies/"><spring:message
 			code="label.event.back" /></a>
-	<%-- |&nbsp;&nbsp; <span
-		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+	 |&nbsp;&nbsp; 
+		
+		
+	<span
+		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/academicTreasury/managefinantialentityadministrativeoffice/finantialentity/update/${finantialEntity.externalId}"><spring:message
-			code="label.event.update" /></a> &nbsp; --%>
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/process/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
+			code="label.event.process" /></a> |&nbsp;&nbsp;
+	<span
+		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/send/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
+			code="label.event.send" /></a> |&nbsp;&nbsp;
+	<span
+		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/log/${sasScholarshipData.sasScholarshipCandidacy.externalId}"><spring:message
+			code="label.event.logs" /></a> |&nbsp;&nbsp;
+	<span
+		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/remove/${sasScholarshipData.sasScholarshipCandidacy.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
+			code="label.event.delete" /></a>
+			
+			
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -231,7 +251,7 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.curricularYear" /></th>
-						<td><c:out value='${label.SasScholarshipData.curricularYear}' /></td>
+						<td><c:out value='${sasScholarshipData.curricularYear}' /></td>
 					</tr>
 
 					<tr>
@@ -282,13 +302,6 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.numberOfEnrolmentsYears" /></th>
-						<td><c:out
-								value='${sasScholarshipData.numberOfEnrolmentsYears}' /></td>
-					</tr>
-
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.numberOfEnrolledEctsLastYear" /></th>
 						<td><c:out
 								value='${sasScholarshipData.numberOfEnrolledEctsLastYear}' /></td>
@@ -333,8 +346,17 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.SasScholarshipData.hasMadeDegreeChangeOnCurrentYear" /></th>
-						<td><c:out
-								value='${sasScholarshipData.hasMadeDegreeChangeOnCurrentYear}' /></td>
+						<td>
+							<c:choose>
+							   <c:when test = "${sasScholarshipData.hasMadeDegreeChangeOnCurrentYear}">
+							      <spring:message code="label.true" />
+							   </c:when>
+							   <c:otherwise>
+							     <spring:message code="label.false" />
+							   </c:otherwise>
+							</c:choose>
+						
+						</td>
 					</tr>
 
 					<tr>

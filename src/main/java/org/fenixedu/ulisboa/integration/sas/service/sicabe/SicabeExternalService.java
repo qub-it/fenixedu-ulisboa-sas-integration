@@ -24,7 +24,9 @@ import org.fenixedu.ulisboa.integration.sas.service.process.AbstractFillScholars
 import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipException;
 import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipFirstYearService;
 import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipServiceOtherYearService;
+import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
@@ -385,7 +387,11 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         service.fillAllInfo(request, bean, c.getRegistration());
 
         SasScholarshipData data = convertBean2SasScholarshipData(bean);
-
+        
+        LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
+        data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
+        data.setRegistrationYear(String.valueOf(c.getRegistration().getStartExecutionYear().getBeginCivilYear()));
+        
         if (c.getSasScholarshipData() != null) {
             c.getSasScholarshipData().delete();
         }
@@ -415,7 +421,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         data.setCycleNumberOfEnrolmentYears(bean.getCycleNumberOfEnrolmentYears());
         data.setDegreeQualificationOwner(bean.getDegreeQualificationOwner());
-        //data.setEnrolmnetDate();
+        //data.setEnrolmnetDate(bean.getE);
 
         data.setFirstMonthGratuity(bean.getFirstMonthExecutionYear());
         data.setGratuityAmount(String.valueOf(bean.getGratuityAmount()));
@@ -429,11 +435,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         data.setRegime(bean.getRegime());
         data.setRegistered(bean.getRegistered());
 
-        //data.setRegistrationYear();
-
         if (bean instanceof ScholarshipStudentOtherYearBean) {
             // TODO NADIR & Gilberto 
-            //data.setCurricularYear(bean.getCurricularYear());
             data.setNumberOfApprovedEcts(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEcts());
             data.setNumberOfApprovedEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEctsLastYear());
             data.setNumberOfDegreeChanges(((ScholarshipStudentOtherYearBean) bean).getNumberOfDegreeChanges());
@@ -442,15 +445,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             data.setLastEnrolmentYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getLastEnrolmentYear()));
             data.setLastAcademicActDateLastYear(
                     String.valueOf(((ScholarshipStudentOtherYearBean) bean).getLastAcademicActDateLastYear()));
-            //data.setNumberOfDegreeCurricularYears();
-
-            // specific fields for "other year"
-            /*bean.setCurricularYear();
-            bean.setCycleIngressionYear();
-            bean.setCycleNumberOfEnrolmentsYearsInIntegralRegime();
-            bean.setLastEnrolmentCurricularYear();
-            bean.setNumberOfEnrolledEctsLastYear();
-            bean.setNumberOfMonthsExecutionYear();*/
+            
+            data.setNumberOfDegreeCurricularYears(((ScholarshipStudentOtherYearBean) bean).getNumberOfDegreeCurricularYears());
+            
+            data.setCycleNumberOfEnrolmentYears((((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentsYearsInIntegralRegime()));
+            data.setNumberOfEnrolledEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfEnrolledEctsLastYear());
+            data.setNumberOfEnrolmentsYears(((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentYears());
+            
+            data.setCurricularYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getCurricularYear()));
+            
         }
 
         return data;

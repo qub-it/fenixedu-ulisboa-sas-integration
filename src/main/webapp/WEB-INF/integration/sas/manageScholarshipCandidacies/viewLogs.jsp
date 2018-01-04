@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -58,10 +59,18 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/academic-administration/sas-scholarship-management/integration-sas-manageScholarshipCandidacies/"><spring:message
-			code="label.event.back" /></a>
+	<c:choose>
+		<c:when test="${not empty sasScholarshipCandidacy}">
+			<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+			<a class=""href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/readSasScholarshipData/${sasScholarshipCandidacy.sasScholarshipData.externalId}"><spring:message code="label.event.back" /></a>
+		</c:when>
+		<c:otherwise>
+			<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+			<a class=""href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/"><spring:message code="label.event.back" /></a>		
+		</c:otherwise>
+	
+	</c:choose>
+
 
 </div>
 
@@ -107,6 +116,7 @@ ${portal.toolkit()}
 
 	</c:otherwise>
 </c:choose>
+
 
 <script>
 	

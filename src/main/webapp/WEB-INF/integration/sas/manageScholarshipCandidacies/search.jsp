@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -58,27 +59,27 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/syncAll?executionYearId=${executionYear.externalId}"><spring:message
-			code="label.event.syncAll" /></a> |&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/syncAll/${executionYear.externalId}"><spring:message
+			code="label.event.syncAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/processAll?executionYearId=${executionYear.externalId}"><spring:message
-			code="label.event.processAll" /></a> |&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/processAll/${executionYear.externalId}"><spring:message
+			code="label.event.processAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/sendAll?executionYearId=${executionYear.externalId}"><spring:message
-			code="label.event.sendAll" /></a> |&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/sendAll/${executionYear.externalId}"><spring:message
+			code="label.event.sendAll" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/logs?executionYearId=${executionYear.externalId}"><spring:message
-			code="label.event.logs" /></a> |&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/logs/${executionYear.externalId}"><spring:message
+			code="label.event.logs" /></a> &nbsp;|&nbsp;
 	<span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/removeAll?executionYearId=${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
+		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/removeAll/${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
 			code="label.event.removeAll" /></a>
 
 
@@ -98,7 +99,7 @@ ${portal.toolkit()}
 </c:if>
 
 <div class="panel panel-default">
-    <form method="post" class="form-horizontal">
+    <form method="post" class="form-horizontal" action="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CHANGE_EXECUTION_YEAR_URL%>">
         <div class="panel-body">    
             <div class="form-group row">
                 <div class="col-sm-1 control-label">
@@ -176,13 +177,48 @@ ${portal.toolkit()}
 						<c:if test="${searchResult.firstYear}"><spring:message code="label.true" /></c:if>
 						<c:if test="${not searchResult.firstYear}"><spring:message code="label.false" /></c:if>
 					</td>
-					<td>${searchResult.state.localizedName}</td>
+					
+					<td>
+						
+						<!-- .text-muted, .text-primary, .text-success, .text-info, .text-warning, and .text-danger: -->
+						<c:choose>
+							
+							<c:when test="${searchResult.state.name == 'PENDING'}">
+								<span>${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'PROCESSED'}">
+								<span class="text-info">${searchResult.state.localizedName}</span>	
+							</c:when>
+							<c:when test="${searchResult.state.name == 'PROCESSED_WARNINGS'}">
+								<span class="text-warning">${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'PROCESSED_ERRORS'}">
+								<span class="text-danger">${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'SENT'}">
+								<span class="text-success">${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'MODIFIED'}">
+								<span class="text-warning">${searchResult.state.localizedName}</span>	
+							</c:when>
+							
+							<c:when test="${searchResult.state.name == 'ANNULLED'}">
+								<span class="text-mutted">${searchResult.state.localizedName}</span>	
+							</c:when>
+
+						</c:choose>
+						  
+					</td>
 					<td width="12%">
-						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/search/viewSasScholarshipCandidacy/${searchResult.externalId}">
+						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/search/viewSasScholarshipCandidacy/${searchResult.externalId}">
 							<spring:message code='label.details.SasScholarshipCandidacy'/>
 						</a>
 		                <c:if test="${searchResult.sasScholarshipData != null}">
-		                	<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/search/viewSasScholarshipData/${searchResult.sasScholarshipData.externalId}"> 
+		                	<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CONTROLLER_URL%>/search/viewSasScholarshipData/${searchResult.sasScholarshipData.externalId}"> 
 		                		<spring:message code='label.details.SasScholarshipData'/>
 		                	</a>
 		                </c:if>
@@ -192,48 +228,6 @@ ${portal.toolkit()}
 
 			</tbody>
 		</table>
-
-		<%-- <form id="syncEntries"
-			action="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/sync"
-			style="display: none;" method="POST"></form>
-
-		<button id="syncEntryButton" type="button"
-			onClick="javascript:submitOptions('searchScholarshipCandidaciesTable', 'syncEntries', 'sasScholarshipCandidacyEntries')">
-			<span class="glyphicon glyphicon-import"
-				aria-hidden="true"></span>&nbsp;
-			<spring:message code='label.event.sync' />
-		</button>
-
-		<form id="processEntries"
-			action="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/process"
-			style="display: none;" method="POST"></form>
-
-		<button id="processEntryButton" type="button"
-			onClick="javascript:submitOptions('searchScholarshipCandidaciesTable', 'processEntries', 'sasScholarshipCandidacyEntries')">
-			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-			<spring:message code='label.event.process' />
-		</button>
-
-		<form id="sendEntries"
-			action="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/send"
-			style="display: none;" method="POST"></form>
-
-		<button id="sendEntryButton" type="button"
-			onClick="javascript:submitOptions('searchScholarshipCandidaciesTable', 'sendEntries', 'sasScholarshipCandidacyEntries')">
-			<span class="glyphicon glyphicon-export"
-				aria-hidden="true"></span>&nbsp;
-			<spring:message code='label.event.send' />
-		</button>
-
-		<form id="removeEntries"
-			action="${pageContext.request.contextPath}/integration/sas/manageScholarshipCandidacies/remove"
-			style="display: none;" method="POST"></form>
-
-		<button id="removeEntryButton" type="button"
-			onClick="javascript:submitOptions('searchScholarshipCandidaciesTable', 'removeEntries', 'sasScholarshipCandidacyEntries')">
-			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;
-			<spring:message code='label.event.remove' />
-		</button> --%>
 
 	</c:when>
 	<c:otherwise>

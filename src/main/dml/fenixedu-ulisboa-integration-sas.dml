@@ -81,7 +81,7 @@ class SasScholarshipData {
 	String registrationYear; //AnoInscricaoCurso
 	String curricularYear; //AnoLectivoActual
 	String lastAcademicActDateLastYear; //DataConclusaoAtosAcademicosUltimoAnoLectivoInscrito
-	String enrolmentDate; //DataInscricaoAnoLectivo (old: registrationDate)
+	LocalDate enrolmentDate; //DataInscricaoAnoLectivo (old: registrationDate)
 	String firstMonthGratuity; //MesPrimeiroPagamento (old: firstMonthExecutionYear)
 	Integer numberOfDegreeCurricularYears; //NumeroAnosCurso
 	BigDecimal numberOfEnrolledECTS; // NumeroECTSActualmenteInscrito / NumeroECTSActualInscrito

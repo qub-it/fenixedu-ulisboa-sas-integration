@@ -100,7 +100,7 @@ class SasScholarshipData {
 	Boolean degreeQualificationOwner; //TitularLicenciatura
 	Boolean masterQualificationOwner; //TitularMestrado
 	String lastEnrolmentYear; //UltimoAnoInscrito
-	String gratuityAmount; //ValorPropina
+	BigDecimal gratuityAmount; //ValorPropina
 	Boolean registered; //iInscritoAnoLectivoActual
 	BigDecimal numberOfApprovedEcts; //totalECTScursoAtingirGrau
 	

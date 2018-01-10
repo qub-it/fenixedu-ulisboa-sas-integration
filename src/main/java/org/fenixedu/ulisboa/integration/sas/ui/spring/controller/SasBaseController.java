@@ -48,72 +48,65 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import pt.ist.fenixframework.Atomic;
 
 public class SasBaseController {
-				private static final String ERROR_MESSAGES = "errorMessages";
-   				private static final String WARNING_MESSAGES = "warningMessages";
-   				private static final String INFO_MESSAGES = "infoMessages";
-   
-				//The HTTP Request that can be used internally in the controller
-				protected @Autowired HttpServletRequest request;
-				
-				//The entity in the Model
-				
+    private static final String ERROR_MESSAGES = "errorMessages";
+    private static final String WARNING_MESSAGES = "warningMessages";
+    private static final String INFO_MESSAGES = "infoMessages";
 
-				// The list of INFO messages that can be showed on View
-				protected void addInfoMessage(String message, Model model)
-				{
-					((List<String>)model.asMap().get(INFO_MESSAGES)).add(message);
-				}
-				
-				// The list of WARNING messages that can be showed on View
-				protected void addWarningMessage(String message, Model model)
-				{
-					((List<String>)model.asMap().get(WARNING_MESSAGES)).add(message);
-				}
-				
-				// The list of ERROR messages that can be showed on View
-				protected void addErrorMessage(String message, Model model)
-				{
-					((List<String>)model.asMap().get(ERROR_MESSAGES)).add(message);
-				}
-				
-				protected void clearMessages(Model model)
-				{
-					model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
-					model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
-					model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
-				}
+    //The HTTP Request that can be used internally in the controller
+    protected @Autowired HttpServletRequest request;
 
- 				protected String redirect(String destinationAction,Model model, RedirectAttributes redirectAttributes)
-				{
-					if (model.containsAttribute(INFO_MESSAGES)){
-						redirectAttributes.addFlashAttribute(INFO_MESSAGES, model.asMap().get(INFO_MESSAGES));
-					}
-					if (model.containsAttribute(WARNING_MESSAGES)){
-						redirectAttributes.addFlashAttribute(WARNING_MESSAGES, model.asMap().get(WARNING_MESSAGES));
-					}
-					if (model.containsAttribute(ERROR_MESSAGES)){
-						redirectAttributes.addFlashAttribute(ERROR_MESSAGES, model.asMap().get(ERROR_MESSAGES));
-					}
-		
-					return "redirect:" + destinationAction;
-				}
+    //The entity in the Model
 
-				@ModelAttribute
-				protected void addModelProperties(Model model) {
-					if (!model.containsAttribute(INFO_MESSAGES)) {
-						model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
-					}
-					if (!model.containsAttribute(WARNING_MESSAGES)) {
-						model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
-					}
-					if (!model.containsAttribute(ERROR_MESSAGES)) {
-						model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
-					}
+    // The list of INFO messages that can be showed on View
+    protected void addInfoMessage(String message, Model model) {
+        ((List<String>) model.asMap().get(INFO_MESSAGES)).add(message);
+    }
 
-					// Add here more attributes to the Model
-					// model.addAttribute(<attr1Key>, <attr1Value>);
-					// ....
-				}			
-				
-				
-		}	
+    // The list of WARNING messages that can be showed on View
+    protected void addWarningMessage(String message, Model model) {
+        ((List<String>) model.asMap().get(WARNING_MESSAGES)).add(message);
+    }
+
+    // The list of ERROR messages that can be showed on View
+    protected void addErrorMessage(String message, Model model) {
+        ((List<String>) model.asMap().get(ERROR_MESSAGES)).add(message);
+    }
+
+    protected void clearMessages(Model model) {
+        model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
+        model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
+        model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
+    }
+
+    protected String redirect(String destinationAction, Model model, RedirectAttributes redirectAttributes) {
+        if (model.containsAttribute(INFO_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(INFO_MESSAGES, model.asMap().get(INFO_MESSAGES));
+        }
+        if (model.containsAttribute(WARNING_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(WARNING_MESSAGES, model.asMap().get(WARNING_MESSAGES));
+        }
+        if (model.containsAttribute(ERROR_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGES, model.asMap().get(ERROR_MESSAGES));
+        }
+
+        return "redirect:" + destinationAction;
+    }
+
+    @ModelAttribute
+    protected void addModelProperties(Model model) {
+        if (!model.containsAttribute(INFO_MESSAGES)) {
+            model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
+        }
+        if (!model.containsAttribute(WARNING_MESSAGES)) {
+            model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
+        }
+        if (!model.containsAttribute(ERROR_MESSAGES)) {
+            model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
+        }
+
+        // Add here more attributes to the Model
+        // model.addAttribute(<attr1Key>, <attr1Value>);
+        // ....
+    }
+
+}

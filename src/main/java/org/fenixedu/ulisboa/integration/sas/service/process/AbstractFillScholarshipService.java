@@ -52,15 +52,15 @@ public class AbstractFillScholarshipService {
 
     protected static final Map<String, IDDocumentType> ID_DOCUMENT_TYPE_MAPPING = Maps.newHashMap();
 
-    private static final String REGIME_FULL_TIME = "Tempo integral";
+    public static final String REGIME_FULL_TIME = "Tempo integral";
 
-    private static final String REGIME_FULL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo integral";
+    public static final String REGIME_FULL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo integral";
 
-    private static final String REGIME_PARTIAL_TIME = "Tempo parcial";
+    public static final String REGIME_PARTIAL_TIME = "Tempo parcial";
 
-    private static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
+    public static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
 
-    private static final String REGIME_PROFESSIONAL_INTERNSHIP = "Estágio Profissional";
+    public static final String REGIME_PROFESSIONAL_INTERNSHIP = "Estágio Profissional";
 
     public static final String ERROR_OBSERVATION = "ERRO";
 

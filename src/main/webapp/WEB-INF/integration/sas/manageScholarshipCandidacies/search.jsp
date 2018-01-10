@@ -213,7 +213,7 @@ ${portal.toolkit()}
 					</td>
 					
 					<td style="width: 5%">
-						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.READ_SAS_SCHOLARSHIP_CANDIDACY_URL%>${searchResult.externalId}">
+						<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.READ_SAS_SCHOLARSHIP_CANDIDACY_URL%>/${searchResult.externalId}">
 							<spring:message code='label.details'/>
 						</a>
 					</td>

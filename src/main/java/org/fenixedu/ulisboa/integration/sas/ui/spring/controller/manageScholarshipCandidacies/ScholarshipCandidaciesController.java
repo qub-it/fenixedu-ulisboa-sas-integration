@@ -49,7 +49,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping(ScholarshipCandidaciesController.CONTROLLER_URL)
 public class ScholarshipCandidaciesController extends SasBaseController {
 
-    private final int TEMP_INSTITUTION_CODE = 1501;
+    
 
     public static final String CONTROLLER_URL = "/integration/sas/manageScholarshipCandidacies";
 
@@ -109,9 +109,9 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear, TEMP_INSTITUTION_CODE);
+        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear);
 
-        model.addAttribute("infoMessages", sasScholarshipCandidacies.size() + " candidaturas sincronizadas com sucesso.");
+        addInfoMessage(sasScholarshipCandidacies.size() + " candidaturas sincronizadas com sucesso.", model);
 
         return search(model, executionYear);
     }
@@ -124,7 +124,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillAllSasScholarshipCandidacies(executionYear, TEMP_INSTITUTION_CODE);
+        sicabe.fillAllSasScholarshipCandidacies(executionYear);
 
         addInfoMessage("Todas as candidaturas foram sincronizadas com sucesso.", model);
 
@@ -157,8 +157,9 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         //process all entries
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processAllSasScholarshipCandidacies();
+        
+        addInfoMessage("TODO: Todas as candidaturas foram processadas com sucesso.", model);
 
-        model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram processadas com sucesso.");
         return search(model, executionYear);
     }
 
@@ -171,9 +172,9 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.sendSasScholarshipsData(Collections.singletonList(sasScholarshipCandidacy));
-
-        model.addAttribute("infoMessages", "TODO: candidatura enviada com sucesso.");
+        sicabe.sendSasScholarshipsCandidacies2Sicabe(Collections.singletonList(sasScholarshipCandidacy));
+        
+        addInfoMessage("TODO: candidatura enviada com sucesso.", model);
 
         return jspPath("readSasScholarshipData");
     }
@@ -186,9 +187,10 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.sendAllSasScholarshipsData();
+        sicabe.sendAllSasScholarshipCandidacies2Sicabe();
+        
+        addInfoMessage("TODO: Todas as candidaturas foram enviadas com sucesso.", model);
 
-        model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram enviadas com sucesso.");
         return search(model, executionYear);
 
     }
@@ -205,8 +207,8 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeSasScholarshipsCandidacies(Collections.singletonList(sasScholarshipCandidacy));
-
-        model.addAttribute("infoMessages", "Candidatura do aluno " + studentName + " apagada com sucesso.");
+        
+        addInfoMessage("Candidatura do aluno " + studentName + " apagada com sucesso.", model);
 
         return search(model, executionYear);
     }
@@ -220,8 +222,9 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeAllSasScholarshipsCandidacies();
+        
+        addInfoMessage("TODO: Todas as candidaturas foram apagadas com sucesso.", model);
 
-        model.addAttribute("infoMessages", "TODO: Todas as candidaturas foram apagadas com sucesso.");
         return search(model, executionYear);
 
     }

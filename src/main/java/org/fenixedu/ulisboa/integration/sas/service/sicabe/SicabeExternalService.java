@@ -59,7 +59,6 @@ import pt.dges.schemas.services.sicabe.v1.DadosAcademicos_Service;
 import pt.ist.fenixframework.Atomic;
 
 public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos> {
-    
 
     public SicabeExternalService() {
     }
@@ -82,8 +81,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         try {
             final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
                     getClient().obterCandidaturasSubmetidas(parameters);
-            obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream()
-                    .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino()).equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode())).forEach(c -> {
+            obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream().filter(c -> String
+                    .valueOf(c.getCodigoInstituicaoEnsino()).equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode()))
+                    .forEach(c -> {
 
                         updateOrCreateSasScholarshipCandidacy(c, executionYear);
 
@@ -113,7 +113,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                     getClient().obterCandidaturasSubmetidas(parameters);
 
             obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream()
-                    .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino()).equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode())
+                    .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
+                            .equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode())
                             && candidacyNumbersSet.contains(c.getNumeroCandidatura()))
                     .forEach(c -> {
 
@@ -134,9 +135,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void updateOrCreateSasScholarshipCandidacy(CandidaturaSubmetida input, ExecutionYear executionYear) {
 
-        System.out.println(input.getCodigoCurso() + "\t" + input.getCodigoInstituicaoEnsino() + "\t" + input.getNif() + "\t"
+        /*System.out.println(input.getCodigoCurso() + "\t" + input.getCodigoInstituicaoEnsino() + "\t" + input.getNif() + "\t"
                 + input.getNumeroDocumentoIdentificacao() + "\t" + input.getTipoDocumentoIdentificacao() + "\t"
-                + input.getNumeroCandidatura() + "\t" + input.getEstadoCandidatura().getResultadoEstadoCandidatura().name());
+                + input.getNumeroCandidatura() + "\t" + input.getEstadoCandidatura().getResultadoEstadoCandidatura().name());*/
 
         SasScholarshipCandidacy candidacy = SasScholarshipCandidacy.findAll().stream()
                 .filter(c -> c.getExecutionYear() == executionYear && (c.getFiscalNumber().equalsIgnoreCase(input.getNif())
@@ -212,8 +213,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         candidacy.setSubmissionDate(
                 input.getDataSubmissao() != null ? new DateTime(input.getDataSubmissao().toGregorianCalendar().getTime()) : null);
         candidacy.setTechnicianEmail(input.getEmailTecnico().getValue());
-
-        //candidacy state
+      
         candidacy.setAssignmentDate(input.getEstadoCandidatura().getDataAtribuicao() != null ? new DateTime(
                 input.getEstadoCandidatura().getDataAtribuicao().toGregorianCalendar().getTime()) : null);
         candidacy.setDescription(input.getEstadoCandidatura().getDescricao().getValue());
@@ -405,17 +405,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         bean.setDegreeCode(c.getDegreeCode());
         bean.setDegreeName(c.getDegreeName());
         bean.setDocumentNumber(c.getDocIdNumber());
-
-        // TODO check if is it ok       
         bean.setDocumentTypeName(c.getDocIdType().name());
-
-        // TODO field document BI number from candidacy data?
-        //bean.setDocumentBINumber();
-
-        // TODO before was read from code in file!!
-        // bean.setDegreeTypeName(c.getDe); 
-
-        //bean.getDegreeTypeName()
 
         // TODO
         ScholarshipReportRequest request = new ScholarshipReportRequest(c.getExecutionYear(), false, false, "/", "".getBytes());
@@ -426,9 +416,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         service.fillAllInfo(request, bean, c.getRegistration());
 
-        SasScholarshipData data = convertBean2SasScholarshipData(bean);
-
         LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
+        
+        SasScholarshipData data = convertBean2SasScholarshipData(bean);
         data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
         data.setRegistrationYear(String.valueOf(c.getRegistration().getStartExecutionYear().getBeginCivilYear()));
 
@@ -462,7 +452,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         data.setCycleNumberOfEnrolmentYears(bean.getCycleNumberOfEnrolmentYears());
         data.setDegreeQualificationOwner(bean.getDegreeQualificationOwner());
-        //data.setEnrolmnetDate(bean.getE);
 
         data.setFirstMonthGratuity(bean.getFirstMonthExecutionYear());
         data.setGratuityAmount(bean.getGratuityAmount());
@@ -477,7 +466,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         data.setRegistered(bean.getRegistered());
 
         if (bean instanceof ScholarshipStudentOtherYearBean) {
-            // TODO NADIR & Gilberto 
             data.setNumberOfApprovedEcts(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEcts());
             data.setNumberOfApprovedEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEctsLastYear());
             data.setNumberOfDegreeChanges(((ScholarshipStudentOtherYearBean) bean).getNumberOfDegreeChanges());
@@ -512,7 +500,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private void sendCandidacy2Sicabe(SasScholarshipCandidacy c) {
-        if(c.getFirstYear()) {
+        if (c.getFirstYear()) {
             sendFirstTimeAcademicData(c);
         } else {
             sendOtherAcademicData(c);
@@ -536,7 +524,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void sendFirstTimeAcademicData(SasScholarshipCandidacy candidacy) {
 
-        SasScholarshipData data = candidacy.getSasScholarshipData();
+        final SasScholarshipData data = candidacy.getSasScholarshipData();
 
         AlterarDadosAcademicosPrimeiraVezRequest request = new AlterarDadosAcademicosPrimeiraVezRequest();
 
@@ -557,7 +545,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setNumeroAluno(candidacy.getStudentNumber());
         request.setNumeroAnosCurso(data.getNumberOfDegreeCurricularYears());
         request.setNumeroECTSActualInscrito(data.getNumberOfEnrolledECTS());
-        request.setNumeroMatriculas(1); // TODO???
+        request.setNumeroMatriculas(1);
         request.setNumeroMesesPropina(data.getNumberOfMonthsGratuity());
         request.setObservacoes(null);
 
@@ -569,7 +557,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setTitularMestrado(data.getMasterQualificationOwner());
 
         request.setValorPropina(data.getGratuityAmount());
-        
 
     }
 
@@ -602,11 +589,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void sendContratualizationAcademicData(SasScholarshipCandidacy candidacy) {
 
-        SasScholarshipData data = candidacy.getSasScholarshipData();
+        final SasScholarshipData data = candidacy.getSasScholarshipData();
+        
+        org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory factory =
+                new org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory();
 
         AlterarDadosAcademicosContratualizacaoRequest request = new AlterarDadosAcademicosContratualizacaoRequest();
 
-        request.setCodigoCurso(null); //TODO data.getSasScholarshipCandidacy().getDegreeCode()
+        request.setCodigoCurso(factory.createAlterarDadosAcademicosContratualizacaoRequestCodigoCurso(
+                data.getSasScholarshipCandidacy().getDegreeCode()));
         request.setCodigoInstituicaoEnsino(candidacy.getInstitutionCode());
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
@@ -617,7 +608,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         request.setIInscritoAnoLectivoActual(data.getRegistered());
         request.setMesPrimeiroPagamento(Integer.valueOf(data.getFirstMonthGratuity()));
-        request.setNumeroAluno(null); //TODO candidacy.getStudentNumber()
+        request.setNumeroAluno(factory.createAlterarDadosAcademicosContratualizacaoRequestNumeroAluno(
+                candidacy.getRegistration().getNumber().toString()));
         request.setNumeroECTSActualmenteInscrito(candidacy.getSasScholarshipData().getNumberOfEnrolledECTS());
         request.setNumeroMesesPropina(data.getNumberOfMonthsGratuity());
         request.setNumeroOcorrenciasMudancaCurso(data.getNumberOfDegreeChanges());
@@ -629,12 +621,12 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void sendOtherAcademicData(SasScholarshipCandidacy candidacy) {
 
-        SasScholarshipData data = candidacy.getSasScholarshipData();
+        final SasScholarshipData data = candidacy.getSasScholarshipData();
 
         AlterarDadosAcademicosRestantesCasosRequest request = new AlterarDadosAcademicosRestantesCasosRequest();
 
         request.setAnoInscricaoCurso(Integer.valueOf(data.getRegistrationYear()));
-        request.setAnoLectivoActual(-1); // TODO
+        request.setAnoLectivoActual(candidacy.getExecutionYear().getBeginCivilYear());
         request.setCodigoCurso(candidacy.getDegreeCode());
         request.setCodigoInstituicaoEnsino(candidacy.getInstitutionCode());
         request.setDataConclusaoAtosAcademicosUltimoAnoLectivoInscrito(null);

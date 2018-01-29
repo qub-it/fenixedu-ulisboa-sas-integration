@@ -93,6 +93,7 @@ public class AbstractFillScholarshipService {
 
         for (final AbstractScholarshipStudentBean bean : scholarshipStudentBeans) {
 
+            //TODO: Fix logic to be included in fillAllInfo so it can handle FillScholarshipException correctly
             Registration registration = getRegistrationByAbstractScholarshipStudentBean(bean, request);
 
             fillAllInfo(request, bean, registration);

@@ -71,6 +71,7 @@ public class AbstractFillScholarshipService {
         // id document types mapping
         ID_DOCUMENT_TYPE_MAPPING.put("BI / N.º ID CIVIL", IDDocumentType.IDENTITY_CARD);
         ID_DOCUMENT_TYPE_MAPPING.put("Autorização de residência", IDDocumentType.RESIDENCE_AUTHORIZATION);
+        ID_DOCUMENT_TYPE_MAPPING.put("Outros", IDDocumentType.OTHER);
 
     }
 
@@ -274,10 +275,10 @@ public class AbstractFillScholarshipService {
 
     private Integer calculateNumberOfDegreeCurricularYears(AbstractScholarshipStudentBean bean, Registration registration,
             ScholarshipReportRequest request) {
+        
         final StudentCurricularPlan studentCurricularPlan =
                 findStudentCurricularPlan(bean, registration, request.getExecutionYear());
-        final float weight = studentCurricularPlan.getDegreeCurricularPlan().getDegreeStructure().getAcademicPeriod().getWeight();
-        return (int) Math.ceil(weight);
+        return studentCurricularPlan.getDegreeCurricularPlan().getDurationInYears();
     }
 
     private String calculateRegime(AbstractScholarshipStudentBean bean, RegistrationHistoryReport registrationHistoryReport) {

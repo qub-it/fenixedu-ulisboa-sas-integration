@@ -97,6 +97,30 @@ ${portal.toolkit()}
 
 	</div>
 </c:if>
+<c:if test="${not empty warningMessages}">
+	<div class="alert alert-warning" role="alert">
+
+		<c:forEach items="${warningMessages}" var="message">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign"
+					aria-hidden="true">&nbsp;</span> ${message}
+			</p>
+		</c:forEach>
+
+	</div>
+</c:if>
+<c:if test="${not empty errorMessages}">
+	<div class="alert alert-danger" role="alert">
+
+		<c:forEach items="${errorMessages}" var="message">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign"
+					aria-hidden="true">&nbsp;</span> ${message}
+			</p>
+		</c:forEach>
+
+	</div>
+</c:if>
 
 <div class="panel panel-default">
     <form method="post" class="form-horizontal" action="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CHANGE_EXECUTION_YEAR_URL%>">
@@ -155,7 +179,7 @@ ${portal.toolkit()}
 					<th><spring:message
 							code="label.SasScholarshipCandidacy.exportDate" /></th>
 					<th><spring:message
-							code="label.SasScholarshipCandidacy.firstTime" /></th>
+							code="label.SasScholarshipCandidacy.firstYear" /></th>
 					<th></th>
 				</tr>
 			</thead>

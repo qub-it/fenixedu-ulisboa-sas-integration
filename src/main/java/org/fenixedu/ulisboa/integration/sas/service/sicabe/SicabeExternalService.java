@@ -33,10 +33,10 @@ import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 
 import pt.dges.schemas.data.sicabe.v1.AlterarCursoInsituicaoRequest;
 import pt.dges.schemas.data.sicabe.v1.AlterarDadosAcademicosPrimeiraVezRequest;
@@ -52,6 +52,15 @@ import pt.dges.schemas.data.sicabe.v1.ResultadoEstadoCandidatura;
 import pt.dges.schemas.data.sicabe.v1.TipoDocumentoIdentificacao;
 import pt.dges.schemas.data.sicabe.v1.TipoRegime;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicos;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeBusinessMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeErrorMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeValidationMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeBusinessMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeErrorMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeValidationMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage;
@@ -74,63 +83,48 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     @Atomic
-    public void fillAllSasScholarshipCandidacies(ExecutionYear executionYear) {
+    public void fillAllSasScholarshipCandidacies(ExecutionYear executionYear)
+            throws DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage,
+            DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage,
+            DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage, ServerSOAPFaultException {
         final ObterCandidaturasSubmetidasRequest parameters = new ObterCandidaturasSubmetidasRequest();
         parameters.setAnoLectivo(executionYear.getBeginCivilYear());
 
-        try {
-            final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
-                    getClient().obterCandidaturasSubmetidas(parameters);
-            obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream().filter(c -> String
-                    .valueOf(c.getCodigoInstituicaoEnsino()).equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode()))
-                    .forEach(c -> {
+        final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
+                getClient().obterCandidaturasSubmetidas(parameters);
+        obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream().filter(c -> String
+                .valueOf(c.getCodigoInstituicaoEnsino()).equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode()))
+                .forEach(c -> {
 
-                        updateOrCreateSasScholarshipCandidacy(c, executionYear);
+                    updateOrCreateSasScholarshipCandidacy(c, executionYear);
 
-                    });
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+                });
+
     }
 
     @Atomic
-    public void fillSasScholarshipCandidacies(List<SasScholarshipCandidacy> list2Update, ExecutionYear executionYear) {
+    public void fillSasScholarshipCandidacies(List<SasScholarshipCandidacy> list2Update, ExecutionYear executionYear)
+            throws DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage,
+            DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage,
+            DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage, ServerSOAPFaultException {
         final ObterCandidaturasSubmetidasRequest parameters = new ObterCandidaturasSubmetidasRequest();
         parameters.setAnoLectivo(executionYear.getBeginCivilYear());
 
         Set<Integer> candidacyNumbersSet = Sets.newHashSet();
         list2Update.stream().forEach(s -> candidacyNumbersSet.add(s.getCandidacyNumber()));
 
-        try {
-            final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
-                    getClient().obterCandidaturasSubmetidas(parameters);
+        final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
+                getClient().obterCandidaturasSubmetidas(parameters);
 
-            obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream()
-                    .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
-                            .equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode())
-                            && candidacyNumbersSet.contains(c.getNumeroCandidatura()))
-                    .forEach(c -> {
+        obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream()
+                .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
+                        .equalsIgnoreCase(Bennu.getInstance().getInstitutionUnit().getCode())
+                        && candidacyNumbersSet.contains(c.getNumeroCandidatura()))
+                .forEach(c -> {
 
-                        updateOrCreateSasScholarshipCandidacy(c, executionYear);
+                    updateOrCreateSasScholarshipCandidacy(c, executionYear);
 
-                    });
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+                });
     }
 
     private void updateOrCreateSasScholarshipCandidacy(CandidaturaSubmetida input, ExecutionYear executionYear) {
@@ -205,7 +199,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     }
 
-    private void fillCandidacyInfos(CandidaturaSubmetida input, ExecutionYear executionYear, boolean newCandidacy,
+    private void fillCandidacyInfos(CandidaturaSubmetida input, ExecutionYear executionYear, boolean isNewCandidacy,
             SasScholarshipCandidacy candidacy) {
         candidacy.setDegreeCode(input.getCodigoCurso());
         candidacy.setInstitutionCode(input.getCodigoInstituicaoEnsino());
@@ -213,7 +207,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         candidacy.setSubmissionDate(
                 input.getDataSubmissao() != null ? new DateTime(input.getDataSubmissao().toGregorianCalendar().getTime()) : null);
         candidacy.setTechnicianEmail(input.getEmailTecnico().getValue());
-      
+
         candidacy.setAssignmentDate(input.getEstadoCandidatura().getDataAtribuicao() != null ? new DateTime(
                 input.getEstadoCandidatura().getDataAtribuicao().toGregorianCalendar().getTime()) : null);
         candidacy.setDescription(input.getEstadoCandidatura().getDescricao().getValue());
@@ -241,22 +235,18 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             throw new DomainException("error.SicabeExternalService.ExecutionYear.not.found");
         }
 
-        if (newCandidacy) {
+        if (isNewCandidacy) {
             executionYear.addSasScholarshipCandidacies(candidacy);
         }
 
-        // write log file
-        SasScholarshipDataChangeLog log = new SasScholarshipDataChangeLog();
-        log.setDate(new DateTime());
-        log.setDescription(
-                newCandidacy ? "Nova candidatura recolhida do SICABE." : "Atualização de candidatura a partir do SICABE.");
-        log.setStudentName(candidacy.getCandidacyName());
-        log.setStudentNumber(candidacy.getStudentNumber());
-        candidacy.addSasScholarshipDataChangeLogs(log);
+        final DateTime date = new DateTime();
+        writeLog(candidacy,
+                isNewCandidacy ? "Nova candidatura recolhida do SICABE." : "Atualização de candidatura a partir do SICABE.",
+                date);
 
         fillCandidacyInfos(candidacy);
 
-        candidacy.setImportDate(new DateTime());
+        candidacy.setImportDate(date);
 
     }
 
@@ -283,22 +273,16 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             }
 
         } catch (FillScholarshipException e) {
-            SasScholarshipDataChangeLog log = new SasScholarshipDataChangeLog();
-
-            log.setDate(new DateTime());
-            log.setDescription(service.formatObservations(tempBean));
-            log.setStudentName(c.getCandidacyName());
-            log.setStudentNumber(c.getStudentNumber());
-
-            c.addSasScholarshipDataChangeLogs(log);
+            DateTime date = new DateTime();
+            writeLog(c, service.formatObservations(tempBean), date);
 
             c.setState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
-            c.setStateDate(log.getDate());
+            c.setStateDate(date);
 
         }
     }
 
-    private TipoRegime convertRegimeCandidacy(String regime) {
+    protected TipoRegime convertRegimeCandidacy(String regime) {
 
         if (regime.equals(AbstractFillScholarshipService.REGIME_FULL_TIME)) {
             return TipoRegime.TEMPO_INTEGRAL;
@@ -315,7 +299,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         return null;
     }
 
-    private IDDocumentType convertCandidacyDocumentType(TipoDocumentoIdentificacao idDocumentType) {
+    protected IDDocumentType convertCandidacyDocumentType(TipoDocumentoIdentificacao idDocumentType) {
         if (idDocumentType == TipoDocumentoIdentificacao.BI) {
             return IDDocumentType.IDENTITY_CARD;
         } else if (idDocumentType == TipoDocumentoIdentificacao.PASSAPORTE) {
@@ -331,7 +315,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         return null;
     }
 
-    private TipoDocumentoIdentificacao convertDocumentTypeCandidacy(IDDocumentType idDocumentType) {
+    protected TipoDocumentoIdentificacao convertDocumentTypeCandidacy(IDDocumentType idDocumentType) {
         if (idDocumentType == IDDocumentType.IDENTITY_CARD) {
             return TipoDocumentoIdentificacao.BI;
         } else if (idDocumentType == IDDocumentType.PASSPORT) {
@@ -347,7 +331,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         return null;
     }
 
-    private CandidacyState convertCandidacyState(ResultadoEstadoCandidatura candidacyState) {
+    protected CandidacyState convertCandidacyState(ResultadoEstadoCandidatura candidacyState) {
         if (candidacyState == ResultadoEstadoCandidatura.INDEFERIDA) {
             return CandidacyState.DISMISSED;
         } else if (candidacyState == ResultadoEstadoCandidatura.DEFERIDA) {
@@ -407,7 +391,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         bean.setDocumentNumber(c.getDocIdNumber());
         bean.setDocumentTypeName(c.getDocIdType().name());
 
-        // TODO
         ScholarshipReportRequest request = new ScholarshipReportRequest(c.getExecutionYear(), false, false, "/", "".getBytes());
 
         if (c.getRegistration() == null) {
@@ -415,35 +398,77 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
 
         service.fillAllInfo(request, bean, c.getRegistration());
-
-        LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
         
-        SasScholarshipData data = convertBean2SasScholarshipData(bean);
+        LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
+
+        SasScholarshipData data = convertBean2SasScholarshipData(bean, c.getExecutionYear());
         data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
         data.setRegistrationYear(String.valueOf(c.getRegistration().getStartExecutionYear().getBeginCivilYear()));
 
-        if (c.getSasScholarshipData() != null) {
+        if (c.getSasScholarshipData() == null) {
+            c.setSasScholarshipData(data);
+
+            if (data.getObservations().contains(AbstractFillScholarshipService.ERROR_OBSERVATION)) {
+                c.setState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
+            } else if (data.getObservations().contains(AbstractFillScholarshipService.WARNING_OBSERVATION)) {
+                c.setState(SasScholarshipCandidacyState.PROCESSED_WARNINGS);
+            } else {
+                c.setState(SasScholarshipCandidacyState.PROCESSED);
+            }
+
+            final DateTime date = new DateTime();
+            c.setStateDate(date);
+
+            writeLog(c,
+                    !StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : "Candidatura processada com sucesso.",
+                    date);
+        }
+
+        else if (c.getSasScholarshipData() != null && dataHasChanged(c.getSasScholarshipData(), data)) {
             c.getSasScholarshipData().delete();
+            c.setSasScholarshipData(data);
+
+            c.setState(SasScholarshipCandidacyState.MODIFIED);
+
+            final DateTime date = new DateTime();
+            c.setStateDate(date);
+
+            writeLog(c, "Dados da candidatura atualizados com sucesso. " + (!StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : ""), date);
         }
-        c.setSasScholarshipData(data);
-
-        if (data.getObservations().contains(AbstractFillScholarshipService.ERROR_OBSERVATION)) {
-            c.setState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
-        } else if (data.getObservations().contains(AbstractFillScholarshipService.WARNING_OBSERVATION)) {
-            c.setState(SasScholarshipCandidacyState.PROCESSED_WARNINGS);
-        } else {
-            c.setState(SasScholarshipCandidacyState.PROCESSED);
-        }
-
-        c.setStateDate(new DateTime());
-
-        c.getSasScholarshipDataChangeLogsSet().add(new SasScholarshipDataChangeLog(c.getStateDate(), c.getStudentNumber(),
-                c.getCandidacyName(),
-                !StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : "Candidatura processada com sucesso."));
 
     }
 
-    private SasScholarshipData convertBean2SasScholarshipData(AbstractScholarshipStudentBean bean) {
+    private boolean dataHasChanged(SasScholarshipData sasScholarshipData, SasScholarshipData data) {
+
+        return !Objects.equal(data.getRegistrationYear(), sasScholarshipData.getRegistrationYear())
+                || !Objects.equal(data.getCurricularYear(), sasScholarshipData.getCurricularYear())
+                || !Objects.equal(data.getLastAcademicActDateLastYear(), sasScholarshipData.getLastAcademicActDateLastYear())
+                || !Objects.equal(data.getEnrolmentDate(), sasScholarshipData.getEnrolmentDate())
+                || !Objects.equal(data.getFirstMonthGratuity(), sasScholarshipData.getFirstMonthGratuity())
+                || !Objects.equal(data.getNumberOfDegreeCurricularYears(), sasScholarshipData.getNumberOfDegreeCurricularYears())
+                || !Objects.equal(data.getNumberOfEnrolledECTS(), sasScholarshipData.getNumberOfEnrolledECTS())
+                || !Objects.equal(data.getNumberOfApprovedEctsLastYear(), sasScholarshipData.getNumberOfApprovedEctsLastYear())
+                || !Objects.equal(data.getNumberOfEnrolmentsYears(), sasScholarshipData.getNumberOfEnrolmentsYears())
+                || !Objects.equal(data.getCycleNumberOfEnrolmentYears(), sasScholarshipData.getCycleNumberOfEnrolmentYears())
+                || !Objects.equal(data.getNumberOfMonthsGratuity(), sasScholarshipData.getNumberOfMonthsGratuity())
+                || !Objects.equal(data.getNumberOfDegreeChanges(), sasScholarshipData.getNumberOfDegreeChanges())
+                || !Objects.equal(data.getObservations(), sasScholarshipData.getObservations())
+                || !Objects.equal(data.getHasMadeDegreeChangeOnCurrentYear(),
+                        sasScholarshipData.getHasMadeDegreeChangeOnCurrentYear())
+                || !Objects.equal(data.getRegime(), sasScholarshipData.getRegime())
+                || !Objects.equal(data.getCetQualificationOwner(), sasScholarshipData.getCetQualificationOwner())
+                || !Objects.equal(data.getCtspQualificationOwner(), sasScholarshipData.getCtspQualificationOwner())
+                || !Objects.equal(data.getPhdQualificationOwner(), sasScholarshipData.getPhdQualificationOwner())
+                || !Objects.equal(data.getDegreeQualificationOwner(), sasScholarshipData.getDegreeQualificationOwner())
+                || !Objects.equal(data.getMasterQualificationOwner(), sasScholarshipData.getMasterQualificationOwner())
+                || !Objects.equal(data.getLastEnrolmentYear(), sasScholarshipData.getLastEnrolmentYear())
+                || !Objects.equal(data.getGratuityAmount(), sasScholarshipData.getGratuityAmount())
+                || !Objects.equal(data.getRegistered(), sasScholarshipData.getRegistered())
+                || !Objects.equal(data.getNumberOfApprovedEcts(), sasScholarshipData.getNumberOfApprovedEcts());
+
+    }
+
+    private SasScholarshipData convertBean2SasScholarshipData(AbstractScholarshipStudentBean bean, ExecutionYear executionYear) {
 
         SasScholarshipData data = new SasScholarshipData();
 
@@ -453,7 +478,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         data.setCycleNumberOfEnrolmentYears(bean.getCycleNumberOfEnrolmentYears());
         data.setDegreeQualificationOwner(bean.getDegreeQualificationOwner());
 
-        data.setFirstMonthGratuity(bean.getFirstMonthExecutionYear());
+        data.setFirstMonthGratuity(executionYear.getBeginLocalDate().getMonthOfYear());
         data.setGratuityAmount(bean.getGratuityAmount());
 
         data.setMasterQualificationOwner(bean.getMasterQualificationOwner());
@@ -464,6 +489,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         data.setPhdQualificationOwner(bean.getPhdQualificationOwner());
         data.setRegime(bean.getRegime());
         data.setRegistered(bean.getRegistered());
+        data.setNumberOfDegreeCurricularYears(bean.getNumberOfDegreeCurricularYears());
 
         if (bean instanceof ScholarshipStudentOtherYearBean) {
             data.setNumberOfApprovedEcts(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEcts());
@@ -472,10 +498,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             data.setHasMadeDegreeChangeOnCurrentYear(
                     ((ScholarshipStudentOtherYearBean) bean).getHasMadeDegreeChangeOnCurrentYear());
             data.setLastEnrolmentYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getLastEnrolmentYear()));
-            data.setLastAcademicActDateLastYear(
-                    String.valueOf(((ScholarshipStudentOtherYearBean) bean).getLastAcademicActDateLastYear()));
-
-            data.setNumberOfDegreeCurricularYears(((ScholarshipStudentOtherYearBean) bean).getNumberOfDegreeCurricularYears());
+            data.setLastAcademicActDateLastYear(((ScholarshipStudentOtherYearBean) bean).getLastAcademicActDateLastYear());
 
             data.setCycleNumberOfEnrolmentYears(
                     (((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentsYearsInIntegralRegime()));
@@ -500,11 +523,26 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private void sendCandidacy2Sicabe(SasScholarshipCandidacy c) {
-        if (c.getFirstYear()) {
-            sendFirstTimeAcademicData(c);
-        } else {
-            sendOtherAcademicData(c);
-            sendContratualizationAcademicData(c);
+        try {
+            if (c.getFirstYear()) {
+                sendFirstTimeAcademicData(c);
+            } else {
+                sendOtherAcademicData(c);
+                sendContratualizationAcademicData(c);
+            }
+            final DateTime exportDate = new DateTime();
+            c.setExportDate(exportDate);
+            writeLog(c, "Candidatura exportada para o SICABE", exportDate);
+        } catch (DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeBusinessMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeErrorMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeValidationMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeBusinessMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeErrorMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeValidationMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage
+                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -522,7 +560,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         c.delete();
     }
 
-    private void sendFirstTimeAcademicData(SasScholarshipCandidacy candidacy) {
+    private void sendFirstTimeAcademicData(SasScholarshipCandidacy candidacy)
+            throws DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeBusinessMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeErrorMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeValidationMessageFaultFaultMessage {
 
         final SasScholarshipData data = candidacy.getSasScholarshipData();
 
@@ -558,9 +599,13 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         request.setValorPropina(data.getGratuityAmount());
 
+        candidacy.setState(SasScholarshipCandidacyState.SENT);
+
+        getClient().alterarDadosAcademicosPrimeiraVez(request);
+
     }
 
-    private XMLGregorianCalendar createXMLGregorianCalendar(LocalDate localDate) {
+    protected XMLGregorianCalendar createXMLGregorianCalendar(LocalDate localDate) {
         final GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTimeInMillis(localDate.toDate().getTime());
 
@@ -575,7 +620,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     }
 
-    private IdentificadorCandidatura createIdentificadorCandidaturaData(Integer beginExecutionYear, String docIdNumber,
+    protected IdentificadorCandidatura createIdentificadorCandidaturaData(Integer beginExecutionYear, String docIdNumber,
             IDDocumentType docIdType, String fiscalNumber) {
         ObjectFactory factory = new ObjectFactory();
 
@@ -587,10 +632,13 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         return idCandidatura;
     }
 
-    private void sendContratualizationAcademicData(SasScholarshipCandidacy candidacy) {
+    private void sendContratualizationAcademicData(SasScholarshipCandidacy candidacy)
+            throws DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage {
 
         final SasScholarshipData data = candidacy.getSasScholarshipData();
-        
+
         org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory factory =
                 new org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory();
 
@@ -617,9 +665,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setRegime(convertRegimeCandidacy(data.getRegime()));
         request.setValorPropina(data.getGratuityAmount());
 
+        candidacy.setState(SasScholarshipCandidacyState.SENT);
+
+        getClient().alterarDadosAcademicosContratualizacao(request);
     }
 
-    private void sendOtherAcademicData(SasScholarshipCandidacy candidacy) {
+    private void sendOtherAcademicData(SasScholarshipCandidacy candidacy)
+            throws DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeBusinessMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeErrorMessageFaultFaultMessage,
+            DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeValidationMessageFaultFaultMessage {
 
         final SasScholarshipData data = candidacy.getSasScholarshipData();
 
@@ -629,7 +683,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setAnoLectivoActual(candidacy.getExecutionYear().getBeginCivilYear());
         request.setCodigoCurso(candidacy.getDegreeCode());
         request.setCodigoInstituicaoEnsino(candidacy.getInstitutionCode());
-        request.setDataConclusaoAtosAcademicosUltimoAnoLectivoInscrito(null);
+        request.setDataConclusaoAtosAcademicosUltimoAnoLectivoInscrito(
+                createXMLGregorianCalendar(data.getLastAcademicActDateLastYear()));
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
@@ -639,7 +694,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         request.setIdentificadorCandidatura(idCandidatura);
         request.setIInscritoAnoLectivoActual(data.getRegistered());
-        request.setMesPrimeiroPagamento(Integer.valueOf(data.getFirstMonthGratuity()));
+        request.setMesPrimeiroPagamento(/*Integer.valueOf(data.getFirstMonthGratuity())*/candidacy.getExecutionYear()
+                .getBeginLocalDate().getMonthOfYear());
 
         request.setNumeroAluno(candidacy.getStudentNumber());
         request.setNumeroAnosCurso(data.getNumberOfDegreeCurricularYears());
@@ -663,6 +719,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setTotalECTScursoAtingirGrau(data.getNumberOfApprovedEcts());
         request.setUltimoAnoInscrito(Integer.valueOf(data.getLastEnrolmentYear()));
         request.setValorPropina(data.getGratuityAmount());
+
+        candidacy.setState(SasScholarshipCandidacyState.SENT);
+
+        getClient().alterarDadosAcademicosRestantesCasos(request);
 
     }
 
@@ -721,5 +781,14 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setCodigoInstituicaoEnsino(-1);
         request.setDataMudanca(null);
 
+    }
+
+    private void writeLog(SasScholarshipCandidacy candidacy, String message, DateTime date) {
+        SasScholarshipDataChangeLog log = new SasScholarshipDataChangeLog();
+        log.setDate(date);
+        log.setDescription(message);
+        log.setStudentName(candidacy.getCandidacyName());
+        log.setStudentNumber(candidacy.getStudentNumber());
+        candidacy.addSasScholarshipDataChangeLogs(log);
     }
 }

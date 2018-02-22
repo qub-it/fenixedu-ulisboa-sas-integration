@@ -96,7 +96,7 @@ public class FirstYearScholarshipXlsTransformService extends AbstractScholarship
                 bean.getRegistered() ? booleanToString(bean.getMasterQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_PHD,
                 bean.getRegistered() ? booleanToString(bean.getPhdQualificationOwner()) : null);
-        writeCellString(row, ScholarshipStudentFirstYearBean.OBSERVATIONS, bean.getRegistered() ? bean.getObservations() : null);
+        writeCellString(row, ScholarshipStudentFirstYearBean.OBSERVATIONS, bean.getObservations() != null ? bean.getObservations() : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.REGIME, bean.getRegistered() ? bean.getRegime() : null);
 
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_YEARS_DEGREE,

@@ -13,11 +13,14 @@ public class SocialServicesConfiguration extends SocialServicesConfiguration_Bas
         setBennu(Bennu.getInstance());
     }
 
-    public void edit(int numberOfMonthsOfAcademicYear, Collection<IngressionType> ingressionTypesWhichAreDegreeTransfer) {
-        SocialServicesConfiguration socialServicesConfiguration = Bennu.getInstance().getSocialServicesConfiguration();
-        socialServicesConfiguration.setNumberOfMonthsOfAcademicYear(numberOfMonthsOfAcademicYear);
+    public void edit(int numberOfMonthsOfAcademicYear, String email, String institutionCode,
+            Collection<IngressionType> ingressionTypesWhichAreDegreeTransfer) {
+        SocialServicesConfiguration config = Bennu.getInstance().getSocialServicesConfiguration();
+        config.setNumberOfMonthsOfAcademicYear(numberOfMonthsOfAcademicYear);
+        config.setEmail(email);
+        config.setInstitutionCode(institutionCode);
         Set<IngressionType> ingressionTypeWhichAreDegreeTransferSet =
-                socialServicesConfiguration.getIngressionTypeWhichAreDegreeTransferSet();
+                config.getIngressionTypeWhichAreDegreeTransferSet();
         ingressionTypeWhichAreDegreeTransferSet.clear();
         ingressionTypeWhichAreDegreeTransferSet.addAll(ingressionTypesWhichAreDegreeTransfer);
     }
@@ -36,4 +39,5 @@ public class SocialServicesConfiguration extends SocialServicesConfiguration_Bas
     public int getNumberOfMonthsOfAcademicYear() {
         return super.getNumberOfMonthsOfAcademicYear();
     }
+    
 }

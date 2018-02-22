@@ -80,9 +80,9 @@ relation SasScholarshipCandidacySasScholarshipDataChangeLog {
 class SasScholarshipData {
 	String registrationYear; //AnoInscricaoCurso
 	String curricularYear; //AnoLectivoActual
-	String lastAcademicActDateLastYear; //DataConclusaoAtosAcademicosUltimoAnoLectivoInscrito
+	LocalDate lastAcademicActDateLastYear; //DataConclusaoAtosAcademicosUltimoAnoLectivoInscrito
 	LocalDate enrolmentDate; //DataInscricaoAnoLectivo (old: registrationDate)
-	String firstMonthGratuity; //MesPrimeiroPagamento (old: firstMonthExecutionYear)
+	Integer firstMonthGratuity; //MesPrimeiroPagamento (old: firstMonthExecutionYear)
 	Integer numberOfDegreeCurricularYears; //NumeroAnosCurso
 	BigDecimal numberOfEnrolledECTS; // NumeroECTSActualmenteInscrito / NumeroECTSActualInscrito
 	BigDecimal numberOfApprovedEctsLastYear; //NumeroECTSObtidosUltimoAnoInscrito
@@ -122,8 +122,8 @@ relation SasScholarshipCandidacySasScholarshipData {
 // Should be a singleton
 class SocialServicesConfiguration{
 	protected int numberOfMonthsOfAcademicYear;
-	protected String email;
-	protected String institutionCode;
+	String email;
+	String institutionCode;
 }
 
 class ScholarshipReportRequest {

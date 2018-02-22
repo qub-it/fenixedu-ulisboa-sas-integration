@@ -70,6 +70,24 @@ ${portal.toolkit()}
 </div>	
 </div>		
 <div class="form-group row">
+	<div class="col-sm-2 control-label">
+		<spring:message code="label.SocialServicesConfiguration.email" />
+	</div>
+
+	<div class="col-sm-10">
+		<input class="form-control" type="text" name="email" value="${socialServicesConfiguration.email}" />
+	</div>
+</div>
+<div class="form-group row">
+	<div class="col-sm-2 control-label">
+		<spring:message code="label.SocialServicesConfiguration.institutionCode" />
+	</div>
+
+	<div class="col-sm-10">
+		<input class="form-control" type="text" name="institutionCode" value="${socialServicesConfiguration.institutionCode}" />
+	</div>
+</div>
+<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.SocialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer"/></div> 
 
 <div class="col-sm-4">

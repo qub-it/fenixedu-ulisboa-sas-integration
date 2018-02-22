@@ -38,6 +38,7 @@ import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipDataChangeLog;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasBaseController;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasController;
+import org.fenixedu.ulisboa.integration.sas.util.SasPTUtil;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,11 +46,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
+
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage;
+import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage;
+
 @SpringFunctionality(app = SasController.class, title = "label.title.manageScholarships", accessGroup = "#academicAdmOffice")
 @RequestMapping(ScholarshipCandidaciesController.CONTROLLER_URL)
 public class ScholarshipCandidaciesController extends SasBaseController {
-
-    
 
     public static final String CONTROLLER_URL = "/integration/sas/manageScholarshipCandidacies";
 
@@ -109,9 +114,16 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear);
-
-        addInfoMessage(sasScholarshipCandidacies.size() + " candidaturas sincronizadas com sucesso.", model);
+        try {
+            sicabe.fillSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear);
+            addInfoMessage(SasPTUtil.bundle("label.info.sync", String.valueOf(sasScholarshipCandidacies.size())), model);
+        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage
+                | DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage
+                | DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage e) {
+            addErrorMessage(SasPTUtil.bundle("label.error.sync"), model);
+        } catch (ServerSOAPFaultException e) {
+            addErrorMessage(SasPTUtil.bundle("label.error.connection"), model);
+        }
 
         return search(model, executionYear);
     }
@@ -124,9 +136,17 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillAllSasScholarshipCandidacies(executionYear);
-
-        addInfoMessage("Todas as candidaturas foram sincronizadas com sucesso.", model);
+        try {
+            sicabe.fillAllSasScholarshipCandidacies(executionYear);
+            addInfoMessage(SasPTUtil.bundle("label.info.syncAll"), model);
+        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage
+                | DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage
+                | DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage e) {
+            addErrorMessage(SasPTUtil.bundle("label.error.syncAll"), model);
+        }
+        catch (ServerSOAPFaultException e) {
+            addErrorMessage(SasPTUtil.bundle("label.error.connection"), model);
+        }
 
         return search(model, executionYear);
     }
@@ -141,7 +161,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processSasScholarshipCandidacies(Collections.singletonList(sasScholarshipCandidacy));
 
-        addInfoMessage("TODO Candidatura processada com sucesso.", model);
+        addInfoMessage(SasPTUtil.bundle("label.info.process"), model);
 
         return readResumeSasScholarshipCandidacy(sasScholarshipCandidacy, model);
 
@@ -157,8 +177,8 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         //process all entries
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.processAllSasScholarshipCandidacies();
-        
-        addInfoMessage("TODO: Todas as candidaturas foram processadas com sucesso.", model);
+
+        addInfoMessage(SasPTUtil.bundle("label.info.processAll"), model);
 
         return search(model, executionYear);
     }
@@ -173,10 +193,11 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.sendSasScholarshipsCandidacies2Sicabe(Collections.singletonList(sasScholarshipCandidacy));
-        
-        addInfoMessage("TODO: candidatura enviada com sucesso.", model);
 
-        return jspPath("readSasScholarshipData");
+        model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
+        addInfoMessage(SasPTUtil.bundle("label.info.send"), model);
+
+        return jspPath("resume");
     }
 
     private static final String _SEND_ALL_ENTRIES_URI = "/sendAll";
@@ -188,8 +209,8 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.sendAllSasScholarshipCandidacies2Sicabe();
-        
-        addInfoMessage("TODO: Todas as candidaturas foram enviadas com sucesso.", model);
+
+        addInfoMessage(SasPTUtil.bundle("label.info.sendAll"), model);
 
         return search(model, executionYear);
 
@@ -207,8 +228,8 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeSasScholarshipsCandidacies(Collections.singletonList(sasScholarshipCandidacy));
-        
-        addInfoMessage("Candidatura do aluno " + studentName + " apagada com sucesso.", model);
+
+        addInfoMessage(SasPTUtil.bundle("label.info.delete", studentName), model);
 
         return search(model, executionYear);
     }
@@ -222,8 +243,8 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.removeAllSasScholarshipsCandidacies();
-        
-        addInfoMessage("TODO: Todas as candidaturas foram apagadas com sucesso.", model);
+
+        addInfoMessage(SasPTUtil.bundle("label.info.deleteAll"), model);
 
         return search(model, executionYear);
 

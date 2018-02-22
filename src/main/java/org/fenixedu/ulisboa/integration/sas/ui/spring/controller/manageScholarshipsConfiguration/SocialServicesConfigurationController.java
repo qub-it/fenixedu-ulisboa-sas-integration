@@ -73,13 +73,15 @@ public class SocialServicesConfigurationController extends SasBaseController {
     @RequestMapping(value = "/update/", method = RequestMethod.POST)
     public String update(
             @RequestParam(value = "numberofmonthsofacademicyear", required = false) int numberOfMonthsOfAcademicYear,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "institutionCode", required = false) String institutionCode,
             @RequestParam(value = "ingressiontypewhicharedegreetransfer", required = false) List<IngressionType> ingressionTypeWhichAreDegreeTransfer,
             Model model, RedirectAttributes redirectAttributes) {
         ingressionTypeWhichAreDegreeTransfer =
                 ingressionTypeWhichAreDegreeTransfer != null ? ingressionTypeWhichAreDegreeTransfer : Collections
                         .<IngressionType> emptyList();
         try {
-            updateSocialServicesConfiguration(numberOfMonthsOfAcademicYear, ingressionTypeWhichAreDegreeTransfer, model);
+            updateSocialServicesConfiguration(numberOfMonthsOfAcademicYear, email, institutionCode, ingressionTypeWhichAreDegreeTransfer, model);
 
             return redirect("/integration/sas/managescholarshipsconfiguration/socialservicesconfiguration/read/", model,
                     redirectAttributes);
@@ -91,9 +93,9 @@ public class SocialServicesConfigurationController extends SasBaseController {
     }
 
     @Atomic
-    public void updateSocialServicesConfiguration(int numberOfMonthsOfAcademicYear,
+    public void updateSocialServicesConfiguration(int numberOfMonthsOfAcademicYear, String email, String institutionCode,
             List<IngressionType> ingressionTypeWhichAreDegreeTransfer, Model model) {
-        getSocialServicesConfiguration().edit(numberOfMonthsOfAcademicYear, ingressionTypeWhichAreDegreeTransfer);
+        getSocialServicesConfiguration().edit(numberOfMonthsOfAcademicYear, email, institutionCode, ingressionTypeWhichAreDegreeTransfer);
     }
 
     @ModelAttribute("socialServicesConfiguration")

@@ -174,7 +174,7 @@ ${portal.toolkit()}
 					</tr>
 					
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.firstTime" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.firstYear" /></th>
 						<td>
 							<c:if test="${sasScholarshipCandidacy.firstYear}"><spring:message code="label.true" /></c:if>
 							<c:if test="${not sasScholarshipCandidacy.firstYear}"><spring:message code="label.false" /></c:if>

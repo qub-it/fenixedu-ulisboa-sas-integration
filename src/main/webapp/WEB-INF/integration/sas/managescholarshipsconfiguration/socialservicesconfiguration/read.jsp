@@ -60,6 +60,18 @@ ${portal.toolkit()}
 	</td> 
 </tr>
 <tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.email"/></th> 
+	<td>
+		<c:out value='${socialServicesConfiguration.email}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.institutionCode"/></th> 
+	<td>
+		<c:out value='${socialServicesConfiguration.institutionCode}'/>
+	</td> 
+</tr>
+<tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer"/></th> 
 	<td>
 		<ul>

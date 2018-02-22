@@ -1,13 +1,10 @@
 package org.fenixedu.ulisboa.integration.sas.tasks.sicabe;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.util.email.Message;
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
-import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
-import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacyState;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 
 //Force task to be read only and process each report on its own transaction to avoid errors in a report affecting other reports
@@ -19,21 +16,36 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         sicabe.fillAllSasScholarshipCandidacies(ExecutionYear.readCurrentExecutionYear());
-
-
-        // process only pending (news) and modified (TODO)
-        final List<SasScholarshipCandidacy> sas2Process = SasScholarshipCandidacy.findAll().stream()
-                .filter(c -> c.getState() == SasScholarshipCandidacyState.PENDING)
-                .collect(Collectors.toList());
-
         
-        sicabe.processSasScholarshipCandidacies(sas2Process);
+        sicabe.processAllSasScholarshipCandidacies();
+
+        // process only pending (news) and modified candidacies
+        /*final List<SasScholarshipCandidacy> sas2Process =
+                SasScholarshipCandidacy.findAll().stream().filter(c -> (c.getState() == SasScholarshipCandidacyState.PENDING
+                        || c.getState() == SasScholarshipCandidacyState.MODIFIED)).collect(Collectors.toList());
+
+        sicabe.processSasScholarshipCandidacies(sas2Process);*/
         
-        //enviado-processado (excpeto anulado) compara entre o novo processamento e q ja existia
+        //enviado/processado (excepto anulado) compara entre o novo processamento e o q ja existia
         // - enviados passada a modificado
         // - processado passa a processado! ;)
 
         // TODO send an email to user
+        sendEmailForUser();
+
+    }
+
+    public void sendEmailForUser() {
+
+        final String emailAddress = Bennu.getInstance().getSocialServicesConfiguration().getEmail();
+
+        final String subject = "Fenix Bolsas SAS";
+//                BundleUtil.getString(Bundle.CANDIDATE, "label.application.recomentation.upload.notification.email.subject");
+        final String body = "TODO_BODY";
+//                BundleUtil.getString(Bundle.CANDIDATE, "label.application.recomentation.upload.notification.email.body",
+//                        getRecomentation().getName(), getRecomentation().getInstitution());
+
+        new Message(Bennu.getInstance().getSystemSender(), emailAddress, subject, body);
     }
 
 }

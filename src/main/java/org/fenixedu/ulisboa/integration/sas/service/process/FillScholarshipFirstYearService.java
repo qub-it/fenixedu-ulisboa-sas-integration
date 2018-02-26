@@ -10,7 +10,7 @@ public class FillScholarshipFirstYearService extends AbstractFillScholarshipServ
     protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, RegistrationHistoryReport currentYearRegistrationReport,
             ScholarshipReportRequest request) {
         // first time students in cycle should be 1
-        bean.setCycleNumberOfEnrolmentYears(currentYearRegistrationReport.getEnrolmentYearsCount());
+        bean.setCycleNumberOfEnrolmentsYears(currentYearRegistrationReport.getEnrolmentYearsCount());
     }
 
 }

@@ -238,12 +238,12 @@ public abstract class AbstractScholarshipStudentBean implements Serializable {
         this.numberOfDegreeCurricularYears = numberOfDegreeCurricularYears;
     }
 
-    public Integer getCycleNumberOfEnrolmentYears() {
+    public Integer getCycleNumberOfEnrolmentsYears() {
         return cycleNumberOfEnrolmentYears;
     }
 
-    public void setCycleNumberOfEnrolmentYears(Integer numberOfEnrolmentYearsOnInstitution) {
-        this.cycleNumberOfEnrolmentYears = numberOfEnrolmentYearsOnInstitution;
+    public void setCycleNumberOfEnrolmentsYears(Integer cycleNumberOfEnrolmentsYears) {
+        this.cycleNumberOfEnrolmentYears = cycleNumberOfEnrolmentsYears;
     }
 
     public BigDecimal getNumberOfEnrolledECTS() {

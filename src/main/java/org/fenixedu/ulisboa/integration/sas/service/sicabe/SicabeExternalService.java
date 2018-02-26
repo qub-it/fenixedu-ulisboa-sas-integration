@@ -398,90 +398,100 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
 
         service.fillAllInfo(request, bean, c.getRegistration());
-        
-        LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
 
-        
-        SasScholarshipData data = convertBean2SasScholarshipData(bean, c.getExecutionYear());
-        data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
-        data.setRegistrationYear(String.valueOf(c.getRegistration().getStartExecutionYear().getBeginCivilYear()));
-
-        if (c.getSasScholarshipData() == null) {
-            c.setSasScholarshipData(data);
-
-            if (data.getObservations().contains(AbstractFillScholarshipService.ERROR_OBSERVATION)) {
-                c.setState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
-            } else if (data.getObservations().contains(AbstractFillScholarshipService.WARNING_OBSERVATION)) {
-                c.setState(SasScholarshipCandidacyState.PROCESSED_WARNINGS);
-            } else {
-                c.setState(SasScholarshipCandidacyState.PROCESSED);
-            }
-
-            final DateTime date = new DateTime();
-            c.setStateDate(date);
-
-            writeLog(c,
-                    !StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : "Candidatura processada com sucesso.",
-                    date);
+        if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)) {
+            updateSasSchoolarshipCandidacyData(bean, c);
         }
 
-        else if (c.getSasScholarshipData() != null && dataHasChanged(c.getSasScholarshipData(), data)) {
-            c.getSasScholarshipData().delete();
-            c.setSasScholarshipData(data);
+    }
 
-            c.setState(SasScholarshipCandidacyState.MODIFIED);
+    private boolean dataHasChanged(SasScholarshipData sasScholarshipData, AbstractScholarshipStudentBean bean) {
 
-            final DateTime date = new DateTime();
-            c.setStateDate(date);
+        boolean value =
+                !Objects.equal(bean.getCetQualificationOwner(), sasScholarshipData.getCetQualificationOwner())
+                        || !Objects.equal(bean.getCtspQualificationOwner(), sasScholarshipData.getCtspQualificationOwner())
+                        || !Objects.equal(bean.getPhdQualificationOwner(), sasScholarshipData.getPhdQualificationOwner())
+                        || !Objects.equal(bean.getDegreeQualificationOwner(), sasScholarshipData.getDegreeQualificationOwner())
+                        || !Objects.equal(bean.getMasterQualificationOwner(), sasScholarshipData.getMasterQualificationOwner())
+                        || !Objects.equal(sasScholarshipData.getSasScholarshipCandidacy().getExecutionYear().getBeginLocalDate()
+                                .getMonthOfYear(), sasScholarshipData.getFirstMonthGratuity())
+                        || !Objects.equal(bean.getGratuityAmount(), sasScholarshipData.getGratuityAmount())
+                        || !Objects.equal(bean.getCycleNumberOfEnrolmentsYears(), sasScholarshipData.getNumberOfEnrolmentsYears())
+                        || !Objects.equal(bean.getNumberOfEnrolledECTS(), sasScholarshipData.getNumberOfEnrolledECTS())
+                        || !Objects.equal(bean.getNumberOfMonthsExecutionYear(), sasScholarshipData.getNumberOfMonthsGratuity())
+                        || !Objects.equal(bean.getObservations(), sasScholarshipData.getObservations())
+                        || !Objects.equal(bean.getRegime(), sasScholarshipData.getRegime())
+                        || !Objects.equal(bean.getRegistered(), sasScholarshipData.getRegistered())
+                        || !Objects.equal(bean.getNumberOfDegreeCurricularYears(),
+                                sasScholarshipData.getNumberOfDegreeCurricularYears())
+                        || !Objects.equal(bean.getRegistrationDate(), sasScholarshipData.getEnrolmentDate());
 
-            writeLog(c, "Dados da candidatura atualizados com sucesso. " + (!StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : ""), date);
+        if (bean instanceof ScholarshipStudentOtherYearBean) {
+
+            value = value
+                    && (!Objects.equal(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEcts(),
+                            sasScholarshipData.getNumberOfApprovedEcts())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEctsLastYear(),
+                                    sasScholarshipData.getNumberOfApprovedEctsLastYear())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getNumberOfDegreeChanges(),
+                                    sasScholarshipData.getNumberOfDegreeChanges())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getHasMadeDegreeChangeOnCurrentYear(),
+                                    sasScholarshipData.getHasMadeDegreeChangeOnCurrentYear())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getLastEnrolmentYear(),
+                                    sasScholarshipData.getLastEnrolmentYear())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getLastAcademicActDateLastYear(),
+                                    sasScholarshipData.getLastAcademicActDateLastYear())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean).getCurricularYear(),
+                                    sasScholarshipData.getCurricularYear())
+                            || !Objects.equal(((ScholarshipStudentOtherYearBean) bean)
+                                    .getCycleNumberOfEnrolmentsYearsInIntegralRegime(),
+                                    sasScholarshipData.getCycleNumberOfEnrolmentsYearsInIntegralRegime())
+
+                            || !Objects.equal(
+                                    String.valueOf(sasScholarshipData.getSasScholarshipCandidacy().getRegistration()
+                                            .getStartExecutionYear().getBeginCivilYear()),
+                                    sasScholarshipData.getRegistrationYear())
+
+                    );
+        }
+
+        return value;
+
+        /*
+        
+        if (bean instanceof ScholarshipStudentOtherYearBean) {
+        
+            data.setCycleNumberOfEnrolmentYears(
+                    (((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentsYearsInIntegralRegime()));
+            data.setNumberOfEnrolledEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfEnrolledEctsLastYear());
+            data.setNumberOfEnrolmentsYears(((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentYears());
+        
+            data.setCurricularYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getCurricularYear()));
+        
+        }
+        */
+    }
+
+    private void updateSasSchoolarshipCandidacyData(AbstractScholarshipStudentBean bean, SasScholarshipCandidacy candidacy) {
+
+        boolean isNewData = false;
+
+        SasScholarshipData data;
+        if (candidacy.getSasScholarshipData() == null) {
+            data = new SasScholarshipData();
+            candidacy.setSasScholarshipData(data);
+
+            isNewData = true;
         } else {
-            data.delete();
+            data = candidacy.getSasScholarshipData();
         }
-
-    }
-
-    private boolean dataHasChanged(SasScholarshipData sasScholarshipData, SasScholarshipData data) {
-
-        return !Objects.equal(data.getRegistrationYear(), sasScholarshipData.getRegistrationYear())
-                || !Objects.equal(data.getCurricularYear(), sasScholarshipData.getCurricularYear())
-                || !Objects.equal(data.getLastAcademicActDateLastYear(), sasScholarshipData.getLastAcademicActDateLastYear())
-                || !Objects.equal(data.getEnrolmentDate(), sasScholarshipData.getEnrolmentDate())
-                || !Objects.equal(data.getFirstMonthGratuity(), sasScholarshipData.getFirstMonthGratuity())
-                || !Objects.equal(data.getNumberOfDegreeCurricularYears(), sasScholarshipData.getNumberOfDegreeCurricularYears())
-                || !Objects.equal(data.getNumberOfEnrolledECTS(), sasScholarshipData.getNumberOfEnrolledECTS())
-                || !Objects.equal(data.getNumberOfApprovedEctsLastYear(), sasScholarshipData.getNumberOfApprovedEctsLastYear())
-                || !Objects.equal(data.getNumberOfEnrolmentsYears(), sasScholarshipData.getNumberOfEnrolmentsYears())
-                || !Objects.equal(data.getCycleNumberOfEnrolmentYears(), sasScholarshipData.getCycleNumberOfEnrolmentYears())
-                || !Objects.equal(data.getNumberOfMonthsGratuity(), sasScholarshipData.getNumberOfMonthsGratuity())
-                || !Objects.equal(data.getNumberOfDegreeChanges(), sasScholarshipData.getNumberOfDegreeChanges())
-                || !Objects.equal(data.getObservations(), sasScholarshipData.getObservations())
-                || !Objects.equal(data.getHasMadeDegreeChangeOnCurrentYear(),
-                        sasScholarshipData.getHasMadeDegreeChangeOnCurrentYear())
-                || !Objects.equal(data.getRegime(), sasScholarshipData.getRegime())
-                || !Objects.equal(data.getCetQualificationOwner(), sasScholarshipData.getCetQualificationOwner())
-                || !Objects.equal(data.getCtspQualificationOwner(), sasScholarshipData.getCtspQualificationOwner())
-                || !Objects.equal(data.getPhdQualificationOwner(), sasScholarshipData.getPhdQualificationOwner())
-                || !Objects.equal(data.getDegreeQualificationOwner(), sasScholarshipData.getDegreeQualificationOwner())
-                || !Objects.equal(data.getMasterQualificationOwner(), sasScholarshipData.getMasterQualificationOwner())
-                || !Objects.equal(data.getLastEnrolmentYear(), sasScholarshipData.getLastEnrolmentYear())
-                || !Objects.equal(data.getGratuityAmount(), sasScholarshipData.getGratuityAmount())
-                || !Objects.equal(data.getRegistered(), sasScholarshipData.getRegistered())
-                || !Objects.equal(data.getNumberOfApprovedEcts(), sasScholarshipData.getNumberOfApprovedEcts());
-
-    }
-
-    private SasScholarshipData convertBean2SasScholarshipData(AbstractScholarshipStudentBean bean, ExecutionYear executionYear) {
-
-        SasScholarshipData data = new SasScholarshipData();
 
         data.setCetQualificationOwner(bean.getCetQualificationOwner());
         data.setCtspQualificationOwner(bean.getCtspQualificationOwner());
 
-        data.setCycleNumberOfEnrolmentYears(bean.getCycleNumberOfEnrolmentYears());
         data.setDegreeQualificationOwner(bean.getDegreeQualificationOwner());
 
-        data.setFirstMonthGratuity(executionYear.getBeginLocalDate().getMonthOfYear());
+        data.setFirstMonthGratuity(candidacy.getExecutionYear().getBeginLocalDate().getMonthOfYear());
         data.setGratuityAmount(bean.getGratuityAmount());
 
         data.setMasterQualificationOwner(bean.getMasterQualificationOwner());
@@ -493,6 +503,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         data.setRegime(bean.getRegime());
         data.setRegistered(bean.getRegistered());
         data.setNumberOfDegreeCurricularYears(bean.getNumberOfDegreeCurricularYears());
+        data.setNumberOfEnrolmentsYears(bean.getCycleNumberOfEnrolmentsYears());
 
         if (bean instanceof ScholarshipStudentOtherYearBean) {
             data.setNumberOfApprovedEcts(((ScholarshipStudentOtherYearBean) bean).getNumberOfApprovedEcts());
@@ -503,16 +514,38 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             data.setLastEnrolmentYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getLastEnrolmentYear()));
             data.setLastAcademicActDateLastYear(((ScholarshipStudentOtherYearBean) bean).getLastAcademicActDateLastYear());
 
-            data.setCycleNumberOfEnrolmentYears(
+            data.setCycleNumberOfEnrolmentsYearsInIntegralRegime(
                     (((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentsYearsInIntegralRegime()));
             data.setNumberOfEnrolledEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfEnrolledEctsLastYear());
-            data.setNumberOfEnrolmentsYears(((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentYears());
 
             data.setCurricularYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getCurricularYear()));
 
         }
 
-        return data;
+        LocalDate enrolmentDate =
+                RegistrationServices.getEnrolmentDate(candidacy.getRegistration(), candidacy.getExecutionYear());
+        data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
+        data.setRegistrationYear(String.valueOf(candidacy.getRegistration().getStartExecutionYear().getBeginCivilYear()));
+
+        if (isNewData) {
+            if (data.getObservations().contains(AbstractFillScholarshipService.ERROR_OBSERVATION)) {
+                candidacy.setState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
+            } else if (data.getObservations().contains(AbstractFillScholarshipService.WARNING_OBSERVATION)) {
+                candidacy.setState(SasScholarshipCandidacyState.PROCESSED_WARNINGS);
+            } else {
+                candidacy.setState(SasScholarshipCandidacyState.PROCESSED);
+            }
+        } else {
+            candidacy.setState(SasScholarshipCandidacyState.MODIFIED);
+        }
+
+        final DateTime date = new DateTime();
+        candidacy.setStateDate(date);
+
+        writeLog(candidacy, !StringUtils.isEmpty(data.getObservations()) ? data
+                .getObservations() : isNewData ? "Candidatura processada com sucesso." : "Dados da candidatura atualizados com sucesso. "
+                        + (!StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : ""),
+                date);
     }
 
     @Atomic
@@ -705,7 +738,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setNumeroECTSActualmenteInscrito(data.getNumberOfEnrolledECTS());
         request.setNumeroECTSObtidosUltimoAnoInscrito(data.getNumberOfApprovedEctsLastYear());
         request.setNumeroECTSUltimoAnoInscrito(data.getNumberOfEnrolledEctsLastYear());
-        request.setNumeroInscricoesCicloEstudosTempoIntegral(data.getCycleNumberOfEnrolmentYears());
+        request.setNumeroInscricoesCicloEstudosTempoIntegral(data.getCycleNumberOfEnrolmentsYearsInIntegralRegime());
         request.setNumeroMatriculas(data.getNumberOfEnrolmentsYears());
 
         request.setNumeroMesesPropina(data.getNumberOfMonthsGratuity());

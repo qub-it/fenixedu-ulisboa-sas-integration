@@ -99,7 +99,7 @@ public class OtherYearScholarshipXlsTransformService extends AbstractScholarship
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_INGRESSION_YEAR,
                 bean.getRegistered() ? bean.getCycleIngressionYear() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_NUMBER_OF_ENROLMENT_YEARS,
-                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentYears() : null);
+                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_COUNT_NUMBER_OF_ENROLMENTS_YEARS_IN_INTEGRAL_REGIME,
                 bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.NUMBER_OF_APPROVED_ECTS,

@@ -275,7 +275,7 @@ public class AbstractFillScholarshipService {
 
     private Integer calculateNumberOfDegreeCurricularYears(AbstractScholarshipStudentBean bean, Registration registration,
             ScholarshipReportRequest request) {
-        
+
         final StudentCurricularPlan studentCurricularPlan =
                 findStudentCurricularPlan(bean, registration, request.getExecutionYear());
         return studentCurricularPlan.getDegreeCurricularPlan().getDurationInYears();

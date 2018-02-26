@@ -48,7 +48,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         final Collection<RegistrationHistoryReport> cycleRegistrationReports =
                 calculateRegistrationReports(registration.getStudent(), registration.getDegreeType(), request.getExecutionYear());
 
-        bean.setCycleNumberOfEnrolmentYears(calculateCycleNumberOfEnrolmentYears(cycleRegistrationReports, request));
+        bean.setCycleNumberOfEnrolmentsYears(calculateCycleNumberOfEnrolmentYears(cycleRegistrationReports, request));
         bean.setCycleNumberOfEnrolmentsYearsInIntegralRegime(
                 calculateCycleNumberOfEnrolmentYearsInIntegralRegime(cycleRegistrationReports, request));
 

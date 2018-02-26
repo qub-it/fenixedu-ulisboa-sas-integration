@@ -102,7 +102,7 @@ public class FirstYearScholarshipXlsTransformService extends AbstractScholarship
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_YEARS_DEGREE,
                 bean.getRegistered() ? bean.getNumberOfDegreeCurricularYears() : null);
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_REGISTRATIONS_SINCE_REGISTRATION_START,
-                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentYears() : null);
+                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYears() : null);
         writeCellBigDecimal(row, ScholarshipStudentFirstYearBean.NUMBER_OF_ECTS,
                 bean.getRegistered() ? bean.getNumberOfEnrolledECTS() : null);
     }

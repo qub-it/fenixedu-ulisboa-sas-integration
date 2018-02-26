@@ -88,7 +88,7 @@ class SasScholarshipData {
 	BigDecimal numberOfApprovedEctsLastYear; //NumeroECTSObtidosUltimoAnoInscrito
 	BigDecimal numberOfEnrolledEctsLastYear; //NumeroECTSUltimoAnoInscrito
 	Integer numberOfEnrolmentsYears; //NumeroMatriculas
-	Integer cycleNumberOfEnrolmentYears; //NumeroInscricoesCicloEstudosTempoIntegral
+	Integer cycleNumberOfEnrolmentsYearsInIntegralRegime; //NumeroInscricoesCicloEstudosTempoIntegral
 	Integer numberOfMonthsGratuity; //NumeroMesesPropina (old: numberOfMonthsExecutionYear)
 	Integer numberOfDegreeChanges; //NumeroOcorrenciasMudancaCurso
 	String observations; //Observacoes

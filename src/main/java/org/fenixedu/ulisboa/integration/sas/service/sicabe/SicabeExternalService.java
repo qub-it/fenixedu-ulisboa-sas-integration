@@ -401,6 +401,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         
         LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(c.getRegistration(), c.getExecutionYear());
 
+        
         SasScholarshipData data = convertBean2SasScholarshipData(bean, c.getExecutionYear());
         data.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : null);
         data.setRegistrationYear(String.valueOf(c.getRegistration().getStartExecutionYear().getBeginCivilYear()));
@@ -434,6 +435,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             c.setStateDate(date);
 
             writeLog(c, "Dados da candidatura atualizados com sucesso. " + (!StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : ""), date);
+        } else {
+            data.delete();
         }
 
     }

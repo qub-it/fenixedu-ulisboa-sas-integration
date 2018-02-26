@@ -113,7 +113,7 @@ relation BennuSasScholarshipData {
 
 relation SasScholarshipCandidacySasScholarshipData {
 	SasScholarshipCandidacy playsRole sasScholarshipCandidacy { multiplicity 1..1; }
-	SasScholarshipData playsRole sasScholarshipData { multiplicity 1; }
+	SasScholarshipData playsRole sasScholarshipData { multiplicity 0..1; }
 }
 
 

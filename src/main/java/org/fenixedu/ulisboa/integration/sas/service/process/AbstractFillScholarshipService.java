@@ -37,8 +37,8 @@ import org.fenixedu.ulisboa.integration.sas.domain.ScholarshipReportRequest;
 import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
-import org.fenixedu.ulisboa.integration.sas.service.registration.report.RegistrationHistoryReport;
-import org.fenixedu.ulisboa.integration.sas.service.registration.report.RegistrationHistoryReportService;
+import org.fenixedu.ulisboa.integration.sas.service.registration.report.SasRegistrationHistoryReport;
+import org.fenixedu.ulisboa.integration.sas.service.registration.report.SasRegistrationHistoryReportService;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -109,8 +109,8 @@ public class AbstractFillScholarshipService {
 
             validateStudentNumber(bean, registration);
             checkPreconditions(bean, registration, request);
-            final RegistrationHistoryReport currentYearRegistrationReport =
-                    new RegistrationHistoryReportService().generateReport(registration, request.getExecutionYear());
+            final SasRegistrationHistoryReport currentYearRegistrationReport =
+                    new SasRegistrationHistoryReportService().generateReport(registration, request.getExecutionYear());
 
             fillCommonInfo(bean, currentYearRegistrationReport, request);
             fillSpecificInfo(bean, currentYearRegistrationReport, request);
@@ -132,17 +132,15 @@ public class AbstractFillScholarshipService {
             ScholarshipReportRequest request) {
 
         if (registration.getEnrolments(request.getExecutionYear()).isEmpty()) {
-            addWarning(bean,
+            addError(bean,
                     "A matrícula não tem inscrições para o ano lectivo " + request.getExecutionYear().getQualifiedName() + ".");
+            
+            throw new FillScholarshipException();
         }
 
         final RegistrationState lastRegistrationState = registration.getLastRegistrationState(request.getExecutionYear());
         if (lastRegistrationState != null && !lastRegistrationState.isActive()) {
             addWarning(bean, "A matrícula não está activa em " + request.getExecutionYear().getQualifiedName() + ".");
-        }
-
-        if (isInMobility(registration, request.getExecutionYear())) {
-            addWarning(bean, "A matrícula está em mobilidade.");
         }
 
         if (isEnroledInStandaloneOnly(registration, request.getExecutionYear())) {
@@ -187,29 +185,8 @@ public class AbstractFillScholarshipService {
         return true;
     }
 
-    protected boolean isInMobility(Registration registration, ExecutionYear executionYear) {
 
-        for (final RegistrationState registrationState : registration.getRegistrationStates(executionYear)) {
-            if (registrationState.getStateType() == RegistrationStateType.MOBILITY) {
-                return true;
-            }
-        }
-
-        //TODO wth?
-//        for (final MobilityRegistrationInformation mobility : registration.getMobilityRegistrationInformationsSet()) {
-//            final ExecutionSemester begin = mobility.getBegin();
-//            final ExecutionSemester end = mobility.getEnd();
-//
-//            if (!executionYear.isBefore(begin.getExecutionYear())
-//                    && (end == null || !executionYear.isAfter(end.getExecutionYear()))) {
-//                return true;
-//            }
-//        }
-
-        return false;
-    }
-
-    private void fillCommonInfo(AbstractScholarshipStudentBean bean, RegistrationHistoryReport currentYearRegistrationReport,
+    private void fillCommonInfo(AbstractScholarshipStudentBean bean, SasRegistrationHistoryReport currentYearRegistrationReport,
             ScholarshipReportRequest request) {
 
         final Registration registration = currentYearRegistrationReport.getRegistration();
@@ -281,7 +258,7 @@ public class AbstractFillScholarshipService {
         return studentCurricularPlan.getDegreeCurricularPlan().getDurationInYears();
     }
 
-    private String calculateRegime(AbstractScholarshipStudentBean bean, RegistrationHistoryReport registrationHistoryReport) {
+    private String calculateRegime(AbstractScholarshipStudentBean bean, SasRegistrationHistoryReport registrationHistoryReport) {
 
         final boolean partialRegime = registrationHistoryReport.getRegimeType() == RegistrationRegimeType.PARTIAL_TIME;
         final boolean workingStudent = registrationHistoryReport.isWorkingStudent();
@@ -603,7 +580,7 @@ public class AbstractFillScholarshipService {
 
     }
 
-    protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, RegistrationHistoryReport currentYearRegistrationReport,
+    protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, SasRegistrationHistoryReport currentYearRegistrationReport,
             ScholarshipReportRequest request) {
         //nothing to be done
     }
@@ -617,7 +594,7 @@ public class AbstractFillScholarshipService {
     }
 
     // TODO Methods should be inserted into Registration@academic
-    protected Registration getRootRegistration(Registration registration) {
+    protected static Registration getRootRegistration(Registration registration) {
         final SortedSet<Registration> registrations = Sets.newTreeSet(Registration.COMPARATOR_BY_START_DATE);
         registrations.add(registration);
         registrations.addAll(getPrecedentDegreeRegistrations(registration));

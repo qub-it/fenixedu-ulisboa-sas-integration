@@ -14,7 +14,7 @@ import org.fenixedu.academic.domain.student.StudentStatute;
 import org.fenixedu.academic.domain.student.registrationStates.RegistrationState;
 import org.joda.time.LocalDate;
 
-public class RegistrationHistoryReport {
+public class SasRegistrationHistoryReport {
 
     private ExecutionInterval executionInterval;
 
@@ -22,27 +22,10 @@ public class RegistrationHistoryReport {
 
     private StudentCurricularPlan studentCurricularPlan;
 
-    private RegistrationState registrationState;
-
-    private Collection<StatuteType> statuteTypes;
-
-    private Integer firstSemesterEnrolmentsCount;
-
-    private BigDecimal firstSemesterEnroledCredits;
-
-    private BigDecimal firstSemesterApprovedCredits;
-
-    private Integer secondSemesterEnrolmentsCount;
-
-    private BigDecimal secondSemesterEnroledCredits;
-
-    private BigDecimal secondSemesterApprovedCredits;
 
     private BigDecimal totalEnroledCredits;
 
     private BigDecimal totalApprovedCredits;
-
-    private Integer totalEnrolmentsCount;
 
     private RegistrationRegimeType regimeType;
 
@@ -60,7 +43,7 @@ public class RegistrationHistoryReport {
 
     private LocalDate lastAcademicActDate;
 
-    public RegistrationHistoryReport(Registration registration, ExecutionInterval executionInterval) {
+    public SasRegistrationHistoryReport(Registration registration, ExecutionInterval executionInterval) {
         this.registration = registration;
         this.executionInterval = executionInterval;
     }
@@ -89,69 +72,7 @@ public class RegistrationHistoryReport {
         this.studentCurricularPlan = studentCurricularPlan;
     }
 
-    public RegistrationState getRegistrationState() {
-        return registrationState;
-    }
-
-    public void setRegistrationState(RegistrationState registrationState) {
-        this.registrationState = registrationState;
-    }
-
-    public Collection<StatuteType> getStatuteTypes() {
-        return statuteTypes;
-    }
-
-    public void setStatuteTypes(Collection<StatuteType> statuteTypes) {
-        this.statuteTypes = statuteTypes;
-    }
-
-    public Integer getFirstSemesterEnrolmentsCount() {
-        return firstSemesterEnrolmentsCount;
-    }
-
-    public void setFirstSemesterEnrolmentsCount(Integer firstSemesterEnrolmentsCount) {
-        this.firstSemesterEnrolmentsCount = firstSemesterEnrolmentsCount;
-    }
-
-    public BigDecimal getFirstSemesterEnroledCredits() {
-        return firstSemesterEnroledCredits;
-    }
-
-    public void setFirstSemesterEnroledCredits(BigDecimal firstSemesterEnroledCredits) {
-        this.firstSemesterEnroledCredits = firstSemesterEnroledCredits;
-    }
-
-    public BigDecimal getFirstSemesterApprovedCredits() {
-        return firstSemesterApprovedCredits;
-    }
-
-    public void setFirstSemesterApprovedCredits(BigDecimal firstSemesterApprovedCredits) {
-        this.firstSemesterApprovedCredits = firstSemesterApprovedCredits;
-    }
-
-    public Integer getSecondSemesterEnrolmentsCount() {
-        return secondSemesterEnrolmentsCount;
-    }
-
-    public void setSecondSemesterEnrolmentsCount(Integer secondSemesterEnrolmentsCount) {
-        this.secondSemesterEnrolmentsCount = secondSemesterEnrolmentsCount;
-    }
-
-    public BigDecimal getSecondSemesterEnroledCredits() {
-        return secondSemesterEnroledCredits;
-    }
-
-    public void setSecondSemesterEnroledCredits(BigDecimal secondSemesterEnroledCredits) {
-        this.secondSemesterEnroledCredits = secondSemesterEnroledCredits;
-    }
-
-    public BigDecimal getSecondSemesterApprovedCredits() {
-        return secondSemesterApprovedCredits;
-    }
-
-    public void setSecondSemesterApprovedCredits(BigDecimal secondSemesterApprovedCredits) {
-        this.secondSemesterApprovedCredits = secondSemesterApprovedCredits;
-    }
+  
 
     public RegistrationRegimeType getRegimeType() {
         return regimeType;
@@ -209,14 +130,7 @@ public class RegistrationHistoryReport {
         this.totalApprovedCredits = totalApprovedCredits;
     }
 
-    public Integer getTotalEnrolmentsCount() {
-        return totalEnrolmentsCount;
-    }
-
-    public void setTotalEnrolmentsCount(Integer totalEnrolmentsCount) {
-        this.totalEnrolmentsCount = totalEnrolmentsCount;
-    }
-
+    
     public Integer getEnrolmentYearsCount() {
         return enrolmentYearsCount;
     }

@@ -124,9 +124,9 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.cycleNumberOfEnrolmentYears" /></th>
+								code="label.SasScholarshipData.cycleNumberOfEnrolmentsYearsInIntegralRegime" /></th>
 						<td><c:out
-								value='${sasScholarshipCandidacy.sasScholarshipData.cycleNumberOfEnrolmentYears}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.cycleNumberOfEnrolmentsYearsInIntegralRegime}' /></td>
 					</tr>
 
 					<tr>

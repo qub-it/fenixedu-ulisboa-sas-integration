@@ -33,6 +33,7 @@ import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
+
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
@@ -269,7 +270,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             Registration registration = service.getRegistrationByAbstractScholarshipStudentBean(tempBean, request);
             if (registration != null) {
                 c.setRegistration(registration);
-                c.setFirstYear(c.getRegistration().getFirstEnrolmentExecutionYear() == c.getExecutionYear());
+                c.setFirstYear(FillScholarshipServiceOtherYearService.getCycleFirstRegistration(registration)
+                        .getStartExecutionYear() == c.getExecutionYear());
             }
 
         } catch (FillScholarshipException e) {
@@ -450,26 +452,11 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                             || !Objects.equal(
                                     String.valueOf(sasScholarshipData.getSasScholarshipCandidacy().getRegistration()
                                             .getStartExecutionYear().getBeginCivilYear()),
-                                    sasScholarshipData.getRegistrationYear())
-
-                    );
+                                    sasScholarshipData.getRegistrationYear()));
         }
 
         return value;
 
-        /*
-        
-        if (bean instanceof ScholarshipStudentOtherYearBean) {
-        
-            data.setCycleNumberOfEnrolmentYears(
-                    (((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentsYearsInIntegralRegime()));
-            data.setNumberOfEnrolledEctsLastYear(((ScholarshipStudentOtherYearBean) bean).getNumberOfEnrolledEctsLastYear());
-            data.setNumberOfEnrolmentsYears(((ScholarshipStudentOtherYearBean) bean).getCycleNumberOfEnrolmentYears());
-        
-            data.setCurricularYear(String.valueOf(((ScholarshipStudentOtherYearBean) bean).getCurricularYear()));
-        
-        }
-        */
     }
 
     private void updateSasSchoolarshipCandidacyData(AbstractScholarshipStudentBean bean, SasScholarshipCandidacy candidacy) {
@@ -559,6 +546,13 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private void sendCandidacy2Sicabe(SasScholarshipCandidacy c) {
+
+        if (!stateAllow2SendCandicacy(c.getState())) {
+            writeLog(c, "Candidatura não enviada para o SICABE - estado da candidatura: " + c.getState()
+                    + " não permite o seu envio.", new DateTime());
+            throw new RuntimeException(c.getState().name());
+        }
+
         try {
             if (c.getFirstYear()) {
                 sendFirstTimeAcademicData(c);
@@ -582,6 +576,25 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
     }
 
+    private boolean stateAllow2SendCandicacy(SasScholarshipCandidacyState state) {
+        return state == SasScholarshipCandidacyState.PROCESSED || state == SasScholarshipCandidacyState.PROCESSED_WARNINGS
+                || state == SasScholarshipCandidacyState.MODIFIED;
+
+        /*PENDING,
+        
+        PROCESSED,
+        
+        PROCESSED_WARNINGS,
+        
+        PROCESSED_ERRORS,
+        
+        SENT,
+        
+        MODIFIED,
+        
+        ANNULLED;*/
+    }
+
     @Atomic
     public void removeAllSasScholarshipsCandidacies() {
         SasScholarshipCandidacy.findAll().stream().forEach(c -> removeCandidacyData(c));
@@ -593,7 +606,11 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private void removeCandidacyData(SasScholarshipCandidacy c) {
-        c.delete();
+        if(c.getExportDate() != null) {
+            c.delete();
+        } else {
+            throw new RuntimeException("Não é possível apagar candidaturas já enviadas para o SICABE!");
+        }
     }
 
     private void sendFirstTimeAcademicData(SasScholarshipCandidacy candidacy)

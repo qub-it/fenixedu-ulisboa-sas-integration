@@ -21,8 +21,8 @@ import org.fenixedu.ulisboa.integration.sas.domain.ScholarshipReportRequest;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentOtherYearBean;
-import org.fenixedu.ulisboa.integration.sas.service.registration.report.RegistrationHistoryReport;
-import org.fenixedu.ulisboa.integration.sas.service.registration.report.RegistrationHistoryReportService;
+import org.fenixedu.ulisboa.integration.sas.service.registration.report.SasRegistrationHistoryReport;
+import org.fenixedu.ulisboa.integration.sas.service.registration.report.SasRegistrationHistoryReportService;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -33,7 +33,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
 
     @Override
     protected void fillSpecificInfo(AbstractScholarshipStudentBean inputBean,
-            RegistrationHistoryReport currentYearRegistrationReport, ScholarshipReportRequest request) {
+            SasRegistrationHistoryReport currentYearRegistrationReport, ScholarshipReportRequest request) {
 
         final Registration registration = currentYearRegistrationReport.getRegistration();
         final ScholarshipStudentOtherYearBean bean = (ScholarshipStudentOtherYearBean) inputBean;
@@ -45,32 +45,23 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
 
         bean.setCycleIngressionYear(calculateCycleIngressionYear(bean, registration));
 
-        final Collection<RegistrationHistoryReport> cycleRegistrationReports =
+        final Collection<SasRegistrationHistoryReport> cycleRegistrationReports =
                 calculateRegistrationReports(registration.getStudent(), registration.getDegreeType(), request.getExecutionYear());
 
         bean.setCycleNumberOfEnrolmentsYears(calculateCycleNumberOfEnrolmentYears(cycleRegistrationReports, request));
         bean.setCycleNumberOfEnrolmentsYearsInIntegralRegime(
                 calculateCycleNumberOfEnrolmentYearsInIntegralRegime(cycleRegistrationReports, request));
 
-        final RegistrationHistoryReport lastEnrolmentYearHistory = calculateCycleLastEnrolmentYearHistory(registration, request);
+        final SasRegistrationHistoryReport lastEnrolmentYearHistory = calculateCycleLastEnrolmentYearHistory(registration, request);
         checkIfHasDismissals(bean, registration, lastEnrolmentYearHistory);
 
         if (lastEnrolmentYearHistory != null) {
             bean.setLastEnrolmentYear(lastEnrolmentYearHistory.getExecutionInterval().getBeginDateYearMonthDay().getYear());
             bean.setLastEnrolmentCurricularYear(lastEnrolmentYearHistory.getCurricularYear());
 
-            final ExecutionYear executionYear = ExecutionInterval.assertExecutionIntervalType(ExecutionYear.class,
-                    lastEnrolmentYearHistory.getExecutionInterval());
-
-            if (!isInMobility(registration, executionYear)) {
-                bean.setNumberOfEnrolledEctsLastYear(lastEnrolmentYearHistory.getTotalEnroledCredits());
-                bean.setNumberOfApprovedEctsLastYear(lastEnrolmentYearHistory.getTotalApprovedCredits());
-            } else {
-                // TODO add the approved and enrolled credits obtained in erasmus (information to be extracted from mobility - roadmap)
-                bean.setNumberOfEnrolledEctsLastYear(lastEnrolmentYearHistory.getTotalEnroledCredits());
-                bean.setNumberOfApprovedEctsLastYear(lastEnrolmentYearHistory.getTotalApprovedCredits());
-            }
-
+            bean.setNumberOfEnrolledEctsLastYear(lastEnrolmentYearHistory.getTotalEnroledCredits());
+            bean.setNumberOfApprovedEctsLastYear(lastEnrolmentYearHistory.getTotalApprovedCredits());
+            
             bean.setLastAcademicActDateLastYear(lastEnrolmentYearHistory.getLastAcademicActDate());
         }
 
@@ -111,7 +102,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
     }
 
     private void checkIfHasDismissals(final ScholarshipStudentOtherYearBean bean, final Registration registration,
-            final RegistrationHistoryReport lastEnrolmentYearHistory) {
+            final SasRegistrationHistoryReport lastEnrolmentYearHistory) {
 
         // report any in the last enrolment year
         if (lastEnrolmentYearHistory != null) {
@@ -144,10 +135,10 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
     }
 
     private Integer calculateCycleNumberOfEnrolmentYearsInIntegralRegime(
-            Collection<RegistrationHistoryReport> cycleRegistrationReports, ScholarshipReportRequest request) {
+            Collection<SasRegistrationHistoryReport> cycleRegistrationReports, ScholarshipReportRequest request) {
 
         Set<ExecutionYear> executionYears = Sets.newHashSet();
-        for (RegistrationHistoryReport registrationHistoryReport : cycleRegistrationReports) {
+        for (SasRegistrationHistoryReport registrationHistoryReport : cycleRegistrationReports) {
 
             Registration registration = registrationHistoryReport.getRegistration();
             Collection<ExecutionYear> enrolmentYearsIncludingPrecedentRegistrations =
@@ -167,21 +158,21 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         return getExecutionYears(registration, r -> r.getEnrolmentsExecutionYears().stream(), ey -> ey.isBeforeOrEquals(year));
     }
 
-    private Integer calculateCycleNumberOfEnrolmentYears(Collection<RegistrationHistoryReport> cycleRegistrationReports,
+    private Integer calculateCycleNumberOfEnrolmentYears(Collection<SasRegistrationHistoryReport> cycleRegistrationReports,
             ScholarshipReportRequest request) {
 
         Set<ExecutionYear> executionYears = Sets.newHashSet();
-        for (RegistrationHistoryReport registrationHistoryReport : cycleRegistrationReports) {
+        for (SasRegistrationHistoryReport registrationHistoryReport : cycleRegistrationReports) {
             executionYears.addAll(getEnrolmentYearsIncludingPrecedentDegrees(registrationHistoryReport.getRegistration(),
                     request.getExecutionYear()));
         }
         return executionYears.size();
     }
 
-    private Collection<RegistrationHistoryReport> calculateRegistrationReports(Student student, DegreeType degreeType,
+    private Collection<SasRegistrationHistoryReport> calculateRegistrationReports(Student student, DegreeType degreeType,
             ExecutionYear executionYear) {
-        final Set<RegistrationHistoryReport> result = Sets.newHashSet();
-        final RegistrationHistoryReportService service = new RegistrationHistoryReportService();
+        final Set<SasRegistrationHistoryReport> result = Sets.newHashSet();
+        final SasRegistrationHistoryReportService service = new SasRegistrationHistoryReportService();
         for (final Registration registration : student.getRegistrationsByDegreeTypes(degreeType)) {
             result.add(service.generateReport(registration, executionYear));
         }
@@ -191,12 +182,8 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
 
     private Integer calculateCycleIngressionYear(ScholarshipStudentOtherYearBean bean, Registration registration) {
 
-        final Registration firstRegistration =
-                Collections.min(registration.getStudent().getRegistrationsByDegreeTypes(registration.getDegreeType()),
-                        Registration.COMPARATOR_BY_START_DATE);
-
-        Integer firstRegistrationYear =
-                getRootRegistration(firstRegistration).getStartExecutionYear().getBeginDateYearMonthDay().getYear();
+        final Integer firstRegistrationYear =
+                getCycleFirstRegistration(registration).getStartExecutionYear().getBeginDateYearMonthDay().getYear();
 
         if (bean.getCycleIngressionYear() != null && !bean.getCycleIngressionYear().equals(firstRegistrationYear)) {
             String message = "o ano de ingresso no ciclo de estudos declarado no ficheiro (" + bean.getCycleIngressionYear()
@@ -207,7 +194,15 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         return firstRegistrationYear;
     }
 
-    private RegistrationHistoryReport calculateCycleLastEnrolmentYearHistory(Registration currentYearRegistration,
+    static public Registration getCycleFirstRegistration(final Registration registration) {
+        final Registration firstRegistration =
+                Collections.min(registration.getStudent().getRegistrationsByDegreeTypes(registration.getDegreeType()),
+                        Registration.COMPARATOR_BY_START_DATE);
+
+        return getRootRegistration(firstRegistration);
+    }
+
+    private SasRegistrationHistoryReport calculateCycleLastEnrolmentYearHistory(Registration currentYearRegistration,
             ScholarshipReportRequest request) {
 
         final SortedSet<ExecutionYear> allEnrolmentYears = Sets.newTreeSet(ExecutionYear.COMPARATOR_BY_BEGIN_DATE);
@@ -234,7 +229,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         for (final Map.Entry<Registration, Collection<ExecutionYear>> entry : enrolmentYearsByRegistration.asMap().entrySet()) {
             if (entry.getValue().contains(lastEnrolmentYear)) {
                 final Registration registration = entry.getKey();
-                final RegistrationHistoryReportService service = new RegistrationHistoryReportService();
+                final SasRegistrationHistoryReportService service = new SasRegistrationHistoryReportService();
 
                 return service.generateReport(registration, lastEnrolmentYear);
             }

@@ -185,6 +185,12 @@ ${portal.toolkit()}
 			</thead>
 			<tbody>
 			
+			<style>
+				.text-modified {
+					color: yellow !important;
+				}
+			</style>
+			
 			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
 				<tr>
 					<td>	
@@ -210,7 +216,7 @@ ${portal.toolkit()}
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'MODIFIED'}">
-								<strong><span class="text-warning">${searchResult.state.localizedName}</span></strong>	
+								<strong><span class="text-primary">${searchResult.state.localizedName}</span></strong>	
 							</c:when>
 							
 							<c:when test="${searchResult.state.name == 'ANNULLED'}">

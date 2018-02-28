@@ -189,17 +189,17 @@ public class ScholarshipCandidaciesController extends SasBaseController {
     public String sendSearchEntries(
             @PathVariable(value = "sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy, Model model,
             RedirectAttributes redirectAttributes) {
-
+        
         try {
             SicabeExternalService sicabe = new SicabeExternalService();
             sicabe.sendSasScholarshipsCandidacies2Sicabe(Collections.singletonList(sasScholarshipCandidacy));
-    
-            model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
             addInfoMessage(SasPTUtil.bundle("label.info.send"), model);
         } catch (RuntimeException e) {
             addErrorMessage(SasPTUtil.bundle("label.error.send", e.getMessage()), model);
         }
 
+        model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
+        
         return jspPath("resume");
     }
 

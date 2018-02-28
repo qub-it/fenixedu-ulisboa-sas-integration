@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -38,7 +39,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         final Registration registration = currentYearRegistrationReport.getRegistration();
         final ScholarshipStudentOtherYearBean bean = (ScholarshipStudentOtherYearBean) inputBean;
 
-        bean.setNumberOfDegreeChanges(calculateNumberOfDegreeChanges(registration.getStudent(), request));
+        bean.setNumberOfDegreeChanges(calculateNumberOfDegreeChanges(registration, request));
         bean.setHasMadeDegreeChangeOnCurrentYear(calculateDegreeChangeForCurrentYear(registration, request));
 
         bean.setCurricularYear(currentYearRegistrationReport.getCurricularYear());
@@ -52,7 +53,8 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         bean.setCycleNumberOfEnrolmentsYearsInIntegralRegime(
                 calculateCycleNumberOfEnrolmentYearsInIntegralRegime(cycleRegistrationReports, request));
 
-        final SasRegistrationHistoryReport lastEnrolmentYearHistory = calculateCycleLastEnrolmentYearHistory(registration, request);
+        final SasRegistrationHistoryReport lastEnrolmentYearHistory =
+                calculateCycleLastEnrolmentYearHistory(registration, request);
         checkIfHasDismissals(bean, registration, lastEnrolmentYearHistory);
 
         if (lastEnrolmentYearHistory != null) {
@@ -61,7 +63,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
 
             bean.setNumberOfEnrolledEctsLastYear(lastEnrolmentYearHistory.getTotalEnroledCredits());
             bean.setNumberOfApprovedEctsLastYear(lastEnrolmentYearHistory.getTotalApprovedCredits());
-            
+
             bean.setLastAcademicActDateLastYear(lastEnrolmentYearHistory.getLastAcademicActDate());
         }
 
@@ -220,11 +222,12 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
 
         allEnrolmentYears.remove(request.getExecutionYear());
 
+        // TODO: include erasmus enrolment years
+
         if (allEnrolmentYears.isEmpty()) {
             return null;
         }
 
-        // TODO: check erasmus
         final ExecutionYear lastEnrolmentYear = allEnrolmentYears.last();
         for (final Map.Entry<Registration, Collection<ExecutionYear>> entry : enrolmentYearsByRegistration.asMap().entrySet()) {
             if (entry.getValue().contains(lastEnrolmentYear)) {
@@ -253,14 +256,14 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         return false;
     }
 
-    private Integer calculateNumberOfDegreeChanges(Student student, ScholarshipReportRequest request) {
+    private Integer calculateNumberOfDegreeChanges(Registration currentRegistration, ScholarshipReportRequest request) {
 
         final SortedSet<Registration> allRegistrations =
                 Sets.newTreeSet(Collections.reverseOrder(Registration.COMPARATOR_BY_START_DATE));
-        allRegistrations.addAll(student.getRegistrationsSet());
+        allRegistrations.addAll(currentRegistration.getStudent().getRegistrationsSet().stream()
+                .filter(r -> r.getDegreeType() == currentRegistration.getDegreeType()).collect(Collectors.toSet()));
 
         final Set<Registration> headRegistrations = Sets.newHashSet();
-
         while (!allRegistrations.isEmpty()) {
             final Registration registration = allRegistrations.first();
             headRegistrations.add(registration);

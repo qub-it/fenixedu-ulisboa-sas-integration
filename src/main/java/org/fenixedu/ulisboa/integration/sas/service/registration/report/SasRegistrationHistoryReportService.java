@@ -91,7 +91,9 @@ public class SasRegistrationHistoryReportService {
                 .getRegimeType(executionYear));
 
         final Curriculum curriculum = studentCurricularPlan.getCurriculum(new DateTime(), executionYear);
-        result.setApprovedCredits(curriculum.getSumEctsCredits());
+        
+        // TODO
+        //result.setApprovedCredits(curriculum.getSumEctsCredits());
 
         result.setEquivalenceCredits(calculateEquivalenceCredits(studentCurricularPlan, executionYear));
         result.setCurricularYear(curriculum.getCurricularYear());

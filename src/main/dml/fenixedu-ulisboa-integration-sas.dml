@@ -39,6 +39,7 @@ class SasScholarshipCandidacy {
 	
 	DateTime importDate;
 	DateTime exportDate;
+	DateTime lastModifiedDate;
 	Boolean firstYear;
 	
 	DateTime stateDate;

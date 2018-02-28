@@ -15,12 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
-import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
-import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academic.domain.person.IDDocumentType;
@@ -29,7 +27,6 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academic.domain.student.registrationStates.RegistrationState;
-import org.fenixedu.academic.domain.student.registrationStates.RegistrationStateType;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -131,10 +128,10 @@ public class AbstractFillScholarshipService {
     private void checkPreconditions(AbstractScholarshipStudentBean bean, Registration registration,
             ScholarshipReportRequest request) {
 
-        if (registration.getEnrolments(request.getExecutionYear()).isEmpty()) {
+        if (!hasNormalEnrolments(registration, request.getExecutionYear())) {
             addError(bean,
                     "A matrícula não tem inscrições para o ano lectivo " + request.getExecutionYear().getQualifiedName() + ".");
-            
+
             throw new FillScholarshipException();
         }
 
@@ -143,16 +140,15 @@ public class AbstractFillScholarshipService {
             addWarning(bean, "A matrícula não está activa em " + request.getExecutionYear().getQualifiedName() + ".");
         }
 
-        if (isEnroledInStandaloneOnly(registration, request.getExecutionYear())) {
-
-            final IngressionType ingression = getRootRegistration(registration).getStudentCandidacy().getIngressionType();
-            addWarning(bean, "A matrícula apenas tem inscrições em isoladas (ingresso: "
-                    + (ingression != null ? ingression.getDescription() : "n/a") + ").");
-        }
-
         if (request.getFirstYearOfCycle() && !isFirstTimeInCycle(registration, request.getExecutionYear())) {
             addWarning(bean, "O aluno não é primeira vez.");
         }
+    }
+
+    //TODO: should use registration history report service
+    private boolean hasNormalEnrolments(Registration registration, ExecutionYear executionYear) {
+        return registration.getEnrolments(executionYear).stream()
+                .anyMatch(e -> !e.getCurriculumGroup().isNoCourseGroupCurriculumGroup());
     }
 
     private boolean isFirstTimeInCycle(Registration registration, ExecutionYear executionYear) {
@@ -167,24 +163,6 @@ public class AbstractFillScholarshipService {
         return registration.getFirstEnrolmentExecutionYear() == executionYear;
 
     }
-
-    private boolean isEnroledInStandaloneOnly(Registration registration, ExecutionYear executionYear) {
-
-        final Collection<Enrolment> enrolments = registration.getEnrolments(executionYear);
-
-        if (enrolments.isEmpty()) {
-            return false;
-        }
-
-        for (final Enrolment enrolment : enrolments) {
-            if (!enrolment.getCurriculumGroup().isStandalone()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 
     private void fillCommonInfo(AbstractScholarshipStudentBean bean, SasRegistrationHistoryReport currentYearRegistrationReport,
             ScholarshipReportRequest request) {
@@ -580,8 +558,8 @@ public class AbstractFillScholarshipService {
 
     }
 
-    protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, SasRegistrationHistoryReport currentYearRegistrationReport,
-            ScholarshipReportRequest request) {
+    protected void fillSpecificInfo(AbstractScholarshipStudentBean bean,
+            SasRegistrationHistoryReport currentYearRegistrationReport, ScholarshipReportRequest request) {
         //nothing to be done
     }
 

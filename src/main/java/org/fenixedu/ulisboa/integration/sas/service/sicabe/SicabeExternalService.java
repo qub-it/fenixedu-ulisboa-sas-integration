@@ -236,17 +236,18 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             throw new DomainException("error.SicabeExternalService.ExecutionYear.not.found");
         }
 
+        final DateTime date = new DateTime();
         if (isNewCandidacy) {
             executionYear.addSasScholarshipCandidacies(candidacy);
         }
-
-        final DateTime date = new DateTime();
+        candidacy.setLastModifiedDate(date);
+                
         writeLog(candidacy,
                 isNewCandidacy ? "Nova candidatura recolhida do SICABE." : "Atualização de candidatura a partir do SICABE.",
                 date);
 
         fillCandidacyInfos(candidacy);
-
+        
         candidacy.setImportDate(date);
 
     }
@@ -579,20 +580,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     private boolean stateAllow2SendCandicacy(SasScholarshipCandidacyState state) {
         return state == SasScholarshipCandidacyState.PROCESSED || state == SasScholarshipCandidacyState.PROCESSED_WARNINGS
                 || state == SasScholarshipCandidacyState.MODIFIED;
-
-        /*PENDING,
-        
-        PROCESSED,
-        
-        PROCESSED_WARNINGS,
-        
-        PROCESSED_ERRORS,
-        
-        SENT,
-        
-        MODIFIED,
-        
-        ANNULLED;*/
     }
 
     @Atomic
@@ -609,7 +596,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         if(c.getExportDate() != null) {
             c.delete();
         } else {
-            throw new RuntimeException("Não é possível apagar candidaturas já enviadas para o SICABE!");
+            throw new FillScholarshipException("Não é possível apagar candidaturas enviadas anteriormente para o SICABE!");
         }
     }
 

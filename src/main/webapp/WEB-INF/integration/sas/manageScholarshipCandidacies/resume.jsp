@@ -169,6 +169,11 @@ ${portal.toolkit()}
 					</tr>
 					
 					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.lastModifiedDate" /></th>
+						<td><joda:format value='${sasScholarshipCandidacy.lastModifiedDate}' pattern='yyyy-MM-dd' /></td>
+					</tr>
+					
+					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.exportDate" /></th>
 						<td><joda:format value='${sasScholarshipCandidacy.exportDate}' pattern='yyyy-MM-dd' /></td>
 					</tr>

@@ -1,7 +1,6 @@
 package org.fenixedu.ulisboa.integration.sas.service.registration.report;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -9,9 +8,7 @@ import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
-import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academic.domain.student.StudentStatute;
-import org.fenixedu.academic.domain.student.registrationStates.RegistrationState;
 import org.joda.time.LocalDate;
 
 public class SasRegistrationHistoryReport {
@@ -22,7 +19,6 @@ public class SasRegistrationHistoryReport {
 
     private StudentCurricularPlan studentCurricularPlan;
 
-
     private BigDecimal totalEnroledCredits;
 
     private BigDecimal totalApprovedCredits;
@@ -31,14 +27,14 @@ public class SasRegistrationHistoryReport {
 
     private BigDecimal equivalenceCredits;
 
-    private BigDecimal approvedCredits;
-
     private Integer curricularYear;
 
     private LocalDate enrolmentDate;
 
+    //TODO: remove
     private Integer enrolmentYearsCount;
 
+    //TODO: remove
     private Integer enrolmentYearsInFullRegimeCount;
 
     private LocalDate lastAcademicActDate;
@@ -72,22 +68,12 @@ public class SasRegistrationHistoryReport {
         this.studentCurricularPlan = studentCurricularPlan;
     }
 
-  
-
     public RegistrationRegimeType getRegimeType() {
         return regimeType;
     }
 
     public void setRegimeType(RegistrationRegimeType regimeType) {
         this.regimeType = regimeType;
-    }
-
-    public BigDecimal getApprovedCredits() {
-        return approvedCredits;
-    }
-
-    public void setApprovedCredits(BigDecimal approvedCredits) {
-        this.approvedCredits = approvedCredits;
     }
 
     public Integer getCurricularYear() {
@@ -130,7 +116,6 @@ public class SasRegistrationHistoryReport {
         this.totalApprovedCredits = totalApprovedCredits;
     }
 
-    
     public Integer getEnrolmentYearsCount() {
         return enrolmentYearsCount;
     }

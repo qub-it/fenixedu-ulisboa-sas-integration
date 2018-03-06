@@ -92,51 +92,51 @@ public class OtherYearScholarshipXlsTransformService extends AbstractScholarship
         writeCellInteger(row, ScholarshipStudentOtherYearBean.COUNT_NUMBER_OF_DEGREE_CHANGES, bean.getNumberOfDegreeChanges());
         writeCellString(row, ScholarshipStudentOtherYearBean.CURRENT_YEAR_HAS_MADE_DEGREE_CHANGE,
                 booleanToString(bean.getHasMadeDegreeChangeOnCurrentYear()));
-        writeCellString(row, ScholarshipStudentOtherYearBean.REGISTERED, booleanToString(bean.getRegistered()));
+        writeCellString(row, ScholarshipStudentOtherYearBean.REGISTERED, booleanToString(bean.getEnroled()));
         writeCellLocalDate(row, ScholarshipStudentOtherYearBean.REGISTRATION_DATE,
-                bean.getRegistered() ? bean.getRegistrationDate() : null);
-        writeCellString(row, ScholarshipStudentOtherYearBean.REGIME, bean.getRegistered() ? bean.getRegime() : null);
+                bean.getEnroled() ? bean.getEnrolmentDate() : null);
+        writeCellString(row, ScholarshipStudentOtherYearBean.REGIME, bean.getEnroled() ? bean.getRegime() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_INGRESSION_YEAR,
-                bean.getRegistered() ? bean.getCycleIngressionYear() : null);
+                bean.getEnroled() ? bean.getCycleIngressionYear() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_NUMBER_OF_ENROLMENT_YEARS,
-                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
+                bean.getEnroled() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CYCLE_COUNT_NUMBER_OF_ENROLMENTS_YEARS_IN_INTEGRAL_REGIME,
-                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
+                bean.getEnroled() ? bean.getCycleNumberOfEnrolmentsYearsInIntegralRegime() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.NUMBER_OF_APPROVED_ECTS,
-                bean.getRegistered() ? bean.getNumberOfApprovedEcts() : null);
+                bean.getEnroled() ? bean.getNumberOfApprovedEcts() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.NUMBER_OF_YEARS_DEGREE,
-                bean.getRegistered() ? bean.getNumberOfDegreeCurricularYears() : null);
+                bean.getEnroled() ? bean.getNumberOfDegreeCurricularYears() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.LAST_ENROLMENT_CURRICULAR_YEAR,
-                bean.getRegistered() ? bean.getLastEnrolmentCurricularYear() : null);
+                bean.getEnroled() ? bean.getLastEnrolmentCurricularYear() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.NUMBER_OF_ENROLLED_ECTS_LAST_YEAR,
-                bean.getRegistered() ? bean.getNumberOfEnrolledEctsLastYear() : null);
+                bean.getEnroled() ? bean.getNumberOfEnrolledEctsLastYear() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.NUMBER_OF_APPROVED_ECTS_LAST_YEAR,
-                bean.getRegistered() ? bean.getNumberOfApprovedEctsLastYear() : null);
+                bean.getEnroled() ? bean.getNumberOfApprovedEctsLastYear() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CURRICULAR_YEAR,
-                bean.getRegistered() ? bean.getCurricularYear() : null);
+                bean.getEnroled() ? bean.getCurricularYear() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.NUMBER_OF_ECTS,
-                bean.getRegistered() ? bean.getNumberOfEnrolledECTS() : null);
+                bean.getEnroled() ? bean.getNumberOfEnrolledECTS() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.GRATUITY,
-                bean.getRegistered() ? bean.getGratuityAmount() : null);
+                bean.getEnroled() ? bean.getGratuityAmount() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.NUMBER_OF_MONTHS_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getNumberOfMonthsExecutionYear() : null);
+                bean.getEnroled() ? bean.getNumberOfMonthsExecutionYear() : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.FIRST_MONTH_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getFirstMonthExecutionYear() : null);
+                bean.getEnroled() ? toMonthString(bean.getFirstMonthExecutionYear()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OWNER_CET,
-                bean.getRegistered() ? booleanToString(bean.getCetQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getCetQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OWNER_CSTP,
-                bean.getRegistered() ? booleanToString(bean.getCtspQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getCtspQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OWNER_BACHELOR,
-                bean.getRegistered() ? booleanToString(bean.getDegreeQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getDegreeQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OWNER_MASTER,
-                bean.getRegistered() ? booleanToString(bean.getMasterQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getMasterQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OWNER_PHD,
-                bean.getRegistered() ? booleanToString(bean.getPhdQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getPhdQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.OBSERVATIONS, bean.getObservations());
         writeCellInteger(row, ScholarshipStudentOtherYearBean.LAST_ENROLMENT_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getLastEnrolmentYear() : null);
+                bean.getEnroled() ? bean.getLastEnrolmentYear() : null);
         writeCellLocalDate(row, ScholarshipStudentOtherYearBean.LAST_ACADEMIC_ACT_DATE_LAST_YEAR,
-                bean.getRegistered() ? bean.getLastAcademicActDateLastYear() : null);
+                bean.getEnroled() ? bean.getLastAcademicActDateLastYear() : null);
 
     }
 

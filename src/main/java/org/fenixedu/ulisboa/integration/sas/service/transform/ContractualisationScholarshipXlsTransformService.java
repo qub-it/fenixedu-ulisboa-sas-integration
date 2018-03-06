@@ -56,20 +56,20 @@ public class ContractualisationScholarshipXlsTransformService extends OtherYearS
         writeCellInteger(row, ScholarshipStudentOtherYearBean.COUNT_NUMBER_OF_DEGREE_CHANGES, bean.getNumberOfDegreeChanges());
         writeCellString(row, ScholarshipStudentOtherYearBean.CURRENT_YEAR_HAS_MADE_DEGREE_CHANGE,
                 booleanToString(bean.getHasMadeDegreeChangeOnCurrentYear()));
-        writeCellString(row, ScholarshipStudentOtherYearBean.REGISTERED, booleanToString(bean.getRegistered()));
+        writeCellString(row, ScholarshipStudentOtherYearBean.REGISTERED, booleanToString(bean.getEnroled()));
         writeCellLocalDate(row, ScholarshipStudentOtherYearBean.REGISTRATION_DATE,
-                bean.getRegistered() ? bean.getRegistrationDate() : null);
+                bean.getEnroled() ? bean.getEnrolmentDate() : null);
 
         writeCellString(row, ScholarshipStudentOtherYearBean.CONTRACTUALISATION_REGIME,
-                bean.getRegistered() ? bean.getRegime() : null);
+                bean.getEnroled() ? bean.getRegime() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.CONTRACTUALISATION_NUMBER_OF_ECTS,
-                bean.getRegistered() ? bean.getNumberOfEnrolledECTS() : null);
+                bean.getEnroled() ? bean.getNumberOfEnrolledECTS() : null);
         writeCellBigDecimal(row, ScholarshipStudentOtherYearBean.CONTRACTUALISATION_GRATUITY,
-                bean.getRegistered() ? bean.getGratuityAmount() : null);
+                bean.getEnroled() ? bean.getGratuityAmount() : null);
         writeCellInteger(row, ScholarshipStudentOtherYearBean.CONTRACTUALISATION_NUMBER_OF_MONTHS_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getNumberOfMonthsExecutionYear() : null);
+                bean.getEnroled() ? bean.getNumberOfMonthsExecutionYear() : null);
         writeCellString(row, ScholarshipStudentOtherYearBean.CONTRACTUALISATION_FIRST_MONTH_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getFirstMonthExecutionYear() : null);
+                bean.getEnroled() ? toMonthString(bean.getFirstMonthExecutionYear()) : null);
 
     }
 

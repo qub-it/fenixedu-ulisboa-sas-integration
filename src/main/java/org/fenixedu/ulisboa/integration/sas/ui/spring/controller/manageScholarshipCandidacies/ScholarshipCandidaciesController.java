@@ -35,6 +35,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipDataChangeLog;
+import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipException;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasBaseController;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasController;
@@ -147,7 +148,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             addErrorMessage(SasPTUtil.bundle("label.error.connection"), model);
         }
 
-        return search(model, executionYear);
+        return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
     }
 
     private static final String _PROCESS_ENTRY_URI = "/process";
@@ -175,11 +176,11 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         //process all entries
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.processAllSasScholarshipCandidacies();
+        sicabe.processAllSasScholarshipCandidacies(executionYear);
 
         addInfoMessage(SasPTUtil.bundle("label.info.processAll"), model);
 
-        return search(model, executionYear);
+        return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
     }
 
     private static final String _SEND_ENTRY_URI = "/send";
@@ -189,17 +190,17 @@ public class ScholarshipCandidaciesController extends SasBaseController {
     public String sendSearchEntries(
             @PathVariable(value = "sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy, Model model,
             RedirectAttributes redirectAttributes) {
-        
+
         try {
             SicabeExternalService sicabe = new SicabeExternalService();
             sicabe.sendSasScholarshipsCandidacies2Sicabe(Collections.singletonList(sasScholarshipCandidacy));
             addInfoMessage(SasPTUtil.bundle("label.info.send"), model);
         } catch (RuntimeException e) {
-            addErrorMessage(SasPTUtil.bundle("label.error.send", e.getMessage()), model);
+            addErrorMessage(SasPTUtil.bundle("label.error.send"), model);
         }
 
         model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
-        
+
         return jspPath("resume");
     }
 
@@ -211,11 +212,11 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.sendAllSasScholarshipCandidacies2Sicabe();
+        sicabe.sendAllSasScholarshipCandidacies2Sicabe(executionYear);
 
         addInfoMessage(SasPTUtil.bundle("label.info.sendAll"), model);
 
-        return search(model, executionYear);
+        return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
 
     }
 
@@ -229,12 +230,22 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         String studentName = sasScholarshipCandidacy.getCandidacyName();
         final ExecutionYear executionYear = sasScholarshipCandidacy.getExecutionYear();
 
-        SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.removeSasScholarshipsCandidacies(Collections.singletonList(sasScholarshipCandidacy));
+        try {
+            SicabeExternalService sicabe = new SicabeExternalService();
+            sicabe.removeSasScholarshipsCandidacy(sasScholarshipCandidacy);
 
-        addInfoMessage(SasPTUtil.bundle("label.info.delete", studentName), model);
+            addInfoMessage(SasPTUtil.bundle("label.info.delete", studentName), model);
 
-        return search(model, executionYear);
+            return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
+
+        } catch (FillScholarshipException e) {
+            addErrorMessage(SasPTUtil.bundle(e.getMessage()), model);
+
+            model.addAttribute("sasScholarshipCandidacy", sasScholarshipCandidacy);
+
+            return jspPath("resume");
+        }
+
     }
 
     private static final String _DELETE_ALL_ENTRIES_URI = "/deleteAll";
@@ -245,11 +256,16 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.removeAllSasScholarshipsCandidacies();
 
-        addInfoMessage(SasPTUtil.bundle("label.info.deleteAll"), model);
+        boolean showWarningMessage = sicabe.removeAllSasScholarshipsCandidacies(executionYear);
 
-        return search(model, executionYear);
+        if (showWarningMessage) {
+            addWarningMessage(SasPTUtil.bundle("label.error.delete.already.sent"), model);
+        } else {
+            addInfoMessage(SasPTUtil.bundle("label.info.deleteAll"), model);
+        }
+
+        return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
 
     }
 

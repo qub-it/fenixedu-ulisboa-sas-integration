@@ -1,10 +1,17 @@
 package org.fenixedu.ulisboa.integration.sas.tasks.sicabe;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.util.email.Message;
+import org.fenixedu.academic.domain.util.email.Recipient;
+import org.fenixedu.academic.domain.util.email.ReplyTo;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
+import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacyState;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 
 //Force task to be read only and process each report on its own transaction to avoid errors in a report affecting other reports
@@ -14,24 +21,31 @@ public class IngestSasScholarshipSicabe extends CronTask {
     @Override
     public void runTask() throws Exception {
 
+        int beforeSasCandidacies = Bennu.getInstance().getSasScholarshipCandidaciesSet().size();
+        //taskLog("beforeSasCandidacies: " + beforeSasCandidacies);
+        
+        long beforeWithStateModified = Bennu.getInstance().getSasScholarshipCandidaciesSet().stream()
+                .filter(c -> c.getState() == SasScholarshipCandidacyState.MODIFIED).count();
+        //taskLog("beforeWithStateModified: " + beforeWithStateModified);
+
         SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.fillAllSasScholarshipCandidacies(ExecutionYear.readCurrentExecutionYear());
+        ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+        sicabe.fillAllSasScholarshipCandidacies(currentExecutionYear);
+
+        sicabe.processAllSasScholarshipCandidacies(currentExecutionYear);
+
+        int afterSasCandidacies = Bennu.getInstance().getSasScholarshipCandidaciesSet().size();
+        //taskLog("afterSasCandidacies: " + afterSasCandidacies);
         
-        sicabe.processAllSasScholarshipCandidacies();
-
-        // process only pending (news) and modified candidacies
-        /*final List<SasScholarshipCandidacy> sas2Process =
-                SasScholarshipCandidacy.findAll().stream().filter(c -> (c.getState() == SasScholarshipCandidacyState.PENDING
-                        || c.getState() == SasScholarshipCandidacyState.MODIFIED)).collect(Collectors.toList());
-
-        sicabe.processSasScholarshipCandidacies(sas2Process);*/
+        long afterWithStateModified = Bennu.getInstance().getSasScholarshipCandidaciesSet().stream()
+                .filter(c -> c.getState() == SasScholarshipCandidacyState.MODIFIED).count();
+        //taskLog("afterWithStateModified: " + afterWithStateModified);
         
-        //enviado/processado (excepto anulado) compara entre o novo processamento e o q ja existia
-        // - enviados passada a modificado
-        // - processado passa a processado! ;)
-
-        // TODO send an email to user
-        sendEmailForUser();
+  
+        if (beforeSasCandidacies != afterSasCandidacies || beforeWithStateModified != afterWithStateModified) {
+            //taskLog("...notify user...");
+            sendEmailForUser();
+        }
 
     }
 
@@ -39,13 +53,16 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
         final String emailAddress = Bennu.getInstance().getSocialServicesConfiguration().getEmail();
 
-        final String subject = "Fenix Bolsas SAS";
+        final String subject = "Fenix Bolsas SAS - Dados atualizados";
 //                BundleUtil.getString(Bundle.CANDIDATE, "label.application.recomentation.upload.notification.email.subject");
         final String body = "TODO_BODY";
 //                BundleUtil.getString(Bundle.CANDIDATE, "label.application.recomentation.upload.notification.email.body",
 //                        getRecomentation().getName(), getRecomentation().getInstitution());
 
-        new Message(Bennu.getInstance().getSystemSender(), emailAddress, subject, body);
+        //new Message(Bennu.getInstance().getSystemSender(), emailAddress, subject, body);
+        
+        new Message(Bennu.getInstance().getSystemSender(), Collections.<ReplyTo> emptyList(),
+             Collections.<Recipient> emptyList(), subject, body, new HashSet<String>(Arrays.asList(emailAddress.split(","))));
     }
 
 }

@@ -76,35 +76,35 @@ public class FirstYearScholarshipXlsTransformService extends AbstractScholarship
         writeCellString(row, ScholarshipStudentFirstYearBean.INSTITUTION_CODE, bean.getInstitutionCode());
         writeCellInteger(row, ScholarshipStudentFirstYearBean.STUDENT_NUMBER, bean.getStudentNumber());
         writeCellString(row, ScholarshipStudentFirstYearBean.DEGREE_CODE, bean.getDegreeCode());
-        writeCellString(row, ScholarshipStudentFirstYearBean.REGISTERED, booleanToString(bean.getRegistered()));
+        writeCellString(row, ScholarshipStudentFirstYearBean.REGISTERED, booleanToString(bean.getEnroled()));
 
         writeCellLocalDate(row, ScholarshipStudentFirstYearBean.REGISTRATION_DATE,
-                bean.getRegistered() ? bean.getRegistrationDate() : null);
+                bean.getEnroled() ? bean.getEnrolmentDate() : null);
         writeCellBigDecimal(row, ScholarshipStudentFirstYearBean.GRATUITY,
-                bean.getRegistered() ? bean.getGratuityAmount() : null);
+                bean.getEnroled() ? bean.getGratuityAmount() : null);
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_MONTHS_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getNumberOfMonthsExecutionYear() : null);
+                bean.getEnroled() ? bean.getNumberOfMonthsExecutionYear() : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.FIRST_MONTH_EXECUTION_YEAR,
-                bean.getRegistered() ? bean.getFirstMonthExecutionYear() : null);
+                bean.getEnroled() ? toMonthString(bean.getFirstMonthExecutionYear()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_CET,
-                bean.getRegistered() ? booleanToString(bean.getCetQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getCetQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_CTSP,
-                bean.getRegistered() ? booleanToString(bean.getCtspQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getCtspQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_BACHELOR,
-                bean.getRegistered() ? booleanToString(bean.getDegreeQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getDegreeQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_MASTER,
-                bean.getRegistered() ? booleanToString(bean.getMasterQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getMasterQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OWNER_PHD,
-                bean.getRegistered() ? booleanToString(bean.getPhdQualificationOwner()) : null);
+                bean.getEnroled() ? booleanToString(bean.getPhdQualificationOwner()) : null);
         writeCellString(row, ScholarshipStudentFirstYearBean.OBSERVATIONS, bean.getObservations() != null ? bean.getObservations() : null);
-        writeCellString(row, ScholarshipStudentFirstYearBean.REGIME, bean.getRegistered() ? bean.getRegime() : null);
+        writeCellString(row, ScholarshipStudentFirstYearBean.REGIME, bean.getEnroled() ? bean.getRegime() : null);
 
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_YEARS_DEGREE,
-                bean.getRegistered() ? bean.getNumberOfDegreeCurricularYears() : null);
+                bean.getEnroled() ? bean.getNumberOfDegreeCurricularYears() : null);
         writeCellInteger(row, ScholarshipStudentFirstYearBean.NUMBER_OF_REGISTRATIONS_SINCE_REGISTRATION_START,
-                bean.getRegistered() ? bean.getCycleNumberOfEnrolmentsYears() : null);
+                bean.getEnroled() ? bean.getCycleNumberOfEnrolmentsYears() : null);
         writeCellBigDecimal(row, ScholarshipStudentFirstYearBean.NUMBER_OF_ECTS,
-                bean.getRegistered() ? bean.getNumberOfEnrolledECTS() : null);
+                bean.getEnroled() ? bean.getNumberOfEnrolledECTS() : null);
     }
 
     public FirstYearScholarshipXlsTransformService(POIFSFileSystem poifsFileSystem) {

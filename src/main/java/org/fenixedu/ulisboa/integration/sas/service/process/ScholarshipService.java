@@ -46,7 +46,7 @@ public class ScholarshipService {
                 service = new FillScholarshipFirstYearService();
             }
 
-            service.fillAllInfo(xlsService.getStudentLines(), request);
+            service.fillAllInfo(xlsService.getStudentLines(), request.getExecutionYear(), request.getFirstYearOfCycle());
 
             final HSSFWorkbook hssfWorkbook = xlsService.writeExcelFile(poifs);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

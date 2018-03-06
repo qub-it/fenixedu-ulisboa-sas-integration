@@ -39,10 +39,9 @@ class SasScholarshipCandidacy {
 	
 	DateTime importDate;
 	DateTime exportDate;
-	DateTime lastModifiedDate;
 	Boolean firstYear;
 	
-	DateTime stateDate;
+	DateTime lastModifiedDate;
 	SasScholarshipCandidacyState state;
 }
 
@@ -79,18 +78,18 @@ relation SasScholarshipCandidacySasScholarshipDataChangeLog {
 }
 
 class SasScholarshipData {
-	String registrationYear; //AnoInscricaoCurso
-	String curricularYear; //AnoLectivoActual
+	Integer cycleIngressionYear; //AnoInscricaoCurso
+	Integer curricularYear; //AnoLectivoActual
 	LocalDate lastAcademicActDateLastYear; //DataConclusaoAtosAcademicosUltimoAnoLectivoInscrito
-	LocalDate enrolmentDate; //DataInscricaoAnoLectivo (old: registrationDate)
-	Integer firstMonthGratuity; //MesPrimeiroPagamento (old: firstMonthExecutionYear)
+	LocalDate enrolmentDate; //DataInscricaoAnoLectivo
+	Integer firstMonthExecutionYear; //MesPrimeiroPagamento
 	Integer numberOfDegreeCurricularYears; //NumeroAnosCurso
 	BigDecimal numberOfEnrolledECTS; // NumeroECTSActualmenteInscrito / NumeroECTSActualInscrito
 	BigDecimal numberOfApprovedEctsLastYear; //NumeroECTSObtidosUltimoAnoInscrito
 	BigDecimal numberOfEnrolledEctsLastYear; //NumeroECTSUltimoAnoInscrito
 	Integer numberOfEnrolmentsYears; //NumeroMatriculas
 	Integer cycleNumberOfEnrolmentsYearsInIntegralRegime; //NumeroInscricoesCicloEstudosTempoIntegral
-	Integer numberOfMonthsGratuity; //NumeroMesesPropina (old: numberOfMonthsExecutionYear)
+	Integer numberOfMonthsExecutionYear; //NumeroMesesPropina
 	Integer numberOfDegreeChanges; //NumeroOcorrenciasMudancaCurso
 	String observations; //Observacoes
 	Boolean hasMadeDegreeChangeOnCurrentYear; //PresenteAnoMudouDeCurso
@@ -121,7 +120,7 @@ relation SasScholarshipCandidacySasScholarshipData {
 
 // Object required to enable module configuration
 // Should be a singleton
-class SocialServicesConfiguration{
+class SocialServicesConfiguration {
 	protected int numberOfMonthsOfAcademicYear;
 	String email;
 	String institutionCode;
@@ -151,7 +150,7 @@ relation BennuSocialServicesConfiguration{
 	SocialServicesConfiguration playsRole socialServicesConfiguration;
 }
 
-relation SocialServicesConfigurationIngressionType{
+relation SocialServicesConfigurationIngressionType {
 	SocialServicesConfiguration playsRole socialServicesConfiguration;
 	
 	protected .org.fenixedu.academic.domain.candidacy.IngressionType playsRole ingressionTypeWhichAreDegreeTransfer {
@@ -159,6 +158,13 @@ relation SocialServicesConfigurationIngressionType{
 	}
 }
 
+relation SocialServicesConfigurationCreditsReasonType {
+	SocialServicesConfiguration playsRole socialServicesConfiguration;
+	
+	.org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType playsRole creditsReasonTypes {
+		multiplicity *;
+	}
+}
 
 relation BennuScholarshipReportRequest{
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu{

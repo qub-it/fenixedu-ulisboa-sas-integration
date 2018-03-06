@@ -51,8 +51,8 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.registrationYear" /></th>
-						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.registrationYear}' />
+								code="label.SasScholarshipData.cycleIngressionYear" /></th>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.cycleIngressionYear}' />
 						</td>
 					</tr>
 
@@ -77,8 +77,8 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.firstMonthGratuity" /></th>
-						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.firstMonthGratuity}' /></td>
+								code="label.SasScholarshipData.firstMonthExecutionYear" /></th>
+						<td><c:out value='${sasScholarshipCandidacy.sasScholarshipData.firstMonthExecutionYear}' /></td>
 					</tr>
 
 					<tr>
@@ -131,9 +131,9 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.numberOfMonthsGratuity" /></th>
+								code="label.SasScholarshipData.numberOfMonthsExecutionYear" /></th>
 						<td><c:out
-								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfMonthsGratuity}' /></td>
+								value='${sasScholarshipCandidacy.sasScholarshipData.numberOfMonthsExecutionYear}' /></td>
 					</tr>
 
 					<tr>

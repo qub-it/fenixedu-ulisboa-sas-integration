@@ -76,9 +76,8 @@ ${portal.toolkit()}
 	<span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
+		href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.candidacy" />','${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
 			code="label.event.delete" /></a>
-			
 			
 </div>
 <c:if test="${not empty infoMessages}">
@@ -255,6 +254,29 @@ ${portal.toolkit()}
 
 
 <script>
+
+	function showConfirmation(title, message, url){
+	
+		bootbox.confirm({
+		    title: title,
+		    message: message,
+		    buttons: {
+		        cancel: {
+		            label: '<spring:message code="label.cancel" />'
+		        },
+		        confirm: {
+		            label: '<spring:message code="label.delete" />',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	if (result) {
+		    		window.location.href=url;
+		    	}
+		    }
+		});	
+	}
+	
 	$(document).ready(function() {
 
 	});

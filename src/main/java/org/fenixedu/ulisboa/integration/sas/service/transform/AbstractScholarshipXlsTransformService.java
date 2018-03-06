@@ -2,6 +2,7 @@ package org.fenixedu.ulisboa.integration.sas.service.transform;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -190,5 +191,12 @@ public abstract class AbstractScholarshipXlsTransformService {
         }
         //TODO refactor to use localized labels instead of hardcoded strings
         return value ? "Sim" : "Não";
+    }
+
+    protected String toMonthString(int monthOfYear) {
+        final Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, monthOfYear - 1);
+
+        return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.forLanguageTag("pt-PT"));
     }
 }

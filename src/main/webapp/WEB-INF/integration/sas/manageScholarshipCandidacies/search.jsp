@@ -79,10 +79,8 @@ ${portal.toolkit()}
 	<span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}"<%-- onclick='<%= pageContext.findAttribute("deleteConfirm").toString() %>' --%>><spring:message
-			code="label.event.deleteAll" /></a>
-
-
+		href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.all.candidacies" />','${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.deleteAll" /></a>
+		
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -185,12 +183,6 @@ ${portal.toolkit()}
 			</thead>
 			<tbody>
 			
-			<style>
-				.text-modified {
-					color: yellow !important;
-				}
-			</style>
-			
 			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
 				<tr>
 					<td>	
@@ -264,7 +256,29 @@ ${portal.toolkit()}
 	</c:otherwise>
 </c:choose>
 
-<script>
+<script type="text/javascript">
+
+	function showConfirmation(title, message, url){
+		
+		bootbox.confirm({
+		    title: title,
+		    message: message,
+		    buttons: {
+		        cancel: {
+		            label: '<spring:message code="label.cancel" />'
+		        },
+		        confirm: {
+		            label: '<spring:message code="label.delete" />',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	if (result) {
+		    		window.location.href=url;
+		    	}
+		    }
+		});	
+	}
 	
 	$(document).ready(function() {
 

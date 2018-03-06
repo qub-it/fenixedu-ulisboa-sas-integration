@@ -63,7 +63,6 @@ public class ScholarshipStudentOtherYearBean extends AbstractScholarshipStudentB
 
     private Integer numberOfDegreeChanges;
     private Boolean hasMadeDegreeChangeOnCurrentYear;
-    private Integer cycleIngressionYear;
     private Integer cycleNumberOfEnrolmentsYearsInIntegralRegime;
     private Integer lastEnrolmentCurricularYear;
     private BigDecimal numberOfEnrolledEctsLastYear;
@@ -95,14 +94,6 @@ public class ScholarshipStudentOtherYearBean extends AbstractScholarshipStudentB
 
     public void setHasMadeDegreeChangeOnCurrentYear(Boolean hasMadeDegreeChangeOnCurrentYear) {
         this.hasMadeDegreeChangeOnCurrentYear = hasMadeDegreeChangeOnCurrentYear;
-    }
-
-    public Integer getCycleIngressionYear() {
-        return cycleIngressionYear;
-    }
-
-    public void setCycleIngressionYear(Integer ingressionYear) {
-        this.cycleIngressionYear = ingressionYear;
     }
 
     public Integer getLastEnrolmentCurricularYear() {

@@ -19,17 +19,18 @@ public abstract class AbstractScholarshipStudentBean implements Serializable {
     private String degreeName;
     private String degreeTypeName;
     private String code;
-    private Boolean registered = false;
-    private LocalDate registrationDate;
+    private Boolean enroled = false;
+    private LocalDate enrolmentDate;
     private BigDecimal gratuityAmount;
     private Integer numberOfMonthsExecutionYear;
-    private String firstMonthExecutionYear;
+    private Integer firstMonthExecutionYear;
     private Boolean cetQualificationOwner;
     private Boolean ctspQualificationOwner;
     private Boolean degreeQualificationOwner;
     private Boolean masterQualificationOwner;
     private Boolean phdQualificationOwner;
     private Boolean higherQualificationOwner;
+    private Integer cycleIngressionYear;
     private String observations;
     private String regime;
     private Integer numberOfDegreeCurricularYears;
@@ -126,20 +127,20 @@ public abstract class AbstractScholarshipStudentBean implements Serializable {
         this.code = code;
     }
 
-    public Boolean getRegistered() {
-        return registered;
+    public Boolean getEnroled() {
+        return enroled;
     }
 
-    public void setRegistered(Boolean registered) {
-        this.registered = registered;
+    public void setEnroled(Boolean registered) {
+        this.enroled = registered;
     }
 
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
+    public LocalDate getEnrolmentDate() {
+        return enrolmentDate;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
+    public void setEnrolmentDate(LocalDate registrationDate) {
+        this.enrolmentDate = registrationDate;
     }
 
     public BigDecimal getGratuityAmount() {
@@ -158,11 +159,11 @@ public abstract class AbstractScholarshipStudentBean implements Serializable {
         this.numberOfMonthsExecutionYear = numberOfMonthsExecutionYear;
     }
 
-    public String getFirstMonthExecutionYear() {
+    public Integer getFirstMonthExecutionYear() {
         return firstMonthExecutionYear;
     }
 
-    public void setFirstMonthExecutionYear(String firstMonthExecutionYear) {
+    public void setFirstMonthExecutionYear(Integer firstMonthExecutionYear) {
         this.firstMonthExecutionYear = firstMonthExecutionYear;
     }
 
@@ -269,4 +270,13 @@ public abstract class AbstractScholarshipStudentBean implements Serializable {
     public void setDocumentBINumber(String documentBINumber) {
         this.documentBINumber = documentBINumber;
     }
+
+    public Integer getCycleIngressionYear() {
+        return cycleIngressionYear;
+    }
+
+    public void setCycleIngressionYear(Integer ingressionYear) {
+        this.cycleIngressionYear = ingressionYear;
+    }
+
 }

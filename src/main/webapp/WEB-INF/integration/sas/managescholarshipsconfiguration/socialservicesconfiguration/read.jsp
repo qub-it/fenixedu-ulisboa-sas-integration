@@ -83,6 +83,18 @@ ${portal.toolkit()}
 		<ul>
 	</td> 
 </tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.creditsReasonType"/></th> 
+	<td>
+		<ul>
+		<c:forEach items="${socialServicesConfiguration.creditsReasonTypes}" var="element">
+			<li>
+				<c:out value="${element.reason}" /> 
+			</li>
+		</c:forEach>
+		<ul>
+	</td> 
+</tr>
 </tbody>
 </table>
 </form>

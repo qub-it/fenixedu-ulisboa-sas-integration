@@ -18,8 +18,6 @@ public enum SasScholarshipCandidacyState implements IPresentableEnum {
 
     SENT,
 
-    MODIFIED,
-
     ANNULLED;
 
     public String getName() {

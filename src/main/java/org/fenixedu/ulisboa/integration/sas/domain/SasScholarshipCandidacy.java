@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -24,8 +24,9 @@ public class SasScholarshipCandidacy extends SasScholarshipCandidacy_Base {
             getSasScholarshipData().delete();
 
         }
-        
-        for (final Iterator<SasScholarshipDataChangeLog> iterator = getSasScholarshipDataChangeLogsSet().iterator(); iterator.hasNext();) {
+
+        for (final Iterator<SasScholarshipDataChangeLog> iterator = getSasScholarshipDataChangeLogsSet().iterator(); iterator
+                .hasNext();) {
 
             final SasScholarshipDataChangeLog log = iterator.next();
             iterator.remove();
@@ -36,9 +37,17 @@ public class SasScholarshipCandidacy extends SasScholarshipCandidacy_Base {
         deleteDomainObject();
     }
 
-    
     static public Collection<SasScholarshipCandidacy> findAll() {
         return Bennu.getInstance().getSasScholarshipCandidaciesSet();
     }
-    
+
+    public boolean isModified() {
+        return getExportDate() == null ? false : getStateDate().isAfter(getExportDate());
+    }
+
+    public void changeState(SasScholarshipCandidacyState state) {
+        super.setState(state);
+        super.setStateDate(new DateTime());
+    }
+
 }

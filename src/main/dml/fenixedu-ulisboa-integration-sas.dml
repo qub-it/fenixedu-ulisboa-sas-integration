@@ -41,7 +41,7 @@ class SasScholarshipCandidacy {
 	DateTime exportDate;
 	Boolean firstYear;
 	
-	DateTime lastModifiedDate;
+	DateTime stateDate;
 	SasScholarshipCandidacyState state;
 }
 
@@ -101,7 +101,7 @@ class SasScholarshipData {
 	Boolean masterQualificationOwner; //TitularMestrado
 	String lastEnrolmentYear; //UltimoAnoInscrito
 	BigDecimal gratuityAmount; //ValorPropina
-	Boolean registered; //iInscritoAnoLectivoActual
+	Boolean enroled; //iInscritoAnoLectivoActual
 	BigDecimal numberOfApprovedEcts; //totalECTScursoAtingirGrau
 	
 }

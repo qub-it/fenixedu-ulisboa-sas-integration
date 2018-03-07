@@ -214,9 +214,9 @@ ${portal.toolkit()}
 							<c:when test="${searchResult.state.name == 'ANNULLED'}">
 								<strong><span class="text-mutted">${searchResult.state.localizedName}</span></strong>	
 							</c:when>
-
+							
 						</c:choose>
-						</strong>
+						<c:if test="${sasScholarshipCandidacy.modified}">*</c:if>
 						  
 					</td>
 					<td><joda:format value='${searchResult.submissionDate}' pattern='yyyy-MM-dd' /></td>

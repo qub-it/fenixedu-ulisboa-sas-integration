@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy"%>
 <%@page import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -168,8 +169,8 @@ ${portal.toolkit()}
 					</tr>
 					
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.lastModifiedDate" /></th>
-						<td><joda:format value='${sasScholarshipCandidacy.lastModifiedDate}' pattern='yyyy-MM-dd' /></td>
+						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.stateDate" /></th>
+						<td><joda:format value='${sasScholarshipCandidacy.stateDate}' pattern='yyyy-MM-dd' /></td>
 					</tr>
 					
 					<tr>
@@ -188,10 +189,9 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipData.state" /></th>
 						<td>
-							<c:choose>							
-							
+							<c:choose>
 								<c:when test="${sasScholarshipCandidacy.state.name == 'PENDING'}">
-									<span>${sasScholarshipCandidacy.state.localizedName}</span>	
+									<span>${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
 								
 								<c:when test="${sasScholarshipCandidacy.state.name == 'PROCESSED'}">
@@ -217,6 +217,7 @@ ${portal.toolkit()}
 									<span class="text-mutted">${sasScholarshipCandidacy.state.localizedName}</span>	
 								</c:when>
 							</c:choose>
+							<c:if test="${sasScholarshipCandidacy.modified}">*</c:if>
 						</td>
 					</tr>
 					

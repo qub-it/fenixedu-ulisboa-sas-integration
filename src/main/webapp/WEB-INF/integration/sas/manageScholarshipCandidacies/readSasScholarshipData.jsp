@@ -262,10 +262,10 @@ ${portal.toolkit()}
 
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.SasScholarshipData.registered" /></th>
+								code="label.SasScholarshipData.enroled" /></th>
 						<td>
 							<c:choose>
-							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.registered}">
+							   <c:when test = "${sasScholarshipCandidacy.sasScholarshipData.enroled}">
 							      <spring:message code="label.true" />
 							   </c:when>
 							   <c:otherwise>

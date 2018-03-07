@@ -1,10 +1,8 @@
 package org.fenixedu.ulisboa.integration.sas.service.process;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -97,14 +95,11 @@ public class AbstractFillScholarshipService {
 
         final Collection<Degree> degrees = findDegree(bean);
 
-        // TODO: erasmus dismissal should also be considered
-        final Predicate<Registration> hasActiveEnrolments =
-                r -> r.getEnrolments(requestYear).stream().anyMatch(e -> !e.isAnnulled());
+        final Predicate<Registration> isEnroled = r -> !getEnroledCurriculumLines(r, requestYear).isEmpty();
 
         final Set<Registration> registrations = Sets.newHashSet();
         for (final Degree degree : degrees) {
-            registrations
-                    .addAll(student.getRegistrationsFor(degree).stream().filter(hasActiveEnrolments).collect(Collectors.toSet()));
+            registrations.addAll(student.getRegistrationsFor(degree).stream().filter(isEnroled).collect(Collectors.toSet()));
         }
 
         if (registrations.size() == 1) {
@@ -118,8 +113,8 @@ public class AbstractFillScholarshipService {
             final Collection<DegreeType> possibleDegreeTypes =
                     degrees.stream().map(d -> d.getDegreeType()).collect(Collectors.toSet());
             final Predicate<Registration> degreeTypePredicate = r -> possibleDegreeTypes.contains(r.getDegreeType());
-            final Collection<Registration> registrationsWithActiveEnrolments = student.getRegistrationsSet().stream()
-                    .filter(hasActiveEnrolments.and(degreeTypePredicate)).collect(Collectors.toSet());
+            final Collection<Registration> registrationsWithActiveEnrolments =
+                    student.getRegistrationsSet().stream().filter(isEnroled.and(degreeTypePredicate)).collect(Collectors.toSet());
 
             if (registrationsWithActiveEnrolments.size() == 1) {
                 final Registration registration = registrationsWithActiveEnrolments.iterator().next();
@@ -326,6 +321,7 @@ public class AbstractFillScholarshipService {
         if (firstYearOfCycle && !isFirstTimeInCycle(registration, requestYear)) {
             addWarning(bean, "O aluno não é primeira vez.");
         }
+
     }
 
     private boolean hasNormalEnrolments(Registration registration, ExecutionYear executionYear) {
@@ -464,7 +460,7 @@ public class AbstractFillScholarshipService {
 
     }
 
-    static public Integer getCycleIngressionYear(AbstractScholarshipStudentBean bean, Registration registration) {
+    public Integer getCycleIngressionYear(AbstractScholarshipStudentBean bean, Registration registration) {
 
         final Registration cycleFirstRegistration = getCycleRegistrations(registration).iterator().next();
         final Integer cycleIngressionYear = cycleFirstRegistration.getStartExecutionYear().getBeginDateYearMonthDay().getYear();
@@ -472,8 +468,7 @@ public class AbstractFillScholarshipService {
         if (bean.getCycleIngressionYear() != null && !bean.getCycleIngressionYear().equals(cycleIngressionYear)) {
             String message = "o ano de ingresso no ciclo de estudos declarado no ficheiro (" + bean.getCycleIngressionYear()
                     + ") não corresponde ao ano de início do sistema (" + cycleIngressionYear + ").";
-            //TODO:
-           // addWarning(bean, message);
+            addWarning(bean, message);
         }
 
         return cycleIngressionYear;

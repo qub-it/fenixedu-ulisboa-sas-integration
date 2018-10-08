@@ -275,16 +275,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             Registration registration = service.getRegistrationByAbstractScholarshipStudentBean(tempBean, c.getExecutionYear());
 
             if (registration != null) {
-
                 c.setRegistration(registration);
                 c.setFirstYear(AbstractFillScholarshipService.isFirstTimeInCycle(registration, c.getExecutionYear()));
             }
 
         } catch (FillScholarshipException e) {
             c.changeState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
-            writeLog(c, service.formatObservations(tempBean), c.getStateDate());
-
         }
+        
+        writeLog(c, service.formatObservations(tempBean), c.getStateDate());
     }
 
     protected TipoRegime convertRegimeCandidacy(String regime) {

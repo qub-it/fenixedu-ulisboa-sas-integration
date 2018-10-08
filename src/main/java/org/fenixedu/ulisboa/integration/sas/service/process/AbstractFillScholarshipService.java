@@ -104,35 +104,47 @@ public class AbstractFillScholarshipService {
 
         final Set<Registration> registrations = Sets.newHashSet();
         for (final Degree degree : degrees) {
+
             registrations.addAll(student.getRegistrationsFor(degree).stream().filter(isEnroled).collect(Collectors.toSet()));
         }
 
         if (registrations.size() == 1) {
+
             return registrations.iterator().next();
 
         } else if (registrations.size() > 1) {
+
             addError(bean, "message.error.multiple.registrations");
+            bean.setObservations(formatObservations(bean));
             throw new FillScholarshipException("message.error.multiple.registrations");
+
         } else {
 
             final Collection<DegreeType> possibleDegreeTypes =
                     degrees.stream().map(d -> d.getDegreeType()).collect(Collectors.toSet());
+
             final Predicate<Registration> degreeTypePredicate = r -> possibleDegreeTypes.contains(r.getDegreeType());
-            final Collection<Registration> registrationsWithActiveEnrolments =
-                    student.getRegistrationsSet().stream().filter(isEnroled.and(degreeTypePredicate)).collect(Collectors.toSet());
+
+            final Predicate<Registration> precedentDegreePredicate = r -> r.getDegree().getPrecedentDegreesSet().stream()
+                    .anyMatch(pd -> Objects.equals(pd.getMinistryCode(), bean.getDegreeCode()));
+
+            final Collection<Registration> registrationsWithActiveEnrolments = student.getRegistrationsSet().stream()
+                    .filter(isEnroled.and(degreeTypePredicate).and(precedentDegreePredicate)).collect(Collectors.toSet());
 
             if (registrationsWithActiveEnrolments.size() == 1) {
                 final Registration registration = registrationsWithActiveEnrolments.iterator().next();
                 addWarning(bean, "message.warning.input.degree.code.not.equals.to.active.degree.code",
                         registration.getDegree().getCode());
-
+                bean.setObservations(formatObservations(bean));
                 return registration;
             } else if (registrationsWithActiveEnrolments.size() > 1) {
                 addError(bean, "message.error.input.registration.not.found.and.multiple.active.registrations");
+                bean.setObservations(formatObservations(bean));
                 throw new FillScholarshipException(
                         "message.error.input.registration.not.found.and.multiple.active.registrations");
             } else {
                 addError(bean, "message.error.input.registration.not.found.and.no.active.registrations");
+                bean.setObservations(formatObservations(bean));
                 throw new FillScholarshipException("message.error.input.registration.not.found.and.no.active.registrations");
             }
 
@@ -147,6 +159,7 @@ public class AbstractFillScholarshipService {
 
         if (degrees.isEmpty()) {
             addError(bean, "message.error.degree.not.found");
+            bean.setObservations(formatObservations(bean));
             throw new FillScholarshipException("message.error.degree.not.found");
         }
 
@@ -292,7 +305,7 @@ public class AbstractFillScholarshipService {
             fillCommonInfo(bean, registration, requestYear);
 
         } catch (FillScholarshipException e) {
-            
+
         } finally {
             bean.setObservations(formatObservations(bean));
         }
@@ -322,7 +335,7 @@ public class AbstractFillScholarshipService {
         }
 
         if (!SasDataShareAuthorizationServices.isAuthorizationTypeActive()) {
-            return; 
+            return;
         }
 
         if (!SasDataShareAuthorizationServices.isAnswered(registration.getPerson())) {
@@ -346,7 +359,7 @@ public class AbstractFillScholarshipService {
     private void fillCommonInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {
 
         bean.setCurricularYear(RegistrationServices.getCurricularYear(registration, requestYear).getResult());
-        
+
         bean.setGratuityAmount(getTuitionAmount(registration, requestYear));
         bean.setNumberOfMonthsExecutionYear(SocialServicesConfiguration.getInstance().getNumberOfMonthsOfAcademicYear());
         bean.setFirstMonthExecutionYear(getFirstMonthOfExecutionYear(requestYear));
@@ -376,15 +389,19 @@ public class AbstractFillScholarshipService {
         bean.setNumberOfDegreeCurricularYears(getNumberOfDegreeCurricularYears(registration, requestYear));
 
         bean.setIngressionRegimeCodeWithDescription(Bennu.getInstance().getSasIngressionRegimeMappingsSet().stream()
-                .filter(ir -> ir.getIngressionType() == registration.getIngressionType()).map(SasIngressionRegimeMapping::getRegimeCodeWithDescription).findFirst().orElse(null));
-        
+                .filter(ir -> ir.getIngressionType() == registration.getIngressionType())
+                .map(SasIngressionRegimeMapping::getRegimeCodeWithDescription).findFirst().orElse(null));
+
         bean.setIngressionRegimeCode(Bennu.getInstance().getSasIngressionRegimeMappingsSet().stream()
-                .filter(ir -> ir.getIngressionType() == registration.getIngressionType()).map(SasIngressionRegimeMapping::getRegimeCode).findFirst().orElse(null));
-        
-        if(bean.getIngressionRegimeCode() == null || bean.getIngressionRegimeCodeWithDescription() == null) {
-            addError(bean, "message.error.ingression.regime.mapping.is.missing", registration.getIngressionType() != null ? registration.getIngressionType().getLocalizedName() : "empty.ingression.regime");
+                .filter(ir -> ir.getIngressionType() == registration.getIngressionType())
+                .map(SasIngressionRegimeMapping::getRegimeCode).findFirst().orElse(null));
+
+        if (bean.getIngressionRegimeCode() == null || bean.getIngressionRegimeCodeWithDescription() == null) {
+            addError(bean, "message.error.ingression.regime.mapping.is.missing",
+                    registration.getIngressionType() != null ? registration.getIngressionType()
+                            .getLocalizedName() : "empty.ingression.regime");
         }
-        
+
     }
 
     private Boolean isEnroled(Registration registration, ExecutionYear requestYear) {

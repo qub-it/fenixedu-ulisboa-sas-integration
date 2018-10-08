@@ -382,7 +382,7 @@ public class AbstractFillScholarshipService {
                 .filter(ir -> ir.getIngressionType() == registration.getIngressionType()).map(SasIngressionRegimeMapping::getRegimeCode).findFirst().orElse(null));
         
         if(bean.getIngressionRegimeCode() == null || bean.getIngressionRegimeCodeWithDescription() == null) {
-            addError(bean, "message.error.ingression.regime.mapping.is.missing", registration.getIngressionType().getLocalizedName());
+            addError(bean, "message.error.ingression.regime.mapping.is.missing", registration.getIngressionType() != null ? registration.getIngressionType().getLocalizedName() : "empty.ingression.regime");
         }
         
     }

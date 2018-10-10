@@ -282,7 +282,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         } catch (FillScholarshipException e) {
             c.changeState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
         }
-        
+
         writeLog(c, service.formatObservations(tempBean), c.getStateDate());
     }
 
@@ -890,9 +890,12 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             }
 
             addData("SasScholarshipData.state", candidacy.getState().getLocalizedName());
-            final SasScholarshipDataChangeLog lastLog = candidacy.getSasScholarshipDataChangeLogsSet().stream()
-                    .sorted((x, y) -> -x.getDate().compareTo(y.getDate())).findFirst().orElse(null);
-            addData("event.logs", lastLog.getDescription());
+            
+            final List<SasScholarshipDataChangeLog> logs = candidacy.getSasScholarshipDataChangeLogsSet().stream()
+                    .sorted((x, y) -> -x.getDate().compareTo(y.getDate())).collect(Collectors.toList());
+            
+                       
+            addData("event.logs", logs.stream().map(SasScholarshipDataChangeLog::getDescription).collect(Collectors.joining("\n")));
 
             if (data != null) {
                 addData("SasScholarshipCandidacy.firstYear",

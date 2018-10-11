@@ -209,7 +209,8 @@ public class AbstractFillScholarshipService {
                 final Collection<Person> withPartialDocumentId = Person.readByDocumentIdNumber(documentIdWithoutCheckDigit);
 
                 if (withPartialDocumentId.size() == 1) {
-                    if (bean.getDocumentBINumber() == null || !bean.getDocumentBINumber().equals(documentIdWithoutCheckDigit)) {
+                    if ((bean.getDocumentBINumber() == null || !bean.getDocumentBINumber().equals(documentIdWithoutCheckDigit))
+                            && !(hasSameCheckDigitValue(bean.getDocumentNumber(), withPartialDocumentId.iterator().next()))) {
                         addWarning(bean, "message.warning.input.document.id.not.equals.without.control.digit");
                     }
 
@@ -267,6 +268,16 @@ public class AbstractFillScholarshipService {
             return null;
         }
 
+    }
+
+    private boolean hasSameCheckDigitValue(String candidacyIdDocumentNumber, Person person) {
+        final String inputDocumentIdCheckDigit = candidacyIdDocumentNumber.substring(candidacyIdDocumentNumber.length() - 1);
+
+        final String personDocumentIdCheckDigit = (person.getIdentificationDocumentSeriesNumber() != null
+                && person.getIdentificationDocumentSeriesNumber().length() > 0) ? person.getIdentificationDocumentSeriesNumber()
+                        .substring(0, 1) : "";
+
+        return inputDocumentIdCheckDigit.equals(personDocumentIdCheckDigit);
     }
 
     private Person findPersonByName(Collection<Person> toCheck, AbstractScholarshipStudentBean bean) {

@@ -435,7 +435,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
                 || !equal(bean, bean.getEnrolmentDate(), sasScholarshipData.getEnrolmentDate(), "enrolmentDate")
 
-                || !equal(bean, bean.getIngressionRegimeCode(), sasScholarshipData.getIngressionRegime(), "ingressionRegime");
+                || !equal(bean, bean.getIngressionRegimeCode(), sasScholarshipData.getIngressionRegime(), "ingressionRegime")
+
+                || !equal(bean, bean.getStudentNumber() != null ? String.valueOf(bean.getStudentNumber()) : "",
+                        sasScholarshipData.getSasScholarshipCandidacy().getStudentNumber(), "ingressionRegime");
 
         if (bean instanceof ScholarshipStudentOtherYearBean) {
 
@@ -500,6 +503,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         } else {
             data = candidacy.getSasScholarshipData();
         }
+
+        candidacy.setStudentNumber(bean.getStudentNumber() != null ? String.valueOf(bean.getStudentNumber()) : "");
 
         data.setGratuityAmount(bean.getGratuityAmount());
         data.setNumberOfMonthsExecutionYear(bean.getNumberOfMonthsExecutionYear());
@@ -890,12 +895,12 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             }
 
             addData("SasScholarshipData.state", candidacy.getState().getLocalizedName());
-            
+
             final List<SasScholarshipDataChangeLog> logs = candidacy.getSasScholarshipDataChangeLogsSet().stream()
                     .sorted((x, y) -> -x.getDate().compareTo(y.getDate())).collect(Collectors.toList());
-            
-                       
-            addData("event.logs", logs.stream().map(SasScholarshipDataChangeLog::getDescription).collect(Collectors.joining("\n")));
+
+            addData("event.logs",
+                    logs.stream().map(SasScholarshipDataChangeLog::getDescription).collect(Collectors.joining("\n")));
 
             if (data != null) {
                 addData("SasScholarshipCandidacy.firstYear",

@@ -905,7 +905,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             if (data != null) {
                 addData("SasScholarshipCandidacy.firstYear",
                         candidacy.getFirstYear() ? bundle("label.true") : bundle("label.false"));
-                addData("SasScholarshipData.cycleIngressionYear", data.getCycleIngressionYear().toString());
+                addData("SasScholarshipData.cycleIngressionYear", data.getCycleIngressionYear() != null ? data.getCycleIngressionYear().toString() : "");
                 addData("SasScholarshipData.curricularYear", data.getCurricularYear());
                 addData("SasScholarshipData.lastAcademicActDateLastYear", format(data.getLastAcademicActDateLastYear()));
                 addData("SasScholarshipData.enrolmentDate", format(data.getEnrolmentDate()));

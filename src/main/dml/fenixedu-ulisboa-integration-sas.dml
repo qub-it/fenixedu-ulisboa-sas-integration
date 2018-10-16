@@ -160,7 +160,15 @@ relation BennuSocialServicesConfiguration{
 relation SocialServicesConfigurationIngressionType {
 	SocialServicesConfiguration playsRole socialServicesConfiguration;
 	
-	protected .org.fenixedu.academic.domain.candidacy.IngressionType playsRole ingressionTypeWhichAreDegreeTransfer {
+	.org.fenixedu.academic.domain.candidacy.IngressionType playsRole ingressionTypeWhichAreDegreeTransfer {
+		multiplicity *;
+	}
+}
+
+relation SocialServicesConfigurationIngressionTypeWithExternalData {
+	SocialServicesConfiguration playsRole sasConfigForIngressionsWithExternalData;
+	
+	.org.fenixedu.academic.domain.candidacy.IngressionType playsRole ingressionTypesWithExternalData {
 		multiplicity *;
 	}
 }

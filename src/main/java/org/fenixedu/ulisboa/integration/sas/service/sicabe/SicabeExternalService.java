@@ -30,6 +30,7 @@ import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacyState;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipData;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipDataChangeLog;
+import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentFirstYearBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentOtherYearBean;
@@ -241,9 +242,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         if (isNewCandidacy) {
             executionYear.addSasScholarshipCandidacies(candidacy);
+            candidacy.changeState(SasScholarshipCandidacyState.PENDING);
         }
-
-        candidacy.changeState(SasScholarshipCandidacyState.PENDING);
 
         writeLog(candidacy,
                 isNewCandidacy ? BundleUtil.getString(SasSpringConfiguration.BUNDLE,
@@ -266,7 +266,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 .valueOf(c.getStudentNumber()) : null);
         tempBean.setFiscalCode(c.getFiscalNumber());
         tempBean.setStudentName(c.getCandidacyName());
-        tempBean.setDegreeCode(c.getDegreeCode());
+        tempBean.setDegreeCode(c.getDegreeCode() != null ? c.getDegreeCode().trim() : null);
         tempBean.setDocumentNumber(c.getDocIdNumber());
         IDDocumentType candidacyDocumentType = convertCandidacyDocumentType(c.getDocIdType());
         tempBean.setDocumentTypeName(candidacyDocumentType != null ? candidacyDocumentType.name() : null);
@@ -672,7 +672,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setNumeroECTSActualInscrito(data.getNumberOfEnrolledECTS());
         request.setNumeroMatriculas(1);
         request.setNumeroMesesPropina(data.getNumberOfMonthsExecutionYear());
-        request.setObservacoes(null);
+
+        final String observationToSend = getObservationToSend(candidacy);
+        request.setObservacoes(observationToSend != null ? new ObjectFactory()
+                .createAlterarDadosAcademicosPrimeiraVezRequestObservacoes(observationToSend) : null);
 
         request.setRegime(convertRegimeCandidacy(data.getRegime()));
         request.setCodRegimeIngresso(Integer.valueOf(data.getIngressionRegime()));
@@ -686,6 +689,16 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         getClient().alterarDadosAcademicosPrimeiraVez(request);
 
+    }
+
+    private String getObservationToSend(SasScholarshipCandidacy candidacy) {
+        if (!SocialServicesConfiguration.getInstance().ingressionTypeRequiresExternalData(candidacy.getRegistration())
+                || candidacy.getSasScholarshipDataChangeLogsSet().isEmpty()) {
+            return null;
+        }
+
+        return candidacy.getSasScholarshipDataChangeLogsSet().stream()
+                .sorted(SasScholarshipDataChangeLog.COMPARATOR_BY_DATE.reversed()).findFirst().get().getDescription();
     }
 
     protected XMLGregorianCalendar createXMLGregorianCalendar(LocalDate localDate) {
@@ -789,7 +802,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         request.setNumeroMesesPropina(data.getNumberOfMonthsExecutionYear());
         request.setNumeroOcorrenciasMudancaCurso(data.getNumberOfDegreeChanges());
-        request.setObservacoes(null);
+
+        final String observationToSend = getObservationToSend(candidacy);
+        request.setObservacoes(observationToSend != null ? new ObjectFactory()
+                .createAlterarDadosAcademicosRestantesCasosRequestObservacoes(observationToSend) : null);
 
         request.setPresenteAnoMudouDeCurso(data.getHasMadeDegreeChangeOnCurrentYear());
         request.setRegime(convertRegimeCandidacy(data.getRegime()));
@@ -882,6 +898,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             addData("SasScholarshipCandidacy.stateDate", format(candidacy.getStateDate()));
             addData("SasScholarshipCandidacy.exportDate", format(candidacy.getExportDate()));
 
+            addData("SasScholarshipCandidacy.assignmentDate", format(candidacy.getAssignmentDate()));
+            addData("SasScholarshipCandidacy.candidacyState", candidacy.getCandidacyState().getLocalizedName());
+            addData("SasScholarshipCandidacy.description", candidacy.getDescription());
+
             final Registration registration = candidacy.getRegistration();
 
             if (registration != null) {
@@ -905,7 +925,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             if (data != null) {
                 addData("SasScholarshipCandidacy.firstYear",
                         candidacy.getFirstYear() ? bundle("label.true") : bundle("label.false"));
-                addData("SasScholarshipData.cycleIngressionYear", data.getCycleIngressionYear() != null ? data.getCycleIngressionYear().toString() : "");
+                addData("SasScholarshipData.cycleIngressionYear",
+                        data.getCycleIngressionYear() != null ? data.getCycleIngressionYear().toString() : "");
                 addData("SasScholarshipData.curricularYear", data.getCurricularYear());
                 addData("SasScholarshipData.lastAcademicActDateLastYear", format(data.getLastAcademicActDateLastYear()));
                 addData("SasScholarshipData.enrolmentDate", format(data.getEnrolmentDate()));
@@ -935,15 +956,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 addData("SasScholarshipData.ingressionRegime", data.getIngressionRegime());
             } else {
 
-                final String[] fields = { "firstYear", "cycleIngressionYear", "curricularYear", "lastAcademicActDateLastYear",
-                        "enrolmentDate", "firstMonthExecutionYear", "numberOfDegreeCurricularYears", "numberOfEnrolledECTS",
-                        "numberOfApprovedEctsLastYear", "numberOfEnrolledEctsLastYear", "numberOfEnrolmentsYears",
-                        "cycleNumberOfEnrolmentsYearsInIntegralRegime", "numberOfMonthsExecutionYear", "numberOfDegreeChanges",
-                        "observations", "hasMadeDegreeChangeOnCurrentYear", "regime", "cetQualificationOwner",
-                        "ctspQualificationOwner", "phdQualificationOwner", "degreeQualificationOwner", "masterQualificationOwner",
-                        "lastEnrolmentYear", "gratuityAmount", "enroled", "numberOfApprovedEcts", "ingressionRegime" };
+                final String[] fields = { "SasScholarshipCandidacy.firstYear", "SasScholarshipData.cycleIngressionYear", "SasScholarshipData.curricularYear", "SasScholarshipData.lastAcademicActDateLastYear",
+                        "SasScholarshipData.enrolmentDate", "SasScholarshipData.firstMonthExecutionYear", "SasScholarshipData.numberOfDegreeCurricularYears", "SasScholarshipData.numberOfEnrolledECTS",
+                        "SasScholarshipData.numberOfApprovedEctsLastYear", "SasScholarshipData.numberOfEnrolledEctsLastYear", "SasScholarshipData.numberOfEnrolmentsYears",
+                        "SasScholarshipData.cycleNumberOfEnrolmentsYearsInIntegralRegime", "SasScholarshipData.numberOfMonthsExecutionYear", "SasScholarshipData.numberOfDegreeChanges",
+                        "SasScholarshipData.observations", "SasScholarshipData.hasMadeDegreeChangeOnCurrentYear", "SasScholarshipData.regime", "SasScholarshipData.cetQualificationOwner",
+                        "SasScholarshipData.ctspQualificationOwner", "SasScholarshipData.phdQualificationOwner", "SasScholarshipData.degreeQualificationOwner", "SasScholarshipData.masterQualificationOwner",
+                        "SasScholarshipData.lastEnrolmentYear", "SasScholarshipData.gratuityAmount", "SasScholarshipData.enroled", "SasScholarshipData.numberOfApprovedEcts", "SasScholarshipData.ingressionRegime" };
 
-                Arrays.stream(fields).forEach(f -> addData("SasScholarshipData." + f, "-"));
+                Arrays.stream(fields).forEach(f -> addData(f, "-"));
             }
 
         }

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.fenixedu.academic.domain.candidacy.IngressionType;
+import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 
@@ -15,16 +16,21 @@ public class SocialServicesConfiguration extends SocialServicesConfiguration_Bas
     }
 
     public void edit(int numberOfMonthsOfAcademicYear, String email, String institutionCode,
-            Collection<IngressionType> ingressionTypesWhichAreDegreeTransfer, Collection<CreditsReasonType> creditsReasonTypes) {
+            Collection<IngressionType> ingressionTypesWhichAreDegreeTransfer,
+            Collection<IngressionType> ingressionTypesWithExternalData, Collection<CreditsReasonType> creditsReasonTypes) {
         SocialServicesConfiguration config = Bennu.getInstance().getSocialServicesConfiguration();
         config.setNumberOfMonthsOfAcademicYear(numberOfMonthsOfAcademicYear);
         config.setEmail(email);
         config.setInstitutionCode(institutionCode);
-        
+
         Set<IngressionType> ingressionTypeWhichAreDegreeTransferSet = config.getIngressionTypeWhichAreDegreeTransferSet();
         ingressionTypeWhichAreDegreeTransferSet.clear();
         ingressionTypeWhichAreDegreeTransferSet.addAll(ingressionTypesWhichAreDegreeTransfer);
-        
+
+        Set<IngressionType> ingressionTypesWithExternalDataSet = config.getIngressionTypesWithExternalDataSet();
+        ingressionTypesWithExternalDataSet.clear();
+        ingressionTypesWithExternalDataSet.addAll(ingressionTypesWithExternalData);
+
         Set<CreditsReasonType> creditsReasonType = config.getCreditsReasonTypesSet();
         creditsReasonType.clear();
         creditsReasonType.addAll(creditsReasonTypes);
@@ -34,15 +40,14 @@ public class SocialServicesConfiguration extends SocialServicesConfiguration_Bas
         return Bennu.getInstance().getSocialServicesConfiguration();
     }
 
-    //Change visibility of getters
-    @Override
-    public Set<IngressionType> getIngressionTypeWhichAreDegreeTransferSet() {
-        return super.getIngressionTypeWhichAreDegreeTransferSet();
-    }
-
     @Override
     public int getNumberOfMonthsOfAcademicYear() {
         return super.getNumberOfMonthsOfAcademicYear();
     }
-        
+
+    public boolean ingressionTypeRequiresExternalData(final Registration registration) {
+        return registration.getIngressionType() != null
+                && getIngressionTypesWithExternalDataSet().contains(registration.getIngressionType());
+    }
+
 }

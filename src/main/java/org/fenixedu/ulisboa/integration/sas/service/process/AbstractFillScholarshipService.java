@@ -312,8 +312,8 @@ public class AbstractFillScholarshipService {
             validateStudentNumber(bean, registration);
             checkPreconditions(bean, registration, requestYear, firstYearOfCycle);
 
-            fillSpecificInfo(bean, registration, requestYear);
             fillCommonInfo(bean, registration, requestYear);
+            fillSpecificInfo(bean, registration, requestYear);
 
         } catch (FillScholarshipException e) {
 
@@ -331,11 +331,6 @@ public class AbstractFillScholarshipService {
     private void checkPreconditions(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
             boolean firstYearOfCycle) {
 
-        if (getEnroledCurriculumLines(registration, requestYear).isEmpty()) {
-            addError(bean, "message.error.registration.without.enrolments", requestYear.getQualifiedName());
-            throw new FillScholarshipException("message.error.registration.without.enrolments", requestYear.getQualifiedName());
-        }
-
         final RegistrationState lastRegistrationState = registration.getLastRegistrationState(requestYear);
         if (lastRegistrationState != null && !lastRegistrationState.isActive()) {
             addWarning(bean, "message.warning.registration.is.not.active", requestYear.getQualifiedName());
@@ -343,6 +338,10 @@ public class AbstractFillScholarshipService {
 
         if (firstYearOfCycle && !isFirstTimeInCycle(registration, requestYear)) {
             addWarning(bean, "message.warning.student.is.not.first.time");
+        }
+
+        if (getCycleEnrolmentYears(registration, requestYear).isEmpty()) {
+            addWarning(bean, "message.warning.registration.without.enrolments");
         }
 
         if (!SasDataShareAuthorizationServices.isAuthorizationTypeActive()) {
@@ -360,11 +359,10 @@ public class AbstractFillScholarshipService {
     }
 
     static public boolean isFirstTimeInCycle(Registration registration, ExecutionYear requestYear) {
-        final List<Registration> cycleRegistrations = getCycleRegistrations(registration);
         final List<ExecutionYear> cycleEnrolmentYears = getCycleEnrolmentYears(registration, requestYear);
 
-        return cycleRegistrations.size() > 1 ? false : cycleEnrolmentYears.size() == 1
-                && cycleEnrolmentYears.iterator().next() == requestYear;
+        return cycleEnrolmentYears.size() > 1 ? false : cycleEnrolmentYears.isEmpty()
+                || cycleEnrolmentYears.size() == 1 && cycleEnrolmentYears.iterator().next() == requestYear;
     }
 
     private void fillCommonInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {

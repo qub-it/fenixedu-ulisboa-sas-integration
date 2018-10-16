@@ -84,6 +84,18 @@ ${portal.toolkit()}
 	</td> 
 </tr>
 <tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.ingressionTypesWithExternalData"/></th> 
+	<td>
+		<ul>
+		<c:forEach items="${socialServicesConfiguration.ingressionTypesWithExternalData}" var="element">
+			<li>
+				<c:out value="${element.localizedName}" /> 
+			</li>
+		</c:forEach>
+		<ul>
+	</td> 
+</tr>
+<tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.creditsReasonType"/></th> 
 	<td>
 		<ul>

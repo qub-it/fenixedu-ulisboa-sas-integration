@@ -66,31 +66,38 @@ public class SocialServicesConfigurationController extends SasBaseController {
 
     @RequestMapping(value = "/update/", method = RequestMethod.GET)
     public String update(Model model) {
-        model.addAttribute("SocialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer_options", Bennu.getInstance()
-                .getIngressionTypesSet());
-        model.addAttribute("SocialServicesConfiguration_creditsReasonType_options", Bennu.getInstance()
-                .getCreditsReasonTypesSet());
+        model.addAttribute("SocialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer_options",
+                Bennu.getInstance().getIngressionTypesSet());
+        model.addAttribute("SocialServicesConfiguration_ingressionTypesWithExternalData_options",
+                Bennu.getInstance().getIngressionTypesSet());
+        model.addAttribute("SocialServicesConfiguration_creditsReasonType_options",
+                Bennu.getInstance().getCreditsReasonTypesSet());
         return "integration/sas/managescholarshipsconfiguration/socialservicesconfiguration/update";
     }
 
     @RequestMapping(value = "/update/", method = RequestMethod.POST)
-    public String update(
-            @RequestParam(value = "numberofmonthsofacademicyear", required = false) int numberOfMonthsOfAcademicYear,
+    public String update(@RequestParam(value = "numberofmonthsofacademicyear", required = false) int numberOfMonthsOfAcademicYear,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "institutionCode", required = false) String institutionCode,
-            @RequestParam(value = "ingressiontypewhicharedegreetransfer", required = false) List<IngressionType> ingressionTypeWhichAreDegreeTransfer,
-            @RequestParam(value = "creditsReasonTypes", required = false) List<CreditsReasonType> creditsReasonTypes,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "ingressiontypewhicharedegreetransfer",
+                    required = false) List<IngressionType> ingressionTypeWhichAreDegreeTransfer,
+            @RequestParam(value = "ingressiontypeswithexternaldata",
+                    required = false) List<IngressionType> ingressionTypesWithExternalData,
+            @RequestParam(value = "creditsReasonTypes", required = false) List<CreditsReasonType> creditsReasonTypes, Model model,
+            RedirectAttributes redirectAttributes) {
+
         ingressionTypeWhichAreDegreeTransfer =
                 ingressionTypeWhichAreDegreeTransfer != null ? ingressionTypeWhichAreDegreeTransfer : Collections
                         .<IngressionType> emptyList();
-        
-        creditsReasonTypes =
-                creditsReasonTypes != null ? creditsReasonTypes : Collections
-                        .<CreditsReasonType> emptyList();
-        
+
+        ingressionTypesWithExternalData = ingressionTypesWithExternalData != null ? ingressionTypesWithExternalData : Collections
+                .<IngressionType> emptyList();
+
+        creditsReasonTypes = creditsReasonTypes != null ? creditsReasonTypes : Collections.<CreditsReasonType> emptyList();
+
         try {
-            updateSocialServicesConfiguration(numberOfMonthsOfAcademicYear, email, institutionCode, ingressionTypeWhichAreDegreeTransfer, creditsReasonTypes, model);
+            updateSocialServicesConfiguration(numberOfMonthsOfAcademicYear, email, institutionCode,
+                    ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes, model);
 
             return redirect("/integration/sas/managescholarshipsconfiguration/socialservicesconfiguration/read/", model,
                     redirectAttributes);
@@ -103,8 +110,10 @@ public class SocialServicesConfigurationController extends SasBaseController {
 
     @Atomic
     public void updateSocialServicesConfiguration(int numberOfMonthsOfAcademicYear, String email, String institutionCode,
-            List<IngressionType> ingressionTypeWhichAreDegreeTransfer, List<CreditsReasonType> creditsReasonTypes, Model model) {
-        getSocialServicesConfiguration().edit(numberOfMonthsOfAcademicYear, email, institutionCode, ingressionTypeWhichAreDegreeTransfer, creditsReasonTypes);
+            List<IngressionType> ingressionTypeWhichAreDegreeTransfer, List<IngressionType> ingressionTypesWithExternalData,
+            List<CreditsReasonType> creditsReasonTypes, Model model) {
+        getSocialServicesConfiguration().edit(numberOfMonthsOfAcademicYear, email, institutionCode,
+                ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes);
     }
 
     @ModelAttribute("socialServicesConfiguration")

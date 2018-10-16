@@ -127,6 +127,22 @@ ${portal.toolkit()}
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message
+						code="label.SocialServicesConfiguration.ingressionTypesWithExternalData" />
+				</div>
+
+				<div class="col-sm-4">
+					<select
+						id="socialServicesConfiguration_ingressionTypesWithExternalData"
+						class="js-example-basic-single form-control"
+						name="ingressiontypeswithexternaldata" multiple="multiple">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
 						code="label.SocialServicesConfiguration.creditsReasonType" />
 				</div>
 
@@ -166,34 +182,83 @@ $(document).ready(function() {
 		    );
 		    
 		    
-		    <%java.util.List hackingListIngressionTypeWhichAreDegreeTransfer = request
-					.getParameterValues("ingressiontypewhicharedegreetransfer") != null
-							? java.util.Arrays
-									.asList(request.getParameterValues("ingressiontypewhicharedegreetransfer"))
-							: new java.util.ArrayList();
-			request.setAttribute("hackingListIngressionTypeWhichAreDegreeTransfer",
-					hackingListIngressionTypeWhichAreDegreeTransfer);%>
-		    <c:if test="${not empty hackingListIngressionTypeWhichAreDegreeTransfer}">
-                       $("#socialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer").select2().select2('val', [
-                                             <c:forEach items="${hackingListIngressionTypeWhichAreDegreeTransfer}" var="element" varStatus="status">
-                                                     "<c:out value='${element}'/>"
-                                                     <c:if test="${not status.last}">
-                                                     ,
-                                                     </c:if>
-                                             </c:forEach>
-                                             ]);
-                       </c:if>
-                   <c:if test="${empty hackingListIngressionTypeWhichAreDegreeTransfer && not empty socialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer}">
-                                           $("#socialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer").select2().select2('val', [
-                                           <c:forEach items="${socialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer}" var="element" varStatus="status">
-                                                   "<c:out value='${element.externalId}'/>"
+    <%java.util.List hackingListIngressionTypeWhichAreDegreeTransfer = request
+			.getParameterValues("ingressiontypewhicharedegreetransfer") != null
+					? java.util.Arrays
+							.asList(request.getParameterValues("ingressiontypewhicharedegreetransfer"))
+					: new java.util.ArrayList();
+	request.setAttribute("hackingListIngressionTypeWhichAreDegreeTransfer",
+			hackingListIngressionTypeWhichAreDegreeTransfer);%>
+    <c:if test="${not empty hackingListIngressionTypeWhichAreDegreeTransfer}">
+                     $("#socialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer").select2().select2('val', [
+                                           <c:forEach items="${hackingListIngressionTypeWhichAreDegreeTransfer}" var="element" varStatus="status">
+                                                   "<c:out value='${element}'/>"
                                                    <c:if test="${not status.last}">
                                                    ,
                                                    </c:if>
                                            </c:forEach>
                                            ]);
-                   </c:if>
-		    <%-- End block for providing ingressionTypeWhichAreDegreeTransfer options --%>
+                     </c:if>
+                 <c:if test="${empty hackingListIngressionTypeWhichAreDegreeTransfer && not empty socialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer}">
+                                         $("#socialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer").select2().select2('val', [
+                                         <c:forEach items="${socialServicesConfiguration.ingressionTypeWhichAreDegreeTransfer}" var="element" varStatus="status">
+                                                 "<c:out value='${element.externalId}'/>"
+                                                 <c:if test="${not status.last}">
+                                                 ,
+                                                 </c:if>
+                                         </c:forEach>
+                                         ]);
+                 </c:if>
+    <%-- End block for providing ingressionTypeWhichAreDegreeTransfer options --%>
+    
+    
+
+	ingressionTypesWithExternalData_options = [
+		<c:forEach items="${SocialServicesConfiguration_ingressionTypesWithExternalData_options}" var="element"> 
+			{
+				text : "<c:out value='${element.localizedName}'/>", 
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+		    
+
+	$("#socialServicesConfiguration_ingressionTypesWithExternalData").select2(
+			{
+				data : ingressionTypesWithExternalData_options,
+			}	  
+			    );
+			    
+			    
+	    <%java.util.List hackingListIngressionTypesWithExternalData = request
+				.getParameterValues("ingressiontypeswithexternaldata") != null
+						? java.util.Arrays
+								.asList(request.getParameterValues("ingressiontypeswithexternaldata"))
+						: new java.util.ArrayList();
+		request.setAttribute("hackingListIngressionTypesWithExternalData",
+		        hackingListIngressionTypesWithExternalData);%>
+	    <c:if test="${not empty hackingListIngressionTypesWithExternalData}">
+	                     $("#socialServicesConfiguration_ingressionTypesWithExternalData").select2().select2('val', [
+	                                           <c:forEach items="${hackingListIngressionTypesWithExternalData}" var="element" varStatus="status">
+	                                                   "<c:out value='${element}'/>"
+	                                                   <c:if test="${not status.last}">
+	                                                   ,
+	                                                   </c:if>
+	                                           </c:forEach>
+	                                           ]);
+	                     </c:if>
+	                 <c:if test="${empty hackingListIngressionTypesWithExternalData && not empty socialServicesConfiguration.ingressionTypesWithExternalData}">
+	                                         $("#socialServicesConfiguration_ingressionTypesWithExternalData").select2().select2('val', [
+	                                         <c:forEach items="${socialServicesConfiguration.ingressionTypesWithExternalData}" var="element" varStatus="status">
+	                                                 "<c:out value='${element.externalId}'/>"
+	                                                 <c:if test="${not status.last}">
+	                                                 ,
+	                                                 </c:if>
+	                                         </c:forEach>
+	                                         ]);
+	                 </c:if>
+	    <%-- End block for providing IngressionTypesWithExternalData options --%>
+	    
 		    
 		    
 		    

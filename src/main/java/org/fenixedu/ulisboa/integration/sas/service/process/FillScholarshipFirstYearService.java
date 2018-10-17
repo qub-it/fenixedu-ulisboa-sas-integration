@@ -8,13 +8,5 @@ import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 
 public class FillScholarshipFirstYearService extends AbstractFillScholarshipService {
 
-    @Override
-    protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {
-        if (SocialServicesConfiguration.getInstance().ingressionTypeRequiresExternalData(registration)) {
-            addWarning(bean, "message.warning.ingression.type.requires.external.data",
-                    registration.getIngressionType().getLocalizedName(),
-                    RegistrationServices.getCurriculum(registration, requestYear).getSumEctsCredits().toString());
-        }
-    }
 
 }

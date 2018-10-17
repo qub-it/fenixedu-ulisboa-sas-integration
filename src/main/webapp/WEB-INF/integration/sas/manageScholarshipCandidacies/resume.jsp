@@ -1,9 +1,11 @@
-<%@page import="org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy"%>
-<%@page import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
+<%@page
+	import="org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy"%>
+<%@page
+	import="org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies.ScholarshipCandidaciesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl"
@@ -43,8 +45,7 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
-		<spring:message
-			code="label.manageScholarshipCandidacies.resume" />
+		<spring:message code="label.manageScholarshipCandidacies.resume" />
 		<small></small>
 	</h1>
 </div>
@@ -55,34 +56,38 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}/academic-administration/sas-scholarship-management/integration-sas-manageScholarshipCandidacies/"><spring:message
-			code="label.event.back" /></a>
-	 |&nbsp;&nbsp; 
-		
-		
-	<span
-		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+			code="label.event.back" /></a> |&nbsp;&nbsp;
+	
+	<c:choose>
+	<c:when test="${not empty sasScholarshipCandidacy.exportDate}">
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+			class=""
+			href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.FORCE_PROCESS_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
+				code="label.event.process" /></a> &nbsp;|&nbsp;
+	</c:when>
+	<c:otherwise>
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.PROCESS_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
 			code="label.event.process" /></a> &nbsp;|&nbsp;
+	</c:otherwise>
+	</c:choose>
+	
 			
 	<span
 		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOG_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
-			code="label.event.logs" /></a> &nbsp;|&nbsp;
-	
-	<span
+			code="label.event.logs" /></a> &nbsp;|&nbsp; <span
 		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="#" onclick="showConfirmation('<spring:message code="label.send" />','<spring:message code="message.confirm.send.candidacy" />', '<spring:message code="label.send" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
-			code="label.event.send" /></a> &nbsp;|&nbsp;
-	
-	<span
+		class="" href="#"
+		onclick="showConfirmation('<spring:message code="label.send" />','<spring:message code="message.confirm.send.candidacy" />', '<spring:message code="label.send" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
+			code="label.event.send" /></a> &nbsp;|&nbsp; <span
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.candidacy" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
+		class="" href="#"
+		onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.candidacy" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
 			code="label.event.delete" /></a>
-			
+
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -131,99 +136,123 @@ ${portal.toolkit()}
 		<form method="post" class="form-horizontal">
 			<table class="table">
 				<tbody>
-				
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.submissionDate" /></th>
-						<td><joda:format value='${sasScholarshipCandidacy.submissionDate}' pattern='yyyy-MM-dd' /></td>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.submissionDate" /></th>
+						<td><joda:format
+								value='${sasScholarshipCandidacy.submissionDate}'
+								pattern='yyyy-MM-dd' /></td>
 					</tr>
-					
+
 					<tr>
-						<th><spring:message code="label.SasScholarshipCandidacy.studentNumber" /></th>
+						<th><spring:message
+								code="label.SasScholarshipCandidacy.studentNumber" /></th>
 						<td>${sasScholarshipCandidacy.studentNumber}</td>
 					</tr>
-					
+
 					<tr>
-						<th><spring:message code="label.SasScholarshipCandidacy.candidacyName" /></th>
+						<th><spring:message
+								code="label.SasScholarshipCandidacy.candidacyName" /></th>
 						<td><c:out value='${sasScholarshipCandidacy.candidacyName}' /></td>
 					</tr>
-										
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.fiscalNumber" /></th>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.fiscalNumber" /></th>
 						<td><c:out value='${sasScholarshipCandidacy.fiscalNumber}' /></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.docIdNumber" /></th>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.docIdNumber" /></th>
 						<td><c:out value='${sasScholarshipCandidacy.docIdNumber}' /></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.docIdType" /></th>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.docIdType" /></th>
 						<td><c:out value='${sasScholarshipCandidacy.docIdType}' /></td>
 					</tr>
 					<tr>
-						<th><spring:message code="label.SasScholarshipCandidacy.degreeName" /></th>
-						<td>[${sasScholarshipCandidacy.degreeCode}] ${sasScholarshipCandidacy.degreeName}</td>
+						<th><spring:message
+								code="label.SasScholarshipCandidacy.degreeName" /></th>
+						<td>[${sasScholarshipCandidacy.degreeCode}]
+							${sasScholarshipCandidacy.degreeName}</td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.importDate" /></th>
-						<td><joda:format value='${sasScholarshipCandidacy.importDate}' pattern='yyyy-MM-dd' /></td>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.importDate" /></th>
+						<td><joda:format
+								value='${sasScholarshipCandidacy.importDate}'
+								pattern='yyyy-MM-dd' /></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.stateDate" /></th>
-						<td><joda:format value='${sasScholarshipCandidacy.stateDate}' pattern='yyyy-MM-dd' /></td>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.stateDate" /></th>
+						<td><joda:format value='${sasScholarshipCandidacy.stateDate}'
+								pattern='yyyy-MM-dd' /></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.exportDate" /></th>
-						<td><joda:format value='${sasScholarshipCandidacy.exportDate}' pattern='yyyy-MM-dd' /></td>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.exportDate" /></th>
+						<td><joda:format
+								value='${sasScholarshipCandidacy.exportDate}'
+								pattern='yyyy-MM-dd' /></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipCandidacy.firstYear" /></th>
-						<td>
-							<c:if test="${sasScholarshipCandidacy.firstYear}"><spring:message code="label.true" /></c:if>
-							<c:if test="${not sasScholarshipCandidacy.firstYear}"><spring:message code="label.false" /></c:if>
-						</td>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipCandidacy.firstYear" /></th>
+						<td><c:if test="${sasScholarshipCandidacy.firstYear}">
+								<spring:message code="label.true" />
+							</c:if> <c:if test="${not sasScholarshipCandidacy.firstYear}">
+								<spring:message code="label.false" />
+							</c:if></td>
 					</tr>
-					
+
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.SasScholarshipData.state" /></th>
-						<td>
-							<c:choose>
-								<c:when test="${sasScholarshipCandidacy.state.name == 'PENDING'}">
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.SasScholarshipData.state" /></th>
+						<td><c:choose>
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'PENDING'}">
 									<span>${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								
-								<c:when test="${sasScholarshipCandidacy.state.name == 'PROCESSED'}">
-									<span class="text-info">${sasScholarshipCandidacy.state.localizedName}</span>	
+
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'PROCESSED'}">
+									<span class="text-info">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								<c:when test="${sasScholarshipCandidacy.state.name == 'PROCESSED_WARNINGS'}">
-									<span class="text-warning">${sasScholarshipCandidacy.state.localizedName}</span>	
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'PROCESSED_WARNINGS'}">
+									<span class="text-warning">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								
-								<c:when test="${sasScholarshipCandidacy.state.name == 'PROCESSED_ERRORS'}">
-									<span class="text-danger">${sasScholarshipCandidacy.state.localizedName}</span>	
+
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'PROCESSED_ERRORS'}">
+									<span class="text-danger">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								
+
 								<c:when test="${sasScholarshipCandidacy.state.name == 'SENT'}">
-									<span class="text-success">${sasScholarshipCandidacy.state.localizedName}</span>	
+									<span class="text-success">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								
-								<c:when test="${sasScholarshipCandidacy.state.name == 'MODIFIED'}">
-									<span class="text-warning">${sasScholarshipCandidacy.state.localizedName}</span>	
+
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'MODIFIED'}">
+									<span class="text-warning">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-								
-								<c:when test="${sasScholarshipCandidacy.state.name == 'ANNULLED'}">
-									<span class="text-mutted">${sasScholarshipCandidacy.state.localizedName}</span>	
+
+								<c:when
+									test="${sasScholarshipCandidacy.state.name == 'ANNULLED'}">
+									<span class="text-mutted">${sasScholarshipCandidacy.state.localizedName}</span>
 								</c:when>
-							</c:choose>
-							<c:if test="${sasScholarshipCandidacy.modified}">*</c:if>
-						</td>
+							</c:choose> <c:if test="${sasScholarshipCandidacy.modified}">*</c:if></td>
 					</tr>
-					
+
 				</tbody>
 			</table>
 
@@ -236,51 +265,52 @@ ${portal.toolkit()}
 	border-top: 0px;
 }
 </style>
-	
+
 
 <div>
-    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
-		<li class="active"><a href="#academicData" data-toggle="tab"><spring:message code="label.details.SasScholarshipData" /></a></li>
-        <li><a href="#candidacy" data-toggle="tab"><spring:message code="label.details.SasScholarshipCandidacy" /></a></li>
-    </ul>
-    
-     <div id="my-tab-content" class="tab-content">
-        <div class="tab-pane active" id="academicData">
-        	<jsp:include page="readSasScholarshipData.jsp" />
-        </div>
-        <div class="tab-pane" id="candidacy">
-       		<jsp:include page="readSasScholarshipCandidacy.jsp" />
-        </div>
-     </div>
+		<li class="active"><a href="#academicData" data-toggle="tab"><spring:message
+					code="label.details.SasScholarshipData" /></a></li>
+		<li><a href="#candidacy" data-toggle="tab"><spring:message
+					code="label.details.SasScholarshipCandidacy" /></a></li>
+	</ul>
+
+	<div id="my-tab-content" class="tab-content">
+		<div class="tab-pane active" id="academicData">
+			<jsp:include page="readSasScholarshipData.jsp" />
+		</div>
+		<div class="tab-pane" id="candidacy">
+			<jsp:include page="readSasScholarshipCandidacy.jsp" />
+		</div>
+	</div>
 </div>
 
 
 
 <script>
+	function showConfirmation(title, message, confirmMessage, url) {
 
-	function showConfirmation(title, message, confirmMessage, url){
-	
 		bootbox.confirm({
-		    title: title,
-		    message: message,
-		    buttons: {
-		        cancel: {
-		            label: '<spring:message code="label.cancel" />'
-		        },
-		        confirm: {
-		            label: confirmMessage,
-		            className: 'btn-danger'
-		        }
-		    },
-		    callback: function (result) {
-		    	if (result) {
-		    		window.location.href=url;
-		    	}
-		    }
-		});	
+			title : title,
+			message : message,
+			buttons : {
+				cancel : {
+					label : '<spring:message code="label.cancel" />'
+				},
+				confirm : {
+					label : confirmMessage,
+					className : 'btn-danger'
+				}
+			},
+			callback : function(result) {
+				if (result) {
+					window.location.href = url;
+				}
+			}
+		});
 	}
-	
+
 	$(document).ready(function() {
 
 	});

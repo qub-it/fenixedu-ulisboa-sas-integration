@@ -108,30 +108,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return jspPath("resume");
     }
 
-    private static final String _SYNC_ENTRY_URI = "/sync";
-    public static final String SYNC_ENTRY_URL = CONTROLLER_URL + _SYNC_ENTRY_URI;
-
-    @RequestMapping(value = _SYNC_ENTRY_URI, method = RequestMethod.POST)
-    public String syncSearchEntries(
-            @RequestParam("sasScholarshipCandidacyEntries") List<SasScholarshipCandidacy> sasScholarshipCandidacies,
-            @PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        SicabeExternalService sicabe = new SicabeExternalService();
-        try {
-            sicabe.loadSasScholarshipCandidacies(sasScholarshipCandidacies, executionYear);
-            addInfoMessage(SasPTUtil.bundle("label.info.sync", String.valueOf(sasScholarshipCandidacies.size())), model);
-        } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage
-                | DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage
-                | DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage e) {
-            addErrorMessage(SasPTUtil.bundle("label.error.sync"), model);
-        } catch (ServerSOAPFaultException e) {
-            addErrorMessage(SasPTUtil.bundle("label.error.connection"), model);
-        }
-
-        return search(model, executionYear);
-    }
-
+    
     private static final String _SYNC_ALL_ENTRIES_URI = "/syncAll";
     public static final String SYNC_ALL_ENTRIES_URL = CONTROLLER_URL + _SYNC_ALL_ENTRIES_URI;
 
@@ -141,7 +118,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
         SicabeExternalService sicabe = new SicabeExternalService();
         try {
-            sicabe.loadAllSasScholarshipCandidacies(executionYear);
+            sicabe.removeAllCandidaciesWithoutRegistrationAndLoadAllSasCandidacies(executionYear);
             addInfoMessage(SasPTUtil.bundle("label.info.syncAll"), model);
         } catch (DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage
                 | DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage
@@ -170,6 +147,22 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
     }
 
+    private static final String _FORCE_PROCESS_ENTRY_URI = "/forceProcess";
+    public static final String FORCE_PROCESS_ENTRY_URL = CONTROLLER_URL + _FORCE_PROCESS_ENTRY_URI;
+
+    @RequestMapping(value = _FORCE_PROCESS_ENTRY_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
+    public String forceProcessEntry(@PathVariable("sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,
+            Model model, RedirectAttributes redirectAttributes) {
+
+        SicabeExternalService sicabe = new SicabeExternalService();
+        sicabe.forceProcessSasScholarshipCandidacies(sasScholarshipCandidacy);
+
+        addInfoMessage(SasPTUtil.bundle("label.info.process"), model);
+
+        return readResumeSasScholarshipCandidacy(sasScholarshipCandidacy, model);
+
+    }
+    
     private static final String _PROCESS_ALL_ENTRIES_URI = "/processAll";
     public static final String PROCESS_ALL_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ALL_ENTRIES_URI;
 

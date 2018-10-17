@@ -27,7 +27,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
         final SicabeExternalService sicabe = new SicabeExternalService();
         final ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
-        sicabe.loadAllSasScholarshipCandidacies(currentExecutionYear);
+        sicabe.removeAllCandidaciesWithoutRegistrationAndLoadAllSasCandidacies(currentExecutionYear);
 
         sicabe.processAllSasScholarshipCandidacies(currentExecutionYear);
 

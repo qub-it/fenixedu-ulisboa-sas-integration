@@ -42,7 +42,6 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
                     .calculateLastAcademicActDate(lastRegistrationCurricularPlan.getRoot(), lastEnrolmentYear, false);
             bean.setLastAcademicActDateLastYear(lastAcademicActDate != null ? lastAcademicActDate.toLocalDate() : null);
         }
-
     }
 
     private Integer getNumberOfDegreeChanges(Registration currentRegistration) {

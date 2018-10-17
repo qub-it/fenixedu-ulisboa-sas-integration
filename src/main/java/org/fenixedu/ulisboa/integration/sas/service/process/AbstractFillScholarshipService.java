@@ -45,7 +45,36 @@ import com.google.common.collect.Sets;
 
 public class AbstractFillScholarshipService {
 
-    private final Multimap<AbstractScholarshipStudentBean, String> messages = ArrayListMultimap.create();
+    public static class MessageEntry {
+
+        private boolean publicMessage;
+
+        private String message;
+
+        public MessageEntry(boolean publicMessage, String message) {
+            this.publicMessage = publicMessage;
+            this.message = message;
+        }
+
+        public boolean isPublicMessage() {
+            return publicMessage;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setPublicMessage(boolean publicMessage) {
+            this.publicMessage = publicMessage;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+    }
+
+    private final Multimap<AbstractScholarshipStudentBean, MessageEntry> messages = ArrayListMultimap.create();
 
     protected static final Map<String, IDDocumentType> ID_DOCUMENT_TYPE_MAPPING = Maps.newHashMap();
 
@@ -53,7 +82,7 @@ public class AbstractFillScholarshipService {
 
     public static final String REGIME_FULL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo integral";
 
-    public static final String REGIME_PARTIAL_TIME = "Tempo parcial";
+    public static final String REGIME_PARTIAL_TIME = "TempaddDatao parcial";
 
     public static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
 
@@ -85,7 +114,7 @@ public class AbstractFillScholarshipService {
                 fillAllInfo(bean, getRegistrationByAbstractScholarshipStudentBean(bean, requestYear), requestYear,
                         firstYearOfCycle);
             } catch (FillScholarshipException e) {
-                addError(bean, e.getMessage());
+                addError(bean, false, e.getMessage());
                 bean.setObservations(formatObservations(bean));
             }
         }
@@ -114,7 +143,7 @@ public class AbstractFillScholarshipService {
 
         } else if (registrations.size() > 1) {
 
-            addError(bean, "message.error.multiple.registrations");
+            addError(bean, false, "message.error.multiple.registrations");
             bean.setObservations(formatObservations(bean));
             throw new FillScholarshipException("message.error.multiple.registrations");
 
@@ -133,17 +162,17 @@ public class AbstractFillScholarshipService {
 
             if (registrationsWithActiveEnrolments.size() == 1) {
                 final Registration registration = registrationsWithActiveEnrolments.iterator().next();
-                addWarning(bean, "message.warning.input.degree.code.not.equals.to.active.degree.code",
+                addWarning(bean, false, "message.warning.input.degree.code.not.equals.to.active.degree.code",
                         registration.getDegree().getCode());
                 bean.setObservations(formatObservations(bean));
                 return registration;
             } else if (registrationsWithActiveEnrolments.size() > 1) {
-                addError(bean, "message.error.input.registration.not.found.and.multiple.active.registrations");
+                addError(bean, false, "message.error.input.registration.not.found.and.multiple.active.registrations");
                 bean.setObservations(formatObservations(bean));
                 throw new FillScholarshipException(
                         "message.error.input.registration.not.found.and.multiple.active.registrations");
             } else {
-                addError(bean, "message.error.input.registration.not.found.and.no.active.registrations");
+                addError(bean, false, "message.error.input.registration.not.found.and.no.active.registrations");
                 bean.setObservations(formatObservations(bean));
                 throw new FillScholarshipException("message.error.input.registration.not.found.and.no.active.registrations");
             }
@@ -158,7 +187,7 @@ public class AbstractFillScholarshipService {
                         || Objects.equals(d.getCode(), bean.getDegreeCode())).collect(Collectors.toSet());
 
         if (degrees.isEmpty()) {
-            addError(bean, "message.error.degree.not.found");
+            addError(bean, false, "message.error.degree.not.found");
             bean.setObservations(formatObservations(bean));
             throw new FillScholarshipException("message.error.degree.not.found");
         }
@@ -170,17 +199,17 @@ public class AbstractFillScholarshipService {
 
         final Person person = findPerson(bean, requestYear);
         if (person == null) {
-            addError(bean, "message.error.person.not.found");
+            addError(bean, false, "message.error.person.not.found");
             throw new FillScholarshipException("message.error.person.not.found");
         }
 
         if (person.getStudent() == null) {
-            addError(bean, "message.error.degree.not.found");
+            addError(bean, false, "message.error.degree.not.found");
             throw new FillScholarshipException("message.error.person.is.not.a.student");
         }
 
         if (bean.getStudentNumber() == null) {
-            addWarning(bean, "message.warning.input.student.number.is.empty");
+            addWarning(bean, false, "message.warning.input.student.number.is.empty");
         }
 
         return person.getStudent();
@@ -195,7 +224,7 @@ public class AbstractFillScholarshipService {
             return ensureDocumentIdType(withDocumentId.iterator().next(), bean);
 
         } else if (withDocumentId.size() > 1) {
-            addWarning(bean, "message.warning.multiple.people.found.with.same.document.id");
+            addWarning(bean, false, "message.warning.multiple.people.found.with.same.document.id");
             return findPersonByName(withDocumentId, bean);
         } else {
             // try partial id document number and with the student number and name
@@ -211,7 +240,7 @@ public class AbstractFillScholarshipService {
                 if (withPartialDocumentId.size() == 1) {
                     if ((bean.getDocumentBINumber() == null || !bean.getDocumentBINumber().equals(documentIdWithoutCheckDigit))
                             && !(hasSameCheckDigitValue(bean.getDocumentNumber(), withPartialDocumentId.iterator().next()))) {
-                        addWarning(bean, "message.warning.input.document.id.not.equals.without.control.digit");
+                        addWarning(bean, false, "message.warning.input.document.id.not.equals.without.control.digit");
                     }
 
                     return ensureDocumentIdType(withPartialDocumentId.iterator().next(), bean);
@@ -219,10 +248,10 @@ public class AbstractFillScholarshipService {
 
                 if (withPartialDocumentId.size() > 1) {
                     if (bean.getDocumentBINumber() == null || !bean.getDocumentBINumber().equals(documentIdWithoutCheckDigit)) {
-                        addWarning(bean, "message.warning.input.document.id.not.equals.without.control.digit");
+                        addWarning(bean, false, "message.warning.input.document.id.not.equals.without.control.digit");
                     }
 
-                    addWarning(bean, "message.warning.multiple.people.found.with.same.document.id.without.control.digit");
+                    addWarning(bean, false, "message.warning.multiple.people.found.with.same.document.id.without.control.digit");
 
                     return findPersonByName(withPartialDocumentId, bean);
                 }
@@ -237,7 +266,7 @@ public class AbstractFillScholarshipService {
                 if (withPartialDocumentIdWithoutCCSerial.size() == 1) {
                     if (bean.getDocumentBINumber() == null
                             || !bean.getDocumentBINumber().equals(documentIdWithoutCitizenCardSerial)) {
-                        addWarning(bean, "message.warning.input.document.id.not.equals.without.control.digit.and.serial");
+                        addWarning(bean, false, "message.warning.input.document.id.not.equals.without.control.digit.and.serial");
                     }
                     return ensureDocumentIdType(withPartialDocumentIdWithoutCCSerial.iterator().next(), bean);
                 }
@@ -245,9 +274,9 @@ public class AbstractFillScholarshipService {
                 if (withPartialDocumentIdWithoutCCSerial.size() > 1) {
                     if (bean.getDocumentBINumber() == null
                             || !bean.getDocumentBINumber().equals(documentIdWithoutCitizenCardSerial)) {
-                        addWarning(bean, "message.warning.input.document.id.not.equals.without.control.digit.and.serial");
+                        addWarning(bean, false, "message.warning.input.document.id.not.equals.without.control.digit.and.serial");
                     }
-                    addWarning(bean,
+                    addWarning(bean, false,
                             "message.warning.multiple.people.found.with.same.document.id.without.control.digit.and.serial");
                     return findPersonByName(withPartialDocumentIdWithoutCCSerial, bean);
                 }
@@ -259,7 +288,7 @@ public class AbstractFillScholarshipService {
                     Registration findRegistration = findRegistration(person.getStudent(), bean, requestYear);
                     if (findRegistration.getNumber().equals(bean.getStudentNumber()) || (bean.getStudentNumber() != null
                             && findRegistration.getStudent().getNumber().intValue() == bean.getStudentNumber().intValue())) {
-                        addWarning(bean, "message.warning.student.not.found.with.id.but.name.and.number.match");
+                        addWarning(bean, false, "message.warning.student.not.found.with.id.but.name.and.number.match");
                         return person;
                     }
                 }
@@ -296,7 +325,7 @@ public class AbstractFillScholarshipService {
 
         if (person.getIdDocumentType() != ID_DOCUMENT_TYPE_MAPPING.get(bean.getDocumentTypeName())
                 && !person.getIdDocumentType().name().equalsIgnoreCase(bean.getDocumentTypeName())) {
-            addError(bean, "message.error.identity.document.type");
+            addError(bean, false, "message.error.identity.document.type");
             throw new FillScholarshipException("message.error.identity.document.type");
         }
 
@@ -312,8 +341,8 @@ public class AbstractFillScholarshipService {
             validateStudentNumber(bean, registration);
             checkPreconditions(bean, registration, requestYear, firstYearOfCycle);
 
-            fillCommonInfo(bean, registration, requestYear);
             fillSpecificInfo(bean, registration, requestYear);
+            fillCommonInfo(bean, registration, requestYear);
 
         } catch (FillScholarshipException e) {
 
@@ -324,7 +353,7 @@ public class AbstractFillScholarshipService {
 
     private void validateStudentNumber(final AbstractScholarshipStudentBean bean, final Registration registration) {
         if (bean.getStudentNumber() != null && registration.getNumber().intValue() != bean.getStudentNumber().intValue()) {
-            addWarning(bean, "message.warning.input.student.number.does.not.match.with.fenix");
+            addWarning(bean, false, "message.warning.input.student.number.does.not.match.with.fenix");
         }
     }
 
@@ -333,15 +362,19 @@ public class AbstractFillScholarshipService {
 
         final RegistrationState lastRegistrationState = registration.getLastRegistrationState(requestYear);
         if (lastRegistrationState != null && !lastRegistrationState.isActive()) {
-            addWarning(bean, "message.warning.registration.is.not.active", requestYear.getQualifiedName());
+            addWarning(bean, false, "message.warning.registration.is.not.active", requestYear.getQualifiedName());
         }
 
         if (firstYearOfCycle && !isFirstTimeInCycle(registration, requestYear)) {
-            addWarning(bean, "message.warning.student.is.not.first.time");
+            addWarning(bean, false, "message.warning.student.is.not.first.time");
         }
 
         if (getCycleEnrolmentYears(registration, requestYear).isEmpty()) {
-            addWarning(bean, "message.warning.registration.without.enrolments");
+            addWarning(bean, false, "message.warning.registration.without.enrolments");
+        }
+
+        if (registration.hasReingression(requestYear)) {
+            addWarning(bean, true, "message.warning.found.reingression.for.year");
         }
 
         if (!SasDataShareAuthorizationServices.isAuthorizationTypeActive()) {
@@ -349,10 +382,10 @@ public class AbstractFillScholarshipService {
         }
 
         if (!SasDataShareAuthorizationServices.isAnswered(registration.getPerson())) {
-            addError(bean, "message.error.student.has.not.answer.data.sharing.survey");
+            addError(bean, false, "message.error.student.has.not.answer.data.sharing.survey");
             throw new FillScholarshipException("message.error.student.has.not.answer.data.sharing.survey");
         } else if (!SasDataShareAuthorizationServices.isDataShareAllowed(registration.getPerson())) {
-            addError(bean, "message.error.student.does.not.allow.data.sharing");
+            addError(bean, false, "message.error.student.does.not.allow.data.sharing");
             throw new FillScholarshipException("message.error.student.does.not.allow.data.sharing");
         }
 
@@ -406,9 +439,15 @@ public class AbstractFillScholarshipService {
                 .map(SasIngressionRegimeMapping::getRegimeCode).findFirst().orElse(null));
 
         if (bean.getIngressionRegimeCode() == null || bean.getIngressionRegimeCodeWithDescription() == null) {
-            addError(bean, "message.error.ingression.regime.mapping.is.missing",
+            addError(bean, false, "message.error.ingression.regime.mapping.is.missing",
                     registration.getIngressionType() != null ? registration.getIngressionType()
                             .getLocalizedName() : "empty.ingression.regime");
+        }
+
+        if (SocialServicesConfiguration.getInstance().ingressionTypeRequiresExternalData(registration)) {
+            addWarning(bean, true, "message.warning.ingression.type.requires.external.data",
+                    registration.getIngressionType().getLocalizedName(),
+                    RegistrationServices.getCurriculum(registration, requestYear).getSumEctsCredits().toString());
         }
 
     }
@@ -511,7 +550,7 @@ public class AbstractFillScholarshipService {
         final Integer cycleIngressionYear = cycleFirstRegistration.getStartExecutionYear().getBeginDateYearMonthDay().getYear();
 
         if (bean.getCycleIngressionYear() != null && !bean.getCycleIngressionYear().equals(cycleIngressionYear)) {
-            addWarning(bean, "message.warning.input.ingression.date.does.not.match.with.fenix",
+            addWarning(bean, false, "message.warning.input.ingression.date.does.not.match.with.fenix",
                     String.valueOf(bean.getCycleIngressionYear()), String.valueOf(cycleIngressionYear));
         }
 
@@ -531,20 +570,27 @@ public class AbstractFillScholarshipService {
                 .sorted(Registration.COMPARATOR_BY_START_DATE).collect(Collectors.toList());
     }
 
+    public String getMessages(final AbstractScholarshipStudentBean bean, boolean publicMessage) {
+        return messages.containsKey(bean) ? messages.get(bean).stream().filter(m -> m.isPublicMessage() == publicMessage)
+                .map(m -> m.getMessage()).collect(Collectors.joining("\n")) : null;
+    }
+
     public String formatObservations(final AbstractScholarshipStudentBean bean) {
         if (!messages.containsKey(bean)) {
             return "";
         }
 
-        return messages.get(bean).stream().collect(Collectors.joining("\n"));
+        return messages.get(bean).stream().map(m -> m.getMessage()).collect(Collectors.joining("\n"));
     }
 
-    protected void addError(AbstractScholarshipStudentBean bean, String message, String... args) {
-        messages.put(bean, ERROR_OBSERVATION + ": " + BundleUtil.getString(SasSpringConfiguration.BUNDLE, message, args));
+    protected void addError(AbstractScholarshipStudentBean bean, boolean publicMessage, String message, String... args) {
+        messages.put(bean, new MessageEntry(publicMessage,
+                ERROR_OBSERVATION + ": " + BundleUtil.getString(SasSpringConfiguration.BUNDLE, message, args)));
     }
 
-    protected void addWarning(AbstractScholarshipStudentBean bean, String message, String... args) {
-        messages.put(bean, WARNING_OBSERVATION + ": " + BundleUtil.getString(SasSpringConfiguration.BUNDLE, message, args));
+    protected void addWarning(AbstractScholarshipStudentBean bean, boolean publicMessage, String message, String... args) {
+        messages.put(bean, new MessageEntry(publicMessage,
+                WARNING_OBSERVATION + ": " + BundleUtil.getString(SasSpringConfiguration.BUNDLE, message, args)));
     }
 
     private StudentCurricularPlan getStudentCurricularPlan(Registration registration, ExecutionYear executionYear) {
@@ -607,27 +653,27 @@ public class AbstractFillScholarshipService {
         SchoolLevelTypeMapping schoolLevelTypeMapping = registration.getDegreeType().getSchoolLevelTypeMapping();
         SchoolLevelType schoolLevelType = schoolLevelTypeMapping == null ? null : schoolLevelTypeMapping.getSchoolLevel();
         if (bean.getCetQualificationOwner() && SchoolLevelTypeMapping.isCET(schoolLevelType)) {
-            addWarning(bean, "message.warning.cet.level");
+            addWarning(bean, false, "message.warning.cet.level");
         }
 
         if (bean.getCtspQualificationOwner() && SchoolLevelTypeMapping.isCTSP(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
-            addWarning(bean, "message.warning.ctsp.level");
+            addWarning(bean, false, "message.warning.ctsp.level");
         }
 
         if (bean.getDegreeQualificationOwner() && SchoolLevelTypeMapping.isDegree(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
-            addWarning(bean, "message.warning.degree.level");
+            addWarning(bean, false, "message.warning.degree.level");
         }
 
         if (bean.getMasterQualificationOwner() && SchoolLevelTypeMapping.isMasterDegree(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
-            addWarning(bean, "message.warning.master.level");
+            addWarning(bean, false, "message.warning.master.level");
         }
 
         if (bean.getPhdQualificationOwner() && SchoolLevelTypeMapping.isPhd(schoolLevelType)) {
             // check if current registration degree is the same of completed qualification
-            addWarning(bean, "message.warning.phd.level");
+            addWarning(bean, false, "message.warning.phd.level");
         }
     }
 

@@ -66,6 +66,7 @@ class SasScholarshipDataChangeLog {
 	String studentNumber;
 	String studentName;
 	String description;
+	boolean publicLog;
 }
 
 relation BennuSasScholarshipDataChangeLog {

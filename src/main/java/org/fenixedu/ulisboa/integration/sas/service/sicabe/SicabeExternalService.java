@@ -13,6 +13,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.datacontract.schemas._2004._07.sicabe_contracts.AlterarDadosAcademicosContratualizacaoRequest;
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -40,7 +41,6 @@ import org.fenixedu.ulisboa.integration.sas.service.process.FillScholarshipServi
 import org.fenixedu.ulisboa.integration.sas.util.SasPTUtil;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Objects;
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
@@ -273,8 +273,15 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             c.changeState(SasScholarshipCandidacyState.PROCESSED_ERRORS);
         }
 
-        writeLog(c, service.getMessages(tempBean, true), c.getStateDate(), true);
-        writeLog(c, service.getMessages(tempBean, false), c.getStateDate(), false);
+        final String publicMessages = service.getMessages(tempBean, true);
+        if (StringUtils.isNotEmpty(publicMessages)) {
+            writeLog(c, publicMessages, c.getStateDate().plus(1), true);
+        }
+
+        final String internalMessages = service.getMessages(tempBean, false);
+        if (StringUtils.isNotEmpty(internalMessages)) {
+            writeLog(c, internalMessages, c.getStateDate().plus(1), false);
+        }
     }
 
     protected TipoRegime convertRegimeCandidacy(String regime) {
@@ -549,11 +556,11 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
 
         writeLog(candidacy,
-                !StringUtils.isEmpty(data.getObservations()) ? data
+                StringUtils.isNotEmpty(data.getObservations()) ? data
                         .getObservations() : isNewData ? BundleUtil.getString(SasSpringConfiguration.BUNDLE,
                                 "message.updateSasSchoolarshipCandidacyData.new") : BundleUtil.getString(
                                         SasSpringConfiguration.BUNDLE, "message.updateSasSchoolarshipCandidacyData.update")
-                                        + (!StringUtils.isEmpty(data.getObservations()) ? data.getObservations() : ""),
+                                        + (StringUtils.isNotEmpty(data.getObservations()) ? data.getObservations() : ""),
                 candidacy.getStateDate(), false);
     }
 

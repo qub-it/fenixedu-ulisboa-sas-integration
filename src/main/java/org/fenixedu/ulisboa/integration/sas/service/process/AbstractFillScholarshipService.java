@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
@@ -17,6 +18,7 @@ import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academic.domain.organizationalStructure.Party;
 import org.fenixedu.academic.domain.person.IDDocumentType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
@@ -292,6 +294,20 @@ public class AbstractFillScholarshipService {
                         return person;
                     }
                 }
+            }
+            
+            // try with fiscal code and name
+            if(StringUtils.isNotBlank(bean.getFiscalCode())) {
+                final Party party = Person.readByContributorNumber(bean.getFiscalCode());
+                
+                if(party != null) {
+                    Person person = (Person)party;
+                    if(person.getName().equalsIgnoreCase(bean.getStudentName())) {
+                        addWarning(bean, false, "message.warning.student.not.found.with.id.but.name.and.social.number.match");
+                        return person;
+                    }
+                }
+                
             }
 
             return null;

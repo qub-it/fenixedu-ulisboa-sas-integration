@@ -40,7 +40,7 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
                     RegistrationServices.getStudentCurricularPlan(lastRegistration, lastEnrolmentYear);
             final YearMonthDay lastAcademicActDate = CurriculumModuleServices
                     .calculateLastAcademicActDate(lastRegistrationCurricularPlan.getRoot(), lastEnrolmentYear, false);
-            bean.setLastAcademicActDateLastYear(lastAcademicActDate != null ? lastAcademicActDate.toLocalDate() : null);
+            bean.setLastAcademicActDateLastYear(lastAcademicActDate != null ? lastAcademicActDate.toLocalDate() : lastEnrolmentYear.getEndLocalDate());
         }
     }
 

@@ -17,6 +17,7 @@ import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //Force task to be read only and process each report on its own transaction to avoid errors in a report affecting other reports
 @Task(englishTitle = "Ingest SAS Scholarships from SICABE", readOnly = true)
@@ -67,10 +68,23 @@ public class IngestSasScholarshipSicabe extends CronTask {
     @Atomic
     private void sendEmailForUser(final String subject, final String body) {
 
-        final String emailAddress = Bennu.getInstance().getSocialServicesConfiguration().getEmail();
+        Runnable runnable = () -> {
+            FenixFramework.atomic(() -> {
+                final String emailAddress = Bennu.getInstance().getSocialServicesConfiguration().getEmail();
 
-        new Message(Bennu.getInstance().getSystemSender(), Collections.<ReplyTo> emptyList(), Collections.<Recipient> emptyList(),
-                subject, body, new HashSet<String>(Arrays.asList(emailAddress.split(","))));
+                new Message(Bennu.getInstance().getSystemSender(), Collections.<ReplyTo> emptyList(),
+                        Collections.<Recipient> emptyList(), subject, body,
+                        new HashSet<String>(Arrays.asList(emailAddress.split(","))));
+            });
+        };
+
+        Thread t = new Thread(runnable);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

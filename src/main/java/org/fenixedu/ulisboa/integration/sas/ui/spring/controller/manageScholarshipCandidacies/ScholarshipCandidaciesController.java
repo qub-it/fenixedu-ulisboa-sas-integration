@@ -27,6 +27,8 @@
 package org.fenixedu.ulisboa.integration.sas.ui.spring.controller.manageScholarshipCandidacies;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +57,7 @@ import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeBusinessMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage;
+import pt.ist.fenixframework.FenixFramework;
 
 @SpringFunctionality(app = SasController.class, title = "label.title.manageScholarships", accessGroup = "#academicAdmOffice")
 @RequestMapping(ScholarshipCandidaciesController.CONTROLLER_URL)
@@ -108,7 +111,6 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return jspPath("resume");
     }
 
-    
     private static final String _SYNC_ALL_ENTRIES_URI = "/syncAll";
     public static final String SYNC_ALL_ENTRIES_URL = CONTROLLER_URL + _SYNC_ALL_ENTRIES_URI;
 
@@ -162,7 +164,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
         return readResumeSasScholarshipCandidacy(sasScholarshipCandidacy, model);
 
     }
-    
+
     private static final String _PROCESS_ALL_ENTRIES_URI = "/processAll";
     public static final String PROCESS_ALL_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ALL_ENTRIES_URI;
 
@@ -214,6 +216,36 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             addInfoMessage(SasPTUtil.bundle("label.info.sendAll"), model);
         } catch (RuntimeException e) {
             addErrorMessage(SasPTUtil.bundle("label.error.sendAll"), model);
+        }
+
+        return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);
+
+    }
+
+    private static final String _SEND_SELECTED_ENTRIES_URI = "/sendSelected";
+    public static final String SEND_SELECTED_ENTRIES_URL = CONTROLLER_URL + _SEND_SELECTED_ENTRIES_URI;
+
+    @RequestMapping(value = _SEND_SELECTED_ENTRIES_URI + "/{executionYearId}", method = RequestMethod.POST)
+    public String sendSelectedEntries(@RequestParam(value = "selectedCandidacyIds", required = false) String selectedCandidacyIds,
+            @PathVariable(value = "executionYearId") ExecutionYear executionYear, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            SicabeExternalService sicabe = new SicabeExternalService();
+            final Collection<SasScholarshipCandidacy> candidacies = selectedCandidacyIds == null ? Collections.emptySet() : Arrays
+                    .stream(selectedCandidacyIds.split(",")).map(s -> s.trim()).filter(s -> !s.isEmpty())
+                    .map(s -> (SasScholarshipCandidacy) FenixFramework.getDomainObject(s)).collect(Collectors.toSet());
+
+            if (!candidacies.isEmpty()) {
+                sicabe.sendSasScholarshipsCandidaciesToSicabe(candidacies);
+
+                addInfoMessage(SasPTUtil.bundle("label.info.sendSelected"), model);
+
+            } else {
+                addErrorMessage(SasPTUtil.bundle("label.error.sendSelected.empty.list"), model);
+                            }
+        } catch (RuntimeException e) {
+            addErrorMessage(SasPTUtil.bundle("label.error.sendSelected"), model);
         }
 
         return redirect(CONTROLLER_URL + "/" + executionYear.getExternalId(), model, redirectAttributes);

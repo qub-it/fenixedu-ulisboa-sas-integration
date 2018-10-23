@@ -41,6 +41,10 @@ ${portal.toolkit()}
 <script	src="${pageContext.request.contextPath}/static/integration/sas/js/bootbox.min.js"></script>
 <script	src="${pageContext.request.contextPath}/static/integration/sas/js/omnis.js"></script>
 
+<%-- jQuery DataTables Checkboxes --%>
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/css/dataTables.checkboxes.css" rel="stylesheet" />
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/js/dataTables.checkboxes.min.js"></script>
+
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
@@ -52,6 +56,7 @@ ${portal.toolkit()}
 
 <!-- /.modal -->
 <%-- NAVIGATION --%>
+<c:if test="${executionYear.current}">
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
 		class=""
@@ -74,6 +79,13 @@ ${portal.toolkit()}
 		class=""
 		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOGS_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
 			code="label.event.logs" /></a> &nbsp;|&nbsp;
+			
+			
+	<span
+		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="#" onclick="sendSelected('${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_SELECTED_ENTRIES_URL%>');"><spring:message code="label.event.sendSelected" /></a>&nbsp;|&nbsp;
+			
 	
 	<span
 		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
@@ -84,10 +96,9 @@ ${portal.toolkit()}
 		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.all.candidacies" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.deleteAll" /></a>
-		
-	
-		
+
 </div>
+</c:if>
 
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -126,6 +137,10 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
+<form id="sendSelectedForm" method="post" action="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_SELECTED_ENTRIES_URL%>/${executionYear.externalId}" >
+	<input id="selectedCandidacyIds" name="selectedCandidacyIds" type="hidden" value="" />
+</form>
+
 <div class="panel panel-default">
     <form method="post" class="form-horizontal" action="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.CHANGE_EXECUTION_YEAR_URL%>">
         <div class="panel-body">    
@@ -163,6 +178,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+					<th></th>
 					<th><spring:message code="label.SasScholarshipData.state" /></th>
 					<th><spring:message
 							code="label.SasScholarshipCandidacy.submissionDate" /></th>
@@ -191,7 +207,8 @@ ${portal.toolkit()}
 			
 			<c:forEach items="${scholarshipCandidacies}" var="searchResult">
 				<tr>
-					<td>	
+					<td><c:out value="${searchResult.externalId}" /></td>
+					<td class="nowrap">	
 						<c:choose>
 							
 							<c:when test="${searchResult.state.name == 'PENDING'}">
@@ -222,7 +239,7 @@ ${portal.toolkit()}
 							</c:when>
 							
 						</c:choose>
-						<c:if test="${sasScholarshipCandidacy.modified}">*</c:if>
+						<c:if test="${searchResult.modified}">*</c:if>
 						  
 					</td>
 					<td><joda:format value='${searchResult.submissionDate}' pattern='yyyy-MM-dd' /></td>
@@ -250,7 +267,9 @@ ${portal.toolkit()}
 
 			</tbody>
 		</table>
-
+		
+		
+		
 	</c:when>
 	<c:otherwise>
 		<div class="alert alert-warning" role="alert">
@@ -285,6 +304,31 @@ ${portal.toolkit()}
 		    }
 		});	
 	}
+		
+	function sendSelected(){
+		
+		bootbox.confirm({
+		    title: '<spring:message code="label.send" />',
+		    message: '<spring:message code="message.confirm.send.selected.candidacies" />',
+		    buttons: {
+		        cancel: {
+		            label: '<spring:message code="label.cancel" />'
+		        },
+		        confirm: {
+		            label: '<spring:message code="label.send" />',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	if (result) {
+					var selectedCheckboxes = $('#searchScholarshipCandidaciesTable').DataTable().column(0).checkboxes.selected();
+		    		$('#selectedCandidacyIds').attr('value', selectedCheckboxes.join(','));
+		    		$('#sendSelectedForm').submit();
+		    		
+		    	}
+		    }
+		});	
+	}
 	
 	$(document).ready(function() {
 
@@ -293,6 +337,7 @@ ${portal.toolkit()}
 				url : "${datatablesI18NUrl}",			
 			},
 			"columns": [
+				{ data: 'selection' },
 				{ data: 'state' },
 				{ data: 'submissionDate' },
 				{ data: 'studentNumber' },
@@ -319,6 +364,19 @@ ${portal.toolkit()}
         	tableTools: {
             	sSwfPath: "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
         	},
+        	
+        	"columnDefs": [
+                 {
+                    'targets': 0,
+                    'checkboxes': {
+                       'selectRow': true
+                    }
+                 }
+             ],
+             
+             'select': {
+                 'style': 'multi'
+             }
 		});
 		
 		table.columns.adjust().draw();

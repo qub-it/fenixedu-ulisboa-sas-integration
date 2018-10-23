@@ -390,8 +390,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
         service.fillAllInfo(bean, c.getRegistration(), c.getExecutionYear(), c.getFirstYear());
 
-        if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)
-                || c.getState() == SasScholarshipCandidacyState.PENDING) {
+        if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)) {
             updateSasSchoolarshipCandidacyData(bean, c);
         }
 
@@ -439,10 +438,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
                 || !equal(bean, bean.getEnrolmentDate(), sasScholarshipData.getEnrolmentDate(), "enrolmentDate")
 
-                || !equal(bean, bean.getIngressionRegimeCode(), sasScholarshipData.getIngressionRegime(), "ingressionRegime")
-
-                || !equal(bean, bean.getStudentNumber() != null ? String.valueOf(bean.getStudentNumber()) : "",
-                        sasScholarshipData.getSasScholarshipCandidacy().getStudentNumber(), "ingressionRegime");
+                || !equal(bean, bean.getIngressionRegimeCode(), sasScholarshipData.getIngressionRegime(), "ingressionRegime");
 
         if (bean instanceof ScholarshipStudentOtherYearBean) {
 
@@ -882,9 +878,21 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     }
 
-    @Atomic
-    private void writeLog(SasScholarshipCandidacy candidacy, String message, DateTime date, boolean publicLog) {
-        new SasScholarshipDataChangeLog(candidacy, date, message, publicLog);
+    public static byte[] export(ExecutionYear executionYear) {
+
+        final SpreadsheetBuilderForXLSX builder = new SpreadsheetBuilderForXLSX();
+
+        builder.addSheet("SAS", new SheetDataExtension(executionYear.getSasScholarshipCandidaciesSet()));
+
+        final ByteArrayOutputStream result = new ByteArrayOutputStream();
+        try {
+            builder.build(result);
+            return result.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public static final class SheetDataExtension extends SheetData<SasScholarshipCandidacy> {
@@ -905,7 +913,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             addData("SasScholarshipCandidacy.exportDate", format(candidacy.getExportDate()));
 
             addData("SasScholarshipCandidacy.assignmentDate", format(candidacy.getAssignmentDate()));
-            addData("SasScholarshipCandidacy.candidacyState", candidacy.getCandidacyState().getLocalizedName());
+            addData("SasScholarshipCandidacy.candidacyState",
+                    candidacy.getCandidacyState().getLocalizedName() + (candidacy.isModified() ? " *" : ""));
             addData("SasScholarshipCandidacy.description", candidacy.getDescription());
 
             final Registration registration = candidacy.getRegistration();
@@ -983,7 +992,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
 
         private String format(Boolean value) {
-            return value != null && value.booleanValue() ? bundle("label.true") : bundle("label.false");
+            return value == null ? null : (value.booleanValue() ? bundle("label.true") : bundle("label.false"));
         }
 
         private LocalDate format(LocalDate value) {
@@ -999,21 +1008,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         }
     }
 
-    public static byte[] export(ExecutionYear executionYear) {
-
-        final SpreadsheetBuilderForXLSX builder = new SpreadsheetBuilderForXLSX();
-
-        builder.addSheet("SAS", new SheetDataExtension(executionYear.getSasScholarshipCandidaciesSet()));
-
-        final ByteArrayOutputStream result = new ByteArrayOutputStream();
-        try {
-            builder.build(result);
-            return result.toByteArray();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    @Atomic
+    private void writeLog(SasScholarshipCandidacy candidacy, String message, DateTime date, boolean publicLog) {
+        new SasScholarshipDataChangeLog(candidacy, date, message, publicLog);
     }
 
     static private String bundle(final String key) {

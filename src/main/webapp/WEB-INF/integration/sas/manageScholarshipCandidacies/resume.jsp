@@ -61,31 +61,25 @@ ${portal.toolkit()}
 	
 	<c:if test="${sasScholarshipCandidacy.executionYear.current}">
 		 |&nbsp;&nbsp;
-		<c:choose>
-		<c:when test="${not empty sasScholarshipCandidacy.exportDate}">
-			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-				class=""
-				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.FORCE_PROCESS_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
-					code="label.event.process" /></a> &nbsp;|&nbsp;
-		</c:when>
-		<c:otherwise>
+		
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 			class=""
 			href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.PROCESS_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
 				code="label.event.process" /></a> &nbsp;|&nbsp;
-		</c:otherwise>
-		</c:choose>
-		
 				
 		<span
 			class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
 			class=""
 			href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOG_URL%>/${sasScholarshipCandidacy.externalId}"><spring:message
-				code="label.event.logs" /></a> &nbsp;|&nbsp; <span
+				code="label.event.logs" /></a> &nbsp;|&nbsp;
+				
+		<span
 			class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
 			class="" href="#"
 			onclick="showConfirmation('<spring:message code="label.send" />','<spring:message code="message.confirm.send.candidacy" />', '<spring:message code="label.send" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message
-				code="label.event.send" /></a> &nbsp;|&nbsp; <span
+				code="label.event.send" /></a> &nbsp;|&nbsp;
+				
+		<span
 			class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
 			class="" href="#"
 			onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.candidacy" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ENTRY_URL%>/${sasScholarshipCandidacy.externalId}');"><spring:message

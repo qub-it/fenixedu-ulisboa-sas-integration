@@ -334,13 +334,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         SasScholarshipCandidacy.findAll().stream().filter(c -> c.getExecutionYear() == executionYear)
                 .forEach(c -> fillCandidacyData(c));
     }
-
-    @Atomic
-    public void forceProcessSasScholarshipCandidacies(SasScholarshipCandidacy c) {
-        c.setState(SasScholarshipCandidacyState.PENDING);
-        fillCandidacyData(c);
-    }
-
+    
     @Atomic
     public void processSasScholarshipCandidacies(List<SasScholarshipCandidacy> list2Process) {
         list2Process.stream().forEach(c -> fillCandidacyData(c));
@@ -913,8 +907,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             addData("SasScholarshipCandidacy.exportDate", format(candidacy.getExportDate()));
 
             addData("SasScholarshipCandidacy.assignmentDate", format(candidacy.getAssignmentDate()));
-            addData("SasScholarshipCandidacy.candidacyState",
-                    candidacy.getCandidacyState().getLocalizedName() + (candidacy.isModified() ? " *" : ""));
+            addData("SasScholarshipCandidacy.candidacyState", candidacy.getCandidacyState().getLocalizedName());
             addData("SasScholarshipCandidacy.description", candidacy.getDescription());
 
             final Registration registration = candidacy.getRegistration();
@@ -929,7 +922,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 addData("SasScholarshipCandidacy.degreeCode", "");
             }
 
-            addData("SasScholarshipData.state", candidacy.getState().getLocalizedName());
+            addData("SasScholarshipData.state", candidacy.getState().getLocalizedName() + (candidacy.isModified() ? " *" : ""));
 
             final List<SasScholarshipDataChangeLog> logs = candidacy.getSasScholarshipDataChangeLogsSet().stream()
                     .sorted((x, y) -> -x.getDate().compareTo(y.getDate())).collect(Collectors.toList());

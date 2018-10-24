@@ -149,21 +149,6 @@ public class ScholarshipCandidaciesController extends SasBaseController {
 
     }
 
-    private static final String _FORCE_PROCESS_ENTRY_URI = "/forceProcess";
-    public static final String FORCE_PROCESS_ENTRY_URL = CONTROLLER_URL + _FORCE_PROCESS_ENTRY_URI;
-
-    @RequestMapping(value = _FORCE_PROCESS_ENTRY_URI + "/{sasScholarshipCandidacyId}", method = RequestMethod.GET)
-    public String forceProcessEntry(@PathVariable("sasScholarshipCandidacyId") SasScholarshipCandidacy sasScholarshipCandidacy,
-            Model model, RedirectAttributes redirectAttributes) {
-
-        SicabeExternalService sicabe = new SicabeExternalService();
-        sicabe.forceProcessSasScholarshipCandidacies(sasScholarshipCandidacy);
-
-        addInfoMessage(SasPTUtil.bundle("label.info.process"), model);
-
-        return readResumeSasScholarshipCandidacy(sasScholarshipCandidacy, model);
-
-    }
 
     private static final String _PROCESS_ALL_ENTRIES_URI = "/processAll";
     public static final String PROCESS_ALL_ENTRIES_URL = CONTROLLER_URL + _PROCESS_ALL_ENTRIES_URI;

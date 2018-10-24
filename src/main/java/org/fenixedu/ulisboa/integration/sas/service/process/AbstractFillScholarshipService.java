@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
+import org.fenixedu.academic.FenixEduAcademicConfiguration;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
@@ -31,6 +32,7 @@ import org.fenixedu.bennu.SasSpringConfiguration;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.ulisboa.integration.sas.domain.SasIngressionRegimeMapping;
+import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
 import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
@@ -220,6 +222,20 @@ public class AbstractFillScholarshipService {
 
     protected Person findPerson(AbstractScholarshipStudentBean bean, ExecutionYear requestYear) {
 
+        // try with fiscal code and name
+        if (StringUtils.isNotBlank(bean.getFiscalCode()) && !StringUtils.equals(bean.getFiscalCode(),
+                FenixEduAcademicConfiguration.getConfiguration().getDefaultSocialSecurityNumber())) {
+            final Party party = Person.readByContributorNumber(bean.getFiscalCode());
+
+            if (party != null) {
+                Person person = (Person) party;
+                if (person.getName().equalsIgnoreCase(bean.getStudentName())) {
+                    return person;
+                }
+            }
+
+        }
+
         final Collection<Person> withDocumentId = Person.readByDocumentIdNumber(bean.getDocumentNumber());
 
         if (withDocumentId.size() == 1) {
@@ -294,20 +310,6 @@ public class AbstractFillScholarshipService {
                         return person;
                     }
                 }
-            }
-            
-            // try with fiscal code and name
-            if(StringUtils.isNotBlank(bean.getFiscalCode())) {
-                final Party party = Person.readByContributorNumber(bean.getFiscalCode());
-                
-                if(party != null) {
-                    Person person = (Person)party;
-                    if(person.getName().equalsIgnoreCase(bean.getStudentName())) {
-                        addWarning(bean, false, "message.warning.student.not.found.with.id.but.name.and.social.number.match");
-                        return person;
-                    }
-                }
-                
             }
 
             return null;
@@ -422,7 +424,7 @@ public class AbstractFillScholarshipService {
         bean.setNumberOfMonthsExecutionYear(SocialServicesConfiguration.getInstance().getNumberOfMonthsOfAcademicYear());
         bean.setFirstMonthExecutionYear(getFirstMonthOfExecutionYear(requestYear));
 
-        // replace the student number (provided by input file) by the system value
+        // the student number (provided by input file) is replaced by the system value
         bean.setStudentNumber(registration.getNumber());
 
         bean.setRegime(getRegime(bean, registration, requestYear));
@@ -695,6 +697,21 @@ public class AbstractFillScholarshipService {
 
     protected void fillSpecificInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {
         //nothing to be done
+    }
+
+    public void addWarningIfRegistrationChangedToInactive(AbstractScholarshipStudentBean bean,
+            SasScholarshipCandidacy candidacy) {
+
+        final BigDecimal beforeNumberOfEnrolledECTS = candidacy.getSasScholarshipData().getNumberOfEnrolledECTS();
+        final Registration registration = candidacy.getRegistration();
+
+        if (bean.getNumberOfEnrolledECTS().compareTo(beforeNumberOfEnrolledECTS) != 0
+                && bean.getNumberOfEnrolledECTS().compareTo(BigDecimal.ZERO) == 0
+                && registration.getActiveStateType().isInactive()) {
+            addWarning(bean, true, "message.warning.student.registration.state.inactive",
+                    registration.getActiveState().getStateDate().toLocalDate().toString("yyyy-MM-dd"));
+        }
+
     }
 
 }

@@ -2,6 +2,7 @@ package org.fenixedu.ulisboa.integration.sas.service.sicabe;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -20,6 +21,7 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.academic.domain.person.IDDocumentType;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.registrationStates.RegistrationStateType;
 import org.fenixedu.bennu.SasSpringConfiguration;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -334,7 +336,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         SasScholarshipCandidacy.findAll().stream().filter(c -> c.getExecutionYear() == executionYear)
                 .forEach(c -> fillCandidacyData(c));
     }
-    
+
     @Atomic
     public void processSasScholarshipCandidacies(List<SasScholarshipCandidacy> list2Process) {
         list2Process.stream().forEach(c -> fillCandidacyData(c));
@@ -385,6 +387,10 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         service.fillAllInfo(bean, c.getRegistration(), c.getExecutionYear(), c.getFirstYear());
 
         if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)) {
+            
+            // check if registration has changed state to canceled or inactive
+            service.checkIfRegistrationStateHasChanged(bean, c);
+                        
             updateSasSchoolarshipCandidacyData(bean, c);
         }
 
@@ -468,9 +474,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                     || !equal(otherYearBean, bean.getCycleIngressionYear(), sasScholarshipData.getCycleIngressionYear(),
                             "cycleIngressionYear");
         }
-
+        
         return value;
-
     }
 
     private boolean equal(AbstractScholarshipStudentBean bean, Object left, Object right, String fieldName) {

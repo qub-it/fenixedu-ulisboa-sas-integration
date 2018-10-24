@@ -222,20 +222,6 @@ public class AbstractFillScholarshipService {
 
     protected Person findPerson(AbstractScholarshipStudentBean bean, ExecutionYear requestYear) {
 
-        // try with fiscal code and name
-        if (StringUtils.isNotBlank(bean.getFiscalCode()) && !StringUtils.equals(bean.getFiscalCode(),
-                FenixEduAcademicConfiguration.getConfiguration().getDefaultSocialSecurityNumber())) {
-            final Party party = Person.readByContributorNumber(bean.getFiscalCode());
-
-            if (party != null) {
-                Person person = (Person) party;
-                if (person.getName().equalsIgnoreCase(bean.getStudentName())) {
-                    return person;
-                }
-            }
-
-        }
-
         final Collection<Person> withDocumentId = Person.readByDocumentIdNumber(bean.getDocumentNumber());
 
         if (withDocumentId.size() == 1) {
@@ -310,6 +296,21 @@ public class AbstractFillScholarshipService {
                         return person;
                     }
                 }
+            }
+
+         // try with fiscal code and name
+            if (StringUtils.isNotBlank(bean.getFiscalCode()) && !StringUtils.equals(bean.getFiscalCode(),
+                    FenixEduAcademicConfiguration.getConfiguration().getDefaultSocialSecurityNumber())) {
+                final Party party = Person.readByContributorNumber(bean.getFiscalCode());
+
+                if (party != null) {
+                    Person person = (Person) party;
+                    if (person.getName().equalsIgnoreCase(bean.getStudentName())) {
+                        addWarning(bean, false, "message.warning.student.not.found.with.id.but.name.and.social.number.match");
+                        return person;
+                    }
+                }
+
             }
 
             return null;

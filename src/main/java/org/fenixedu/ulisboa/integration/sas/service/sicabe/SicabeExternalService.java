@@ -389,7 +389,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)) {
             
             // check if registration has changed state to canceled or inactive
-            service.checkIfRegistrationStateHasChanged(bean, c);
+            service.addWarningIfRegistrationChangedToInactive(bean, c);
                         
             updateSasSchoolarshipCandidacyData(bean, c);
         }

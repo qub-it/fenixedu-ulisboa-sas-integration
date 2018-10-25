@@ -176,7 +176,14 @@ ${portal.toolkit()}
 						<th><spring:message
 								code="label.SasScholarshipCandidacy.degreeName" /></th>
 						<td>[${sasScholarshipCandidacy.degreeCode}]
-							${sasScholarshipCandidacy.degreeName}</td>
+							<c:choose>
+								<c:when test="${not empty searchResult.registration.degree.presentationName}">
+									${searchResult.registration.degree.presentationName}
+								</c:when>
+								<c:otherwise>${searchResult.degreeName}</c:otherwise>
+							</c:choose>
+							
+							</td>
 					</tr>
 
 					<tr>

@@ -197,7 +197,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void fillCandidacyInfos(CandidaturaSubmetida input, ExecutionYear executionYear, boolean isNewCandidacy,
             SasScholarshipCandidacy candidacy) {
-
+        
         candidacy.setDegreeCode(input.getCodigoCurso());
         candidacy.setInstitutionCode(input.getCodigoInstituicaoEnsino());
         candidacy.setDegreeName(input.getCurso());
@@ -311,7 +311,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         } else if (idDocumentType.equalsIgnoreCase(TipoDocumentoIdentificacao.AUTORIZACAO_RESIDENCIA.name())) {
             return IDDocumentType.RESIDENCE_AUTHORIZATION;
         } else if (idDocumentType.equalsIgnoreCase(TipoDocumentoIdentificacao.BI_NAO_NACIONAL.name())) {
-            return IDDocumentType.FOREIGNER_IDENTITY_CARD;
+            return IDDocumentType.NATIVE_COUNTRY_IDENTITY_CARD;
         } else if (idDocumentType.equalsIgnoreCase(TipoDocumentoIdentificacao.OUTROS.name())) {
             return IDDocumentType.OTHER;
         }
@@ -920,11 +920,16 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             if (registration != null) {
                 addData("SasScholarshipCandidacy.studentNumber",
                         registration.getNumber() != null ? registration.getNumber().toString() : "-");
+
                 addData("SasScholarshipCandidacy.degreeCode",
                         registration.getDegree() != null ? registration.getDegree().getCode() : "");
+                
+                addData("SasScholarshipCandidacy.degreeName",
+                        registration.getDegree() != null ? registration.getDegree().getPresentationName() : "");
             } else {
                 addData("SasScholarshipCandidacy.studentNumber", "-");
                 addData("SasScholarshipCandidacy.degreeCode", "");
+                addData("SasScholarshipCandidacy.degreeName", "");
             }
 
             addData("SasScholarshipData.state", candidacy.getState().getLocalizedName() + (candidacy.isModified() ? " *" : ""));

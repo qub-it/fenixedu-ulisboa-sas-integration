@@ -248,13 +248,23 @@ ${portal.toolkit()}
 					<td>${searchResult.fiscalNumber}</td>
 					<td>${searchResult.docIdNumber}</td>
 					<td>${searchResult.docIdType}</td>
-					<td>[${searchResult.degreeCode}] ${searchResult.degreeName}</td>
+					<td>[${searchResult.degreeCode}] 
+					
+					<c:choose>
+						<c:when test="${not empty searchResult.registration.degree.presentationName}">
+							${searchResult.registration.degree.presentationName}
+						</c:when>
+						<c:otherwise>${searchResult.degreeName}</c:otherwise>
+					</c:choose>
+					
+					
+					</td>
 					
 					<td><joda:format value='${searchResult.importDate}' pattern='yyyy-MM-dd' /></td>
 					<td><joda:format value='${searchResult.exportDate}' pattern='yyyy-MM-dd' /></td>
 					<td>
-						<c:if test="${searchResult.firstYear}"><spring:message code="label.true" /></c:if>
-						<c:if test="${not searchResult.firstYear}"><spring:message code="label.false" /></c:if>
+						<c:if test="${searchResult.firstYear}">'<spring:message code="label.true" />'</c:if>
+						<c:if test="${not searchResult.firstYear}">'<spring:message code="label.false" />'</c:if>
 					</td>
 					
 					<td style="width: 5%">
@@ -348,7 +358,7 @@ ${portal.toolkit()}
 				{ data: 'degreeName' },
 				{ data: 'importDate' },
 				{ data: 'exportDate' },
-				{ data: 'firstTime' },
+				{ data: 'firstTime'},
 				{ data: 'actions',className:"all", width: "12%" }
 				
 				],

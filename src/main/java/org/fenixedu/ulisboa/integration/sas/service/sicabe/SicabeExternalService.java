@@ -197,7 +197,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
     private void fillCandidacyInfos(CandidaturaSubmetida input, ExecutionYear executionYear, boolean isNewCandidacy,
             SasScholarshipCandidacy candidacy) {
-        
+
         candidacy.setDegreeCode(input.getCodigoCurso());
         candidacy.setInstitutionCode(input.getCodigoInstituicaoEnsino());
         candidacy.setDegreeName(input.getCurso());
@@ -387,10 +387,12 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         service.fillAllInfo(bean, c.getRegistration(), c.getExecutionYear(), c.getFirstYear());
 
         if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean)) {
-            
+
             // check if registration has changed state to canceled or inactive
-            service.addWarningIfRegistrationChangedToInactive(bean, c);
-                        
+            if (c.getSasScholarshipData() != null) {
+                service.addWarningIfRegistrationChangedToInactive(bean, c);
+            }
+
             updateSasSchoolarshipCandidacyData(bean, c);
         }
 
@@ -474,7 +476,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                     || !equal(otherYearBean, bean.getCycleIngressionYear(), sasScholarshipData.getCycleIngressionYear(),
                             "cycleIngressionYear");
         }
-        
+
         return value;
     }
 
@@ -923,7 +925,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
 
                 addData("SasScholarshipCandidacy.degreeCode",
                         registration.getDegree() != null ? registration.getDegree().getCode() : "");
-                
+
                 addData("SasScholarshipCandidacy.degreeName",
                         registration.getDegree() != null ? registration.getDegree().getPresentationName() : "");
             } else {

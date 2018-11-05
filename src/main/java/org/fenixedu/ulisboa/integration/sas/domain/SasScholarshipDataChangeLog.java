@@ -16,7 +16,7 @@ public class SasScholarshipDataChangeLog extends SasScholarshipDataChangeLog_Bas
         super.setBennu(Bennu.getInstance());
     }
 
-    public SasScholarshipDataChangeLog(SasScholarshipCandidacy candidacy, DateTime date, String description, boolean publicLog) {
+    public SasScholarshipDataChangeLog(SasScholarshipCandidacy candidacy, DateTime date, String description, boolean publicLog, boolean sentLog) {
         this();
         setSasScholarshipCandidacy(candidacy);
         setDate(date);
@@ -24,6 +24,7 @@ public class SasScholarshipDataChangeLog extends SasScholarshipDataChangeLog_Bas
         setStudentName(candidacy.getCandidacyName());
         setDescription(description);
         setPublicLog(publicLog);
+        setSentLog(sentLog);
     }
 
     @Atomic

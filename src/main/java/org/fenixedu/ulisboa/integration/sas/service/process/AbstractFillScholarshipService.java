@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -42,6 +41,7 @@ import org.fenixedu.ulisboa.specifications.domain.services.statute.StatuteServic
 import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 import org.joda.time.DateTime;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -108,14 +108,14 @@ public class AbstractFillScholarshipService {
 
     }
 
-    public void fillAllInfo(Collection<AbstractScholarshipStudentBean> scholarshipStudentBeans, ExecutionYear requestYear,
+    public void fillAcademicInfos(Collection<AbstractScholarshipStudentBean> scholarshipStudentBeans, ExecutionYear requestYear,
             boolean firstYearOfCycle) {
 
         messages.clear();
 
         for (final AbstractScholarshipStudentBean bean : scholarshipStudentBeans) {
             try {
-                fillAllInfo(bean, getRegistrationByAbstractScholarshipStudentBean(bean, requestYear), requestYear,
+                fillBeanAcademicInfos(bean, getRegistrationByAbstractScholarshipStudentBean(bean, requestYear), requestYear,
                         firstYearOfCycle);
             } catch (FillScholarshipException e) {
                 addError(bean, false, e.getMessage());
@@ -159,7 +159,7 @@ public class AbstractFillScholarshipService {
             final Predicate<Registration> degreeTypePredicate = r -> possibleDegreeTypes.contains(r.getDegreeType());
 
             final Predicate<Registration> precedentDegreePredicate = r -> r.getDegree().getPrecedentDegreesSet().stream()
-                    .anyMatch(pd -> Objects.equals(pd.getMinistryCode(), bean.getDegreeCode()));
+                    .anyMatch(pd -> Objects.equal(pd.getMinistryCode(), bean.getDegreeCode()));
 
             final Collection<Registration> registrationsWithActiveEnrolments = student.getRegistrationsSet().stream()
                     .filter(isEnroled.and(degreeTypePredicate).and(precedentDegreePredicate)).collect(Collectors.toSet());
@@ -187,8 +187,8 @@ public class AbstractFillScholarshipService {
 
     private Collection<Degree> findDegree(AbstractScholarshipStudentBean bean) {
         final Collection<Degree> degrees =
-                Bennu.getInstance().getDegreesSet().stream().filter(d -> Objects.equals(d.getMinistryCode(), bean.getDegreeCode())
-                        || Objects.equals(d.getCode(), bean.getDegreeCode())).collect(Collectors.toSet());
+                Bennu.getInstance().getDegreesSet().stream().filter(d -> Objects.equal(d.getMinistryCode(), bean.getDegreeCode())
+                        || Objects.equal(d.getCode(), bean.getDegreeCode())).collect(Collectors.toSet());
 
         if (degrees.isEmpty()) {
             addError(bean, false, "message.error.degree.not.found");
@@ -298,7 +298,7 @@ public class AbstractFillScholarshipService {
                 }
             }
 
-         // try with fiscal code and name
+            // try with fiscal code and name
             if (StringUtils.isNotBlank(bean.getFiscalCode()) && !StringUtils.equals(bean.getFiscalCode(),
                     FenixEduAcademicConfiguration.getConfiguration().getDefaultSocialSecurityNumber())) {
                 final Party party = Person.readByContributorNumber(bean.getFiscalCode());
@@ -352,7 +352,7 @@ public class AbstractFillScholarshipService {
 
     }
 
-    public void fillAllInfo(final AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
+    public void fillBeanAcademicInfos(final AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
             boolean firstYearOfCycle) {
 
         try {
@@ -713,6 +713,15 @@ public class AbstractFillScholarshipService {
                     registration.getActiveState().getStateDate().toLocalDate().toString("yyyy-MM-dd"));
         }
 
+    }
+    
+    public boolean equal(AbstractScholarshipStudentBean bean, Object left, Object right, String fieldName) {
+        if (Objects.equal(left, right)) {
+            return true;
+        }
+
+        addWarning(bean, false, "message.warning.data.has.changed", BundleUtil.getString(SasSpringConfiguration.BUNDLE, "label.SasScholarshipData." + fieldName));
+        return false;
     }
 
 }

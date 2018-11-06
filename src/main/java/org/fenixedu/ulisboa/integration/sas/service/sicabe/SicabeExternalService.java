@@ -930,9 +930,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 addData("SasScholarshipCandidacy.degreeName",
                         registration.getDegree() != null ? registration.getDegree().getPresentationName() : "");
             } else {
-                addData("SasScholarshipCandidacy.studentNumber", "-");
-                addData("SasScholarshipCandidacy.degreeCode", "");
-                addData("SasScholarshipCandidacy.degreeName", "");
+                addData("SasScholarshipCandidacy.studentNumber", candidacy.getStudentNumber());
+                addData("SasScholarshipCandidacy.degreeCode", candidacy.getDegreeCode());
+                addData("SasScholarshipCandidacy.degreeName", candidacy.getDegreeName());
             }
 
             addData("SasScholarshipData.state", candidacy.getState().getLocalizedName() + (candidacy.isModified() ? " *" : ""));

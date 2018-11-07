@@ -40,6 +40,7 @@ import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.fenixedu.ulisboa.specifications.domain.services.statute.StatuteServices;
 import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
@@ -431,7 +432,9 @@ public class AbstractFillScholarshipService {
         bean.setRegime(getRegime(bean, registration, requestYear));
 
         bean.setEnroled(isEnroled(registration, requestYear));
-        bean.setEnrolmentDate(RegistrationServices.getEnrolmentDate(registration, requestYear));
+        
+        final LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(registration, requestYear);
+        bean.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : requestYear.getBeginLocalDate());
 
         bean.setNumberOfEnrolledECTS(getEnroledCredits(registration, requestYear));
 

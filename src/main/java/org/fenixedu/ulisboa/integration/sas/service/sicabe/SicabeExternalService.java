@@ -695,11 +695,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private String getObservationToSend(SasScholarshipCandidacy candidacy) {
-        if (!SocialServicesConfiguration.getInstance().ingressionTypeRequiresExternalData(candidacy.getRegistration())
-                || candidacy.getSasScholarshipDataChangeLogsSet().isEmpty()) {
-            return null;
-        }
-
+        
         return candidacy.getLogsAfter(candidacy.getSubmissionDate(), true).stream()
                 .sorted(SasScholarshipDataChangeLog.COMPARATOR_BY_DATE.reversed()).map(l -> l.getDescription()).distinct()
                 .collect(Collectors.joining("\n"));

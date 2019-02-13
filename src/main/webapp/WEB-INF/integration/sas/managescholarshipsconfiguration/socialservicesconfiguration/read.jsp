@@ -107,6 +107,12 @@ ${portal.toolkit()}
 		<ul>
 	</td> 
 </tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.SocialServicesConfiguration.statuteTypeSas"/></th> 
+	<td>
+		<c:out value="${socialServicesConfiguration.statuteTypeSas.name.content}" /> 
+	</td> 
+</tr>
 </tbody>
 </table>
 </form>

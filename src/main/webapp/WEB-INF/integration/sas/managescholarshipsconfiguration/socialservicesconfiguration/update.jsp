@@ -58,7 +58,6 @@ ${portal.toolkit()}
 
 	</div>
 </c:if>
-
 <form method="post" class="form-horizontal">
 	<div class="panel panel-default">
 		<div class="panel-body">
@@ -154,6 +153,22 @@ ${portal.toolkit()}
 					</select>
 				</div>
 			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.SocialServicesConfiguration.statuteTypeSas" />
+				</div>
+
+				<div class="col-sm-4">
+					<select
+						id="socialServicesConfiguration_statuteTypeSas"
+						class="js-example-basic-single form-control"
+						name="statuteTypeSas">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
 
 		</div>
 		<div class="panel-footer">
@@ -165,6 +180,25 @@ ${portal.toolkit()}
 
 <script>
 $(document).ready(function() {
+	
+	statuteType_options = [
+		<c:forEach items="${SocialServicesConfiguration_statuteType_options}" var="element"> 
+			{
+				text : "<c:out value='${element.code} - ${element.name.content}'/>", 
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#socialServicesConfiguration_statuteTypeSas").select2(
+		{
+			data : statuteType_options,
+		}	  
+	);
+	
+
+	$("#socialServicesConfiguration_statuteTypeSas").select2().select2('val', "${socialServicesConfiguration.statuteTypeSas.externalId}");
+	
 
 	ingressionTypeWhichAreDegreeTransfer_options = [
 		<c:forEach items="${SocialServicesConfiguration_ingressionTypeWhichAreDegreeTransfer_options}" var="element"> 

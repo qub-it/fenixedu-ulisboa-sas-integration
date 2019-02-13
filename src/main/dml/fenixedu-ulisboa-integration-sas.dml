@@ -167,6 +167,14 @@ relation SocialServicesConfigurationIngressionType {
 	}
 }
 
+relation SocialServicesConfigurationStatuteType {
+	SocialServicesConfiguration playsRole socialServicesConfiguration;
+	
+	.org.fenixedu.academic.domain.student.StatuteType playsRole statuteTypeSas {
+		multiplicity 0..1;
+	}
+}
+
 relation SocialServicesConfigurationIngressionTypeWithExternalData {
 	SocialServicesConfiguration playsRole sasConfigForIngressionsWithExternalData;
 	

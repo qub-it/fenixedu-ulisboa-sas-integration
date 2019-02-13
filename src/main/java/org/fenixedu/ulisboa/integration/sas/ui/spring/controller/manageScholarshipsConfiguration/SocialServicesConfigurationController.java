@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.fenixedu.academic.domain.candidacy.IngressionType;
+import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -72,6 +73,8 @@ public class SocialServicesConfigurationController extends SasBaseController {
                 Bennu.getInstance().getIngressionTypesSet());
         model.addAttribute("SocialServicesConfiguration_creditsReasonType_options",
                 Bennu.getInstance().getCreditsReasonTypesSet());
+        model.addAttribute("SocialServicesConfiguration_statuteType_options",
+                Bennu.getInstance().getStatuteTypesSet());
         return "integration/sas/managescholarshipsconfiguration/socialservicesconfiguration/update";
     }
 
@@ -83,7 +86,9 @@ public class SocialServicesConfigurationController extends SasBaseController {
                     required = false) List<IngressionType> ingressionTypeWhichAreDegreeTransfer,
             @RequestParam(value = "ingressiontypeswithexternaldata",
                     required = false) List<IngressionType> ingressionTypesWithExternalData,
-            @RequestParam(value = "creditsReasonTypes", required = false) List<CreditsReasonType> creditsReasonTypes, Model model,
+            @RequestParam(value = "creditsReasonTypes", required = false) List<CreditsReasonType> creditsReasonTypes,
+            @RequestParam(value = "statuteTypeSas", required = false) StatuteType statuteTypeSas,
+            Model model,
             RedirectAttributes redirectAttributes) {
 
         ingressionTypeWhichAreDegreeTransfer =
@@ -97,7 +102,7 @@ public class SocialServicesConfigurationController extends SasBaseController {
 
         try {
             updateSocialServicesConfiguration(numberOfMonthsOfAcademicYear, email, institutionCode,
-                    ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes, model);
+                    ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes, statuteTypeSas, model);
 
             return redirect("/integration/sas/managescholarshipsconfiguration/socialservicesconfiguration/read/", model,
                     redirectAttributes);
@@ -111,9 +116,9 @@ public class SocialServicesConfigurationController extends SasBaseController {
     @Atomic
     public void updateSocialServicesConfiguration(int numberOfMonthsOfAcademicYear, String email, String institutionCode,
             List<IngressionType> ingressionTypeWhichAreDegreeTransfer, List<IngressionType> ingressionTypesWithExternalData,
-            List<CreditsReasonType> creditsReasonTypes, Model model) {
+            List<CreditsReasonType> creditsReasonTypes, StatuteType statuteType, Model model) {
         getSocialServicesConfiguration().edit(numberOfMonthsOfAcademicYear, email, institutionCode,
-                ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes);
+                ingressionTypeWhichAreDegreeTransfer, ingressionTypesWithExternalData, creditsReasonTypes, statuteType);
     }
 
     @ModelAttribute("socialServicesConfiguration")

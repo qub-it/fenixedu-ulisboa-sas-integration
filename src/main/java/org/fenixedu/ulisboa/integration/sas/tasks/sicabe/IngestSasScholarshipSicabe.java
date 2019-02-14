@@ -71,6 +71,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
     }
 
+    @Atomic
     private void updatePersonalIngressionDataAndAddStatuteType(final ExecutionYear currentExecutionYear) {
         final StatuteType sasStatuteType = SocialServicesConfiguration.getInstance().getStatuteTypeSas();
         currentExecutionYear.getSasScholarshipCandidaciesSet().stream()

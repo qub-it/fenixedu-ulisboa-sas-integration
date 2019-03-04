@@ -114,7 +114,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
             DadosAcademicosObterCandidaturasSubmetidasSicabeErrorMessageFaultFaultMessage,
             DadosAcademicosObterCandidaturasSubmetidasSicabeValidationMessageFaultFaultMessage, ServerSOAPFaultException {
         final ObterCandidaturasSubmetidasRequest parameters = new ObterCandidaturasSubmetidasRequest();
-        parameters.setAnoLectivo(executionYear.getBeginCivilYear());
+        parameters.setAnoLectivo(executionYear.getAcademicInterval().getStart().getYear());
 
         final ObterCandidaturasSubmetidasResponse obterCandidaturasSubmetidas =
                 getClient().obterCandidaturasSubmetidas(parameters);
@@ -663,7 +663,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getBeginCivilYear(), candidacy.getDocIdNumber(),
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
                         candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 
@@ -747,7 +747,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getBeginCivilYear(), candidacy.getDocIdNumber(),
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
                         candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 
@@ -784,7 +784,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getBeginCivilYear(), candidacy.getDocIdNumber(),
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
                         candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 

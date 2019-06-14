@@ -31,13 +31,13 @@ import java.util.List;
 
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.StatuteType;
+import org.fenixedu.academic.domain.student.curriculum.CreditsReasonType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasBaseController;
 import org.fenixedu.ulisboa.integration.sas.ui.spring.controller.SasController;
-import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;

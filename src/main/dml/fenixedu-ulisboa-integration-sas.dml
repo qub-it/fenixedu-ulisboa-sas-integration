@@ -186,7 +186,7 @@ relation SocialServicesConfigurationIngressionTypeWithExternalData {
 relation SocialServicesConfigurationCreditsReasonType {
 	SocialServicesConfiguration playsRole socialServicesConfiguration;
 	
-	.org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType playsRole creditsReasonTypes {
+	.org.fenixedu.academic.domain.student.curriculum.CreditsReasonType playsRole creditsReasonTypes {
 		multiplicity *;
 	}
 }

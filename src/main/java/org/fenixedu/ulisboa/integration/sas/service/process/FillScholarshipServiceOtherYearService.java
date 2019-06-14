@@ -3,11 +3,11 @@ package org.fenixedu.ulisboa.integration.sas.service.process;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationServices;
+import org.fenixedu.academic.domain.student.curriculum.CurriculumModuleServices;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentOtherYearBean;
-import org.fenixedu.ulisboa.specifications.domain.services.CurriculumModuleServices;
-import org.fenixedu.ulisboa.specifications.domain.services.RegistrationServices;
 import org.joda.time.YearMonthDay;
 
 public class FillScholarshipServiceOtherYearService extends AbstractFillScholarshipService {

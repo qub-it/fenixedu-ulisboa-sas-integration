@@ -6,8 +6,8 @@ import java.util.Set;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.StatuteType;
+import org.fenixedu.academic.domain.student.curriculum.CreditsReasonType;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.ulisboa.specifications.domain.studentCurriculum.CreditsReasonType;
 
 public class SocialServicesConfiguration extends SocialServicesConfiguration_Base {
 

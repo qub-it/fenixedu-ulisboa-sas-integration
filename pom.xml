@@ -121,7 +121,7 @@
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
 			<artifactId>fenixedu-academic-core</artifactId>
-			<version>21.0.3</version>
+			<version>21.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
@@ -131,7 +131,7 @@
 		<dependency>
 			<groupId>org.fenixedu.ulisboa</groupId>
 			<artifactId>fenixedu-ulisboa-specifications</artifactId>
-			<version>2.14.1</version>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 	

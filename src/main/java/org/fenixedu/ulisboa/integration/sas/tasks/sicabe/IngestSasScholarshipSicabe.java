@@ -10,6 +10,7 @@ import org.fenixedu.academic.domain.GrantOwnerType;
 import org.fenixedu.academic.domain.student.PersonalIngressionData;
 import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academic.domain.student.StudentStatute;
+import org.fenixedu.academic.domain.student.services.StatuteServices;
 import org.fenixedu.academic.domain.util.email.Message;
 import org.fenixedu.academic.domain.util.email.Recipient;
 import org.fenixedu.academic.domain.util.email.ReplyTo;
@@ -22,7 +23,6 @@ import org.fenixedu.ulisboa.integration.sas.domain.CandidacyState;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
 import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.service.sicabe.SicabeExternalService;
-import org.fenixedu.ulisboa.specifications.domain.services.statute.StatuteServices;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;

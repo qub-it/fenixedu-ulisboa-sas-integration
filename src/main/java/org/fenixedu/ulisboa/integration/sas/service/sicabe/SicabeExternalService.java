@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.google.common.base.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -32,7 +31,6 @@ import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacy;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipCandidacyState;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipData;
 import org.fenixedu.ulisboa.integration.sas.domain.SasScholarshipDataChangeLog;
-import org.fenixedu.ulisboa.integration.sas.domain.SocialServicesConfiguration;
 import org.fenixedu.ulisboa.integration.sas.dto.AbstractScholarshipStudentBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentFirstYearBean;
 import org.fenixedu.ulisboa.integration.sas.dto.ScholarshipStudentOtherYearBean;
@@ -44,6 +42,7 @@ import org.fenixedu.ulisboa.integration.sas.util.SasPTUtil;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Objects;
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 
@@ -122,7 +121,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
                         .equalsIgnoreCase(Bennu.getInstance().getSocialServicesConfiguration().getInstitutionCode()))
                 .forEach(c -> {
-
+                    
                     updateOrCreateSasScholarshipCandidacy(c, executionYear);
 
                 });
@@ -150,6 +149,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private boolean equalsDataBetweenCandidacyAndInput(SasScholarshipCandidacy candidacy, CandidaturaSubmetida input) {
+                
         if (Objects.equal(candidacy.getDegreeCode(), input.getCodigoCurso())
                 && Objects.equal(candidacy.getInstitutionCode(), input.getCodigoInstituicaoEnsino())
                 && Objects.equal(candidacy.getInstitutionName(), input.getInstituicaoEnsino())

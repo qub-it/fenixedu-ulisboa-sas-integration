@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu.ulisboa</groupId>
 	<artifactId>fenixedu-ulisboa-sas-integration</artifactId>
-	<version>3.2.1</version>
+	<version>3.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>ULisboa SAS Integration</name>

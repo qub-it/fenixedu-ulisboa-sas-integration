@@ -120,9 +120,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         obterCandidaturasSubmetidas.getCandidaturas().getCandidaturaSubmetida().stream()
                 .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
                         .equalsIgnoreCase(Bennu.getInstance().getSocialServicesConfiguration().getInstitutionCode()))
-                .forEach(c -> {
+                .forEach(input -> {
                     
-                    updateOrCreateSasScholarshipCandidacy(c, executionYear);
+                    updateOrCreateSasScholarshipCandidacy(input, executionYear);
 
                 });
     }
@@ -391,7 +391,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         IDDocumentType candidacyDocumentType = convertCandidacyDocumentType(c.getDocIdType());
         bean.setDocumentTypeName(candidacyDocumentType != null ? candidacyDocumentType.name() : null);
 
-        service.fillBeanAcademicInfos(bean, c.getRegistration(), c.getExecutionYear(), c.getFirstYear());
+        service.fillBeanWithAcademicInfos(bean, c.getRegistration(), c.getExecutionYear(), c.getFirstYear());
 
         if (c.getSasScholarshipData() == null || dataHasChanged(c.getSasScholarshipData(), bean, service)) {
 

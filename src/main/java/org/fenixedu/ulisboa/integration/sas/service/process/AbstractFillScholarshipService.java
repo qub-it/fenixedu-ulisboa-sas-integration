@@ -116,7 +116,7 @@ public class AbstractFillScholarshipService {
 
         for (final AbstractScholarshipStudentBean bean : scholarshipStudentBeans) {
             try {
-                fillBeanAcademicInfos(bean, getRegistrationByAbstractScholarshipStudentBean(bean, requestYear), requestYear,
+                fillBeanWithAcademicInfos(bean, getRegistrationByAbstractScholarshipStudentBean(bean, requestYear), requestYear,
                         firstYearOfCycle);
             } catch (FillScholarshipException e) {
                 addError(bean, false, e.getMessage());
@@ -353,7 +353,7 @@ public class AbstractFillScholarshipService {
 
     }
 
-    public void fillBeanAcademicInfos(final AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
+    public void fillBeanWithAcademicInfos(final AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
             boolean firstYearOfCycle) {
 
         try {

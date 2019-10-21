@@ -48,7 +48,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
             final int afterSasCandidacies = Bennu.getInstance().getSasScholarshipCandidaciesSet().size();
             final long afterWithStateModified = getNumberOfCandidaciesWithModifiedState();
-            
+
             HashSet<Registration> listOfWarningToReport = new HashSet<Registration>();
             updatePersonalIngressionDataAndUpdateStatuteType(currentExecutionYear, listOfWarningToReport);
 
@@ -68,12 +68,11 @@ public class IngestSasScholarshipSicabe extends CronTask {
                                 +
 
                                 (listOfWarningToReport.size() > 0 ? BundleUtil.getString(SasSpringConfiguration.BUNDLE,
-                                        "sasScholarship.ingestion.task.message.notification.body.warnings")
-                                        + "\n" + printRegistrationList(listOfWarningToReport) : "")
+                                        "sasScholarship.ingestion.task.message.notification.body.warnings") + "\n"
+                                        + printRegistrationList(listOfWarningToReport) : "")
 
                 );
             }
-
 
         } catch (Throwable e) {
             sendEmailForUser(
@@ -86,27 +85,23 @@ public class IngestSasScholarshipSicabe extends CronTask {
         }
 
     }
-    
+
     private String printRegistrationList(HashSet<Registration> listOfWarningToReport) {
 
-        return listOfWarningToReport
-                .stream().map(r -> r.getStudent().getName() + " [" + r.getNumber() + "] - "
-                        + r.getDegree().getPresentationName() + " [" + r.getDegree().getCode() + "]")
-                .collect(Collectors.joining("\n"));
+        return listOfWarningToReport.stream().map(r -> r.getStudent().getName() + " [" + r.getNumber() + "] - "
+                + r.getDegree().getPresentationName() + " [" + r.getDegree().getCode() + "]").collect(Collectors.joining("\n"));
     }
 
     @Atomic
     private void updatePersonalIngressionDataAndUpdateStatuteType(final ExecutionYear currentExecutionYear,
             HashSet<Registration> listOfWarningToReport) {
-        currentExecutionYear.getSasScholarshipCandidaciesSet().stream().filter(c -> c.getRegistration() != null
-                && (c.getCandidacyState() == CandidacyState.DEFERRED || c.getCandidacyState() == CandidacyState.DISMISSED))
-                .forEach(c -> {
+        currentExecutionYear.getSasScholarshipCandidaciesSet().stream().forEach(c -> {
 
-                    updatePersonalIngressionData(c, listOfWarningToReport);
+            updatePersonalIngressionData(c, listOfWarningToReport);
 
-                    updateStatuteType(c, listOfWarningToReport);
+            updateStatuteType(c, listOfWarningToReport);
 
-                });
+        });
 
     }
 
@@ -114,7 +109,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
         final PersonalIngressionData pid =
                 c.getRegistration().getStudent().getPersonalIngressionDataByExecutionYear(c.getExecutionYear());
-        
+
         if (pid != null && c.getCandidacyState() == CandidacyState.DEFERRED
                 && pid.getGrantOwnerType() != GrantOwnerType.HIGHER_EDUCATION_SAS_GRANT_OWNER) {
             // add SAS grant owner information
@@ -122,11 +117,12 @@ public class IngestSasScholarshipSicabe extends CronTask {
             return;
         }
 
-        if (pid != null && c.getCandidacyState() == CandidacyState.DISMISSED
+        if (pid != null
+                && (c.getCandidacyState() == CandidacyState.UNDEFINED || c.getCandidacyState() == CandidacyState.DISMISSED)
                 && pid.getGrantOwnerType() == GrantOwnerType.HIGHER_EDUCATION_SAS_GRANT_OWNER) {
             // remove SAS grant owner information
             //pid.setGrantOwnerType(GrantOwnerType.STUDENT_WITHOUT_SCHOLARSHIP);
-            
+
             listOfWarningToReport.add(c.getRegistration());
 
             return;
@@ -135,7 +131,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
 
     private void updateStatuteType(SasScholarshipCandidacy c, HashSet<Registration> listOfWarningToReport) {
         final StatuteType sasStatuteType = SocialServicesConfiguration.getInstance().getStatuteTypeSas();
-        
+
         if (c.getCandidacyState() == CandidacyState.DEFERRED && sasStatuteType != null
                 && !studentHasStatuteType(c, sasStatuteType)) {
             // assign grant owner statute
@@ -143,10 +139,10 @@ public class IngestSasScholarshipSicabe extends CronTask {
                     c.getExecutionYear().getExecutionSemesterFor(2), null, null, "", c.getRegistration());
         }
 
-        if (c.getCandidacyState() == CandidacyState.DISMISSED && sasStatuteType != null
-                && studentHasStatuteType(c, sasStatuteType)) {
+        if ((c.getCandidacyState() == CandidacyState.UNDEFINED || c.getCandidacyState() == CandidacyState.DISMISSED)
+                && sasStatuteType != null && studentHasStatuteType(c, sasStatuteType)) {
 
-            
+            // remove statute
             /*c.getRegistration().getStudent().getStudentStatutesSet().stream()
             .filter(st -> st.getBeginExecutionInterval() == c.getExecutionYear().getExecutionSemesterFor(1)
                     && st.getEndExecutionInterval() == c.getExecutionYear().getExecutionSemesterFor(2)

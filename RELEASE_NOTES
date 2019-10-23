@@ -1,3 +1,4 @@
+- Bug Fix: check the registration before update the student personal ingression data (#UL-IGOT-890)
 3.2.3 (21-10-2019)
 - Improvement: send a warning to user when a candidacy state changed from "DEFERRED" to "DISMISSED" or from "DEFERRED" to "UNDEFINED" (#UL-IGOT-741)
 3.2.2 (08-10-2019)

@@ -95,13 +95,14 @@ public class IngestSasScholarshipSicabe extends CronTask {
     @Atomic
     private void updatePersonalIngressionDataAndUpdateStatuteType(final ExecutionYear currentExecutionYear,
             HashSet<Registration> listOfWarningToReport) {
-        currentExecutionYear.getSasScholarshipCandidaciesSet().stream().forEach(c -> {
+        currentExecutionYear.getSasScholarshipCandidaciesSet().stream()
+                .filter(c -> c.getRegistration() != null && c.getRegistration().getStudent() != null).forEach(c -> {
 
-            updatePersonalIngressionData(c, listOfWarningToReport);
+                    updatePersonalIngressionData(c, listOfWarningToReport);
 
-            updateStatuteType(c, listOfWarningToReport);
+                    updateStatuteType(c, listOfWarningToReport);
 
-        });
+                });
 
     }
 

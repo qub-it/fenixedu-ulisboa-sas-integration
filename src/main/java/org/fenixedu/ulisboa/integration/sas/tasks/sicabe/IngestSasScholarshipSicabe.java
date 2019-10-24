@@ -68,7 +68,7 @@ public class IngestSasScholarshipSicabe extends CronTask {
                                 +
 
                                 (listOfWarningToReport.size() > 0 ? BundleUtil.getString(SasSpringConfiguration.BUNDLE,
-                                        "sasScholarship.ingestion.task.message.notification.body.warnings") + "\n"
+                                        "\n" + "sasScholarship.ingestion.task.message.notification.body.warnings") + "\n"
                                         + printRegistrationList(listOfWarningToReport) : "")
 
                 );

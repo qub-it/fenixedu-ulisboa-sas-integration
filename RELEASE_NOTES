@@ -1,3 +1,4 @@
+- Improvement: warning message when a candidacy state changed
 3.2.4 (23-10-2019)
 - Bug Fix: check the registration before update the student personal ingression data (#UL-IGOT-890)
 3.2.3 (21-10-2019)

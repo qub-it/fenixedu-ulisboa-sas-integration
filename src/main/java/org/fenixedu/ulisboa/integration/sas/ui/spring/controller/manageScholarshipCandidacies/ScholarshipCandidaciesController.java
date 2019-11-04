@@ -294,6 +294,7 @@ public class ScholarshipCandidaciesController extends SasBaseController {
             RedirectAttributes redirectAttributes) {
 
         List<SasScholarshipDataChangeLog> logs = Bennu.getInstance().getSasScholarshipDataChangeLogsSet().stream()
+                .filter(l -> l.getSasScholarshipCandidacy().getExecutionYear() == executionYear)
                 .sorted((x, y) -> -(x.getDate().compareTo(y.getDate()))).collect(Collectors.toList());
 
         model.addAttribute("sasScholarshipDataChangeLogs", logs);

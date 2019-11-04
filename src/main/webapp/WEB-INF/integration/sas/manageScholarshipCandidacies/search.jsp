@@ -56,49 +56,67 @@ ${portal.toolkit()}
 
 <!-- /.modal -->
 <%-- NAVIGATION --%>
-<c:if test="${executionYear.current}">
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SYNC_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
-			code="label.event.syncAll" /></a> &nbsp;|&nbsp;
-	<span
-		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.PROCESS_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
-			code="label.event.processAll" /></a> &nbsp;|&nbsp;
 
-		
-	<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.EXPORT_TO_XLS_URL%>/${executionYear.externalId}"><spring:message
-			code="label.event.exportToXls" /></a> &nbsp;|&nbsp;
-	
- 	<span
-		class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOGS_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
-			code="label.event.logs" /></a> &nbsp;|&nbsp;
-			
-			
-	<span
-		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="#" onclick="sendSelected('${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_SELECTED_ENTRIES_URL%>');"><spring:message code="label.event.sendSelected" /></a>&nbsp;|&nbsp;
-			
-	
-	<span
-		class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="#" onclick="showConfirmation('<spring:message code="label.send" />','<spring:message code="message.confirm.send.all.candidacies" />', '<spring:message code="label.send" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.sendAll" /></a>&nbsp;|&nbsp;
-		
-	<span
-		class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.all.candidacies" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.deleteAll" /></a>
+<c:choose>
 
-</div>
-</c:if>
+	<c:when test="${executionYear.current}">
+		<div class="well well-sm" style="display: inline-block">
+			<span class="glyphicon glyphicon-import" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SYNC_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.syncAll" /></a> &nbsp;|&nbsp;
+			<span
+				class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.PROCESS_ALL_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.processAll" /></a> &nbsp;|&nbsp;
+		
+				
+			<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.EXPORT_TO_XLS_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.exportToXls" /></a> &nbsp;|&nbsp;
+			
+		 	<span
+				class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOGS_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.logs" /></a> &nbsp;|&nbsp;
+					
+					
+			<span
+				class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="#" onclick="sendSelected('${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_SELECTED_ENTRIES_URL%>');"><spring:message code="label.event.sendSelected" /></a>&nbsp;|&nbsp;
+					
+			
+			<span
+				class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="#" onclick="showConfirmation('<spring:message code="label.send" />','<spring:message code="message.confirm.send.all.candidacies" />', '<spring:message code="label.send" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.SEND_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.sendAll" /></a>&nbsp;|&nbsp;
+				
+			<span
+				class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="#" onclick="showConfirmation('<spring:message code="label.delete" />','<spring:message code="message.confirm.delete.all.candidacies" />', '<spring:message code="label.delete" />', '${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.DELETE_ALL_ENTRIES_URL%>/${executionYear.externalId}');"><spring:message code="label.event.deleteAll" /></a>
+		
+		</div>
+	</c:when>
+	<c:otherwise>
+		<div class="well well-sm" style="display: inline-block">
+			<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.EXPORT_TO_XLS_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.exportToXls" /></a> &nbsp;|&nbsp;
+					
+		 	<span
+				class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;<a
+				class=""
+				href="${pageContext.request.contextPath}<%=ScholarshipCandidaciesController.VIEW_LOGS_ENTRIES_URL%>/${executionYear.externalId}"><spring:message
+					code="label.event.logs" /></a>
+		</div>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

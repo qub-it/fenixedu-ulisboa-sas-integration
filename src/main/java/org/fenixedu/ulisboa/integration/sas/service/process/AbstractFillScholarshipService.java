@@ -137,8 +137,8 @@ public class AbstractFillScholarshipService {
         final Predicate<Registration> isEnroled = r -> !getEnroledCurriculumLines(r, requestYear).isEmpty();
 
         final Set<Registration> registrations = Sets.newHashSet();
+        
         for (final Degree degree : degrees) {
-
             registrations.addAll(student.getRegistrationsFor(degree).stream().filter(isEnroled).collect(Collectors.toSet()));
         }
 
@@ -167,7 +167,7 @@ public class AbstractFillScholarshipService {
 
             if (registrationsWithActiveEnrolments.size() == 1) {
                 final Registration registration = registrationsWithActiveEnrolments.iterator().next();
-                addWarning(bean, false, "message.warning.input.degree.code.not.equals.to.active.degree.code",
+                addWarning(bean, true, "message.warning.input.degree.code.not.equals.to.active.degree.code",
                         registration.getDegree().getCode());
                 bean.setObservations(formatObservations(bean));
                 return registration;

@@ -121,7 +121,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 .filter(c -> String.valueOf(c.getCodigoInstituicaoEnsino())
                         .equalsIgnoreCase(Bennu.getInstance().getSocialServicesConfiguration().getInstitutionCode()))
                 .forEach(input -> {
-                    
+
                     updateOrCreateSasScholarshipCandidacy(input, executionYear);
 
                 });
@@ -130,9 +130,11 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     private void updateOrCreateSasScholarshipCandidacy(CandidaturaSubmetida input, ExecutionYear executionYear) {
 
         SasScholarshipCandidacy candidacy = SasScholarshipCandidacy.findAll().stream()
-                .filter(c -> c.getExecutionYear() == executionYear && (c.getFiscalNumber().equalsIgnoreCase(input.getNif())
-                        || (c.getDocIdType().equalsIgnoreCase(input.getTipoDocumentoIdentificacao().name()))
-                                && c.getDocIdNumber().equalsIgnoreCase(input.getNumeroDocumentoIdentificacao())))
+                .filter(c -> c.getExecutionYear() == executionYear
+                        && (c.getFiscalNumber().equalsIgnoreCase(input.getNif())
+                                || (c.getDocIdType().equalsIgnoreCase(input.getTipoDocumentoIdentificacao().name()))
+                                        && c.getDocIdNumber().equalsIgnoreCase(input.getNumeroDocumentoIdentificacao()))
+                        && c.getDegreeCode().equals(input.getCodigoCurso()))
                 .findFirst().orElse(null);
 
         if (candidacy == null) {
@@ -149,7 +151,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private boolean equalsDataBetweenCandidacyAndInput(SasScholarshipCandidacy candidacy, CandidaturaSubmetida input) {
-                
+
         if (Objects.equal(candidacy.getDegreeCode(), input.getCodigoCurso())
                 && Objects.equal(candidacy.getInstitutionCode(), input.getCodigoInstituicaoEnsino())
                 && Objects.equal(candidacy.getInstitutionName(), input.getInstituicaoEnsino())
@@ -197,6 +199,9 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     private void fillCandidacyInfos(CandidaturaSubmetida input, ExecutionYear executionYear, boolean isNewCandidacy,
             SasScholarshipCandidacy candidacy) {
 
+        boolean forceUpdateRegistration =
+                (isNewCandidacy || candidacy.getDegreeCode().equals(input.getCodigoCurso())) ? false : true;
+
         candidacy.setDegreeCode(input.getCodigoCurso());
         candidacy.setInstitutionCode(input.getCodigoInstituicaoEnsino());
         candidacy.setDegreeName(input.getCurso());
@@ -242,7 +247,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                                 "message.fillCandidacyInfos.update"),
                 candidacy.getStateDate(), false, false);
 
-        if (candidacy.getRegistration() == null) {
+        if (candidacy.getRegistration() == null || forceUpdateRegistration) {
             associateRegistrationToCandidacy(candidacy);
         }
 
@@ -265,7 +270,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         tempBean.setDocumentTypeName(candidacyDocumentType != null ? candidacyDocumentType.name() : null);
 
         try {
-            Registration registration = service.getRegistrationByAbstractScholarshipStudentBean(tempBean, c.getExecutionYear());
+            final Registration registration =
+                    service.getRegistrationByAbstractScholarshipStudentBean(tempBean, c.getExecutionYear());
 
             if (registration != null) {
                 c.setRegistration(registration);
@@ -663,8 +669,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
-                        candidacy.getDocIdType(), candidacy.getFiscalNumber());
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(),
+                        candidacy.getDocIdNumber(), candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 
         request.setIInscritoAnoLectivoActual(data.getEnroled());
@@ -695,7 +701,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
     }
 
     private String getObservationToSend(SasScholarshipCandidacy candidacy) {
-        
+
         return candidacy.getLogsAfter(candidacy.getSubmissionDate(), true).stream()
                 .sorted(SasScholarshipDataChangeLog.COMPARATOR_BY_DATE.reversed()).map(l -> l.getDescription()).distinct()
                 .collect(Collectors.joining("\n"));
@@ -747,8 +753,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
-                        candidacy.getDocIdType(), candidacy.getFiscalNumber());
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(),
+                        candidacy.getDocIdNumber(), candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 
         request.setIInscritoAnoLectivoActual(data.getEnroled());
@@ -784,8 +790,8 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
 
         IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(), candidacy.getDocIdNumber(),
-                        candidacy.getDocIdType(), candidacy.getFiscalNumber());
+                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(),
+                        candidacy.getDocIdNumber(), candidacy.getDocIdType(), candidacy.getFiscalNumber());
         request.setIdentificadorCandidatura(idCandidatura);
 
         request.setIdentificadorCandidatura(idCandidatura);

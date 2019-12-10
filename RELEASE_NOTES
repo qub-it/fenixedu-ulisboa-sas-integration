@@ -1,3 +1,4 @@
+3.2.11 (10-12-2019)
 - Refactor: split SICABE.wsdl schemas in several schema files to import them, in order to fix the warnings given by wsimport
 
 3.2.10 (10-12-2019)

@@ -88,9 +88,9 @@ public class IngestSasScholarshipSicabe extends CronTask {
     }
 
     private String printRegistrationList(HashSet<Registration> listOfWarningToReport) {
-
-        return listOfWarningToReport.stream().map(r -> r.getStudent().getName() + " [" + r.getNumber() + "] - "
-                + r.getDegree().getPresentationName() + " [" + r.getDegree().getCode() + "]").collect(Collectors.joining("\n"));
+        
+        return listOfWarningToReport.stream().map(r -> r.getNumber() + " - " + r.getStudent().getName() + " - "
+                + " [" + r.getDegree().getCode() + " - " + r.getDegree().getPresentationName() + "]").collect(Collectors.joining("\n"));
     }
 
     @Atomic

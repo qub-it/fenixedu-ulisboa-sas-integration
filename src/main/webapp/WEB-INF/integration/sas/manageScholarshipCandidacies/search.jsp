@@ -218,6 +218,8 @@ ${portal.toolkit()}
 							code="label.SasScholarshipCandidacy.exportDate" /></th>
 					<th><spring:message
 							code="label.SasScholarshipCandidacy.firstYear" /></th>
+					<th><spring:message
+							code="label.SasScholarshipCandidacy.candidacyState" /></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -283,6 +285,9 @@ ${portal.toolkit()}
 					<td>
 						<c:if test="${searchResult.firstYear}">'<spring:message code="label.true" />'</c:if>
 						<c:if test="${not searchResult.firstYear}">'<spring:message code="label.false" />'</c:if>
+					</td>
+					<td>
+						${searchResult.candidacyState.localizedName}
 					</td>
 					
 					<td style="width: 5%">

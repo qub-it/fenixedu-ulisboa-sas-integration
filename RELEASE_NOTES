@@ -3,6 +3,7 @@
 
 3.2.10 (10-12-2019)
 3.2.9 (20-11-2019)
+- Bug fix: translate SAS message on daily report
 3.2.8 (04-11-2019)
 - Improvement: show buttons (logs and export to Excel) in previous execution years
 3.2.7 (04-11-2019)

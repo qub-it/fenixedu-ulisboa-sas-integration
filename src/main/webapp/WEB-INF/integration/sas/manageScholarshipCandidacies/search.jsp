@@ -382,6 +382,7 @@ ${portal.toolkit()}
 				{ data: 'importDate' },
 				{ data: 'exportDate' },
 				{ data: 'firstTime'},
+				{ data: 'candidacyState'},
 				{ data: 'actions',className:"all", width: "12%" }
 				
 				],

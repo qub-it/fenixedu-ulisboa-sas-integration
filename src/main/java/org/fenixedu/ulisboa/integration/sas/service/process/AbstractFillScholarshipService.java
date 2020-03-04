@@ -515,9 +515,8 @@ public class AbstractFillScholarshipService {
     }
 
     private Collection<SchoolLevelType> getCompletedQualificationsSchoolLevelTypes(final Person person) {
-        return person.getStudent().getPersonalIngressionsDataSet().stream()
-                .flatMap(x -> x.getPrecedentDegreesInformationsSet().stream()).map(x -> x.getSchoolLevel())
-                .collect(Collectors.toSet());
+        return person.getStudent().getRegistrationsSet().stream().flatMap(r -> r.getPrecedentDegreesInformationsSet().stream())
+                .map(x -> x.getSchoolLevel()).collect(Collectors.toSet());
     }
 
     private BigDecimal getTuitionAmount(Registration registration, ExecutionYear requestYear) {

@@ -1,4 +1,5 @@
-3.2.14-rc-jdk11 (28-02-2020)
+- New feature: Support for Java 11
+
 3.2.14 (08-01-2020)
 - Bug fix: show search bar
 

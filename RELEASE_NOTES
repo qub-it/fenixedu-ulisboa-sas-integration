@@ -1,8 +1,10 @@
-3.2.16 (12-03-2020)
 - Refactor: Upgraded dependency of fenixedu-academic-core (Removed deprecated relation between PrecedentDegreeInformation and Registration)
 
 3.3.0 (09-03-2020)
 - New feature: Support for Java 11
+
+3.2.16 (12-03-2020)
+- Refactor: Upgraded dependency of fenixedu-academic-core (Removed deprecated relation between PrecedentDegreeInformation and Registration)
 
 3.2.15 (04-03-2020)
 - Refactor: Upgraded dependency of fenixedu-academic-core (Removed deprecated relation between PrecedentDegreeInformation and PersonalIngressionData)

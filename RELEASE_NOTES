@@ -1,3 +1,4 @@
+3.2.16 (12-03-2020)
 - Refactor: Upgraded dependency of fenixedu-academic-core (Removed deprecated relation between PrecedentDegreeInformation and Registration)
 
 3.2.15 (04-03-2020)

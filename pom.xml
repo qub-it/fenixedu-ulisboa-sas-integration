@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.qubit.solution.fenixedu</groupId>
 		<artifactId>qub-fenixedu-project</artifactId>
-		<version>1.0.1-rc-jdk11</version>
+		<version>1.1.0</version>
 		<relativePath />
 	</parent>
 
@@ -143,12 +143,12 @@
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
 			<artifactId>fenixedu-academic-core</artifactId>
-			<version>28.5.0</version>
+			<version>28.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
 			<artifactId>bennu-webservices-core</artifactId>
-			<version>2.0.2-rc-jdk11</version>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu.ulisboa</groupId>

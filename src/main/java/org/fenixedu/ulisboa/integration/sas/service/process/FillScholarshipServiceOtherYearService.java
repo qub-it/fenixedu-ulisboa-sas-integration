@@ -22,7 +22,9 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
         bean.setHasMadeDegreeChangeOnCurrentYear(hasMadeDegreeChange(registration, requestYear));
         bean.setCycleNumberOfEnrolmentsYearsInIntegralRegime(
                 getCycleNumberOfEnrolmentYearsInIntegralRegime(registration, requestYear));
-        bean.setNumberOfApprovedEcts(RegistrationServices.getCurriculum(registration, requestYear).getSumEctsCredits());
+
+        // bypass cache
+        bean.setNumberOfApprovedEcts(registration.getCurriculum(requestYear).getSumEctsCredits());
 
         final ExecutionYear lastEnrolmentYear = getCycleLastEnrolmentYear(registration, requestYear);
         final Registration lastRegistration = getLastEnrolmentYearRegistration(registration, lastEnrolmentYear);
@@ -33,14 +35,16 @@ public class FillScholarshipServiceOtherYearService extends AbstractFillScholars
             bean.setNumberOfApprovedEctsLastYear(getApprovedCredits(lastRegistration, lastEnrolmentYear));
 
             bean.setLastEnrolmentYear(lastEnrolmentYear.getBeginDateYearMonthDay().getYear());
-            bean.setLastEnrolmentCurricularYear(
-                    RegistrationServices.getCurricularYear(lastRegistration, lastEnrolmentYear).getResult());
+
+            // bypass cache
+            bean.setLastEnrolmentCurricularYear(lastRegistration.getCurriculum(lastEnrolmentYear).getCurricularYear());
 
             final StudentCurricularPlan lastRegistrationCurricularPlan =
                     RegistrationServices.getStudentCurricularPlan(lastRegistration, lastEnrolmentYear);
             final YearMonthDay lastAcademicActDate = CurriculumModuleServices
                     .calculateLastAcademicActDate(lastRegistrationCurricularPlan.getRoot(), lastEnrolmentYear, false);
-            bean.setLastAcademicActDateLastYear(lastAcademicActDate != null ? lastAcademicActDate.toLocalDate() : lastEnrolmentYear.getEndLocalDate());
+            bean.setLastAcademicActDateLastYear(
+                    lastAcademicActDate != null ? lastAcademicActDate.toLocalDate() : lastEnrolmentYear.getEndLocalDate());
         }
     }
 

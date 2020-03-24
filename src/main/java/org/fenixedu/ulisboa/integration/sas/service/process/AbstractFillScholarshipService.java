@@ -137,7 +137,7 @@ public class AbstractFillScholarshipService {
         final Predicate<Registration> isEnroled = r -> !getEnroledCurriculumLines(r, requestYear).isEmpty();
 
         final Set<Registration> registrations = Sets.newHashSet();
-        
+
         for (final Degree degree : degrees) {
             registrations.addAll(student.getRegistrationsFor(degree).stream().filter(isEnroled).collect(Collectors.toSet()));
         }
@@ -187,9 +187,9 @@ public class AbstractFillScholarshipService {
     }
 
     private Collection<Degree> findDegree(AbstractScholarshipStudentBean bean) {
-        final Collection<Degree> degrees =
-                Bennu.getInstance().getDegreesSet().stream().filter(d -> Objects.equal(d.getMinistryCode(), bean.getDegreeCode())
-                        || Objects.equal(d.getCode(), bean.getDegreeCode())).collect(Collectors.toSet());
+        final Collection<Degree> degrees = Bennu.getInstance().getDegreesSet().stream().filter(
+                d -> Objects.equal(d.getMinistryCode(), bean.getDegreeCode()) || Objects.equal(d.getCode(), bean.getDegreeCode()))
+                .collect(Collectors.toSet());
 
         if (degrees.isEmpty()) {
             addError(bean, false, "message.error.degree.not.found");
@@ -353,8 +353,8 @@ public class AbstractFillScholarshipService {
 
     }
 
-    public void fillBeanWithAcademicInfos(final AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear,
-            boolean firstYearOfCycle) {
+    public void fillBeanWithAcademicInfos(final AbstractScholarshipStudentBean bean, Registration registration,
+            ExecutionYear requestYear, boolean firstYearOfCycle) {
 
         try {
 
@@ -420,7 +420,8 @@ public class AbstractFillScholarshipService {
 
     private void fillCommonInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {
 
-        bean.setCurricularYear(RegistrationServices.getCurricularYear(registration, requestYear).getResult());
+        // bypass cache
+        bean.setCurricularYear(registration.getCurriculum().getCurricularYear());
 
         bean.setGratuityAmount(getTuitionAmount(registration, requestYear));
         bean.setNumberOfMonthsExecutionYear(SocialServicesConfiguration.getInstance().getNumberOfMonthsOfAcademicYear());
@@ -432,7 +433,7 @@ public class AbstractFillScholarshipService {
         bean.setRegime(getRegime(bean, registration, requestYear));
 
         bean.setEnroled(isEnroled(registration, requestYear));
-        
+
         final LocalDate enrolmentDate = RegistrationServices.getEnrolmentDate(registration, requestYear);
         bean.setEnrolmentDate(enrolmentDate != null ? enrolmentDate : requestYear.getBeginLocalDate());
 
@@ -717,13 +718,14 @@ public class AbstractFillScholarshipService {
         }
 
     }
-    
+
     public boolean equal(AbstractScholarshipStudentBean bean, Object left, Object right, String fieldName) {
         if (Objects.equal(left, right)) {
             return true;
         }
 
-        addWarning(bean, false, "message.warning.data.has.changed", BundleUtil.getString(SasSpringConfiguration.BUNDLE, "label.SasScholarshipData." + fieldName));
+        addWarning(bean, false, "message.warning.data.has.changed",
+                BundleUtil.getString(SasSpringConfiguration.BUNDLE, "label.SasScholarshipData." + fieldName));
         return false;
     }
 

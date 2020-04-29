@@ -421,7 +421,7 @@ public class AbstractFillScholarshipService {
     private void fillCommonInfo(AbstractScholarshipStudentBean bean, Registration registration, ExecutionYear requestYear) {
 
         // bypass cache
-        bean.setCurricularYear(registration.getCurriculum().getCurricularYear());
+        bean.setCurricularYear(registration.getCurriculum(requestYear).getCurricularYear());
 
         bean.setGratuityAmount(getTuitionAmount(registration, requestYear));
         bean.setNumberOfMonthsExecutionYear(SocialServicesConfiguration.getInstance().getNumberOfMonthsOfAcademicYear());

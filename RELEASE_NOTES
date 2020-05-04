@@ -1,3 +1,5 @@
+- Fix: Delete SchoolLevelTypeMapping of DegreeType only if it exists
+
 3.3.5 (29-04-2020)
 - Fix: calculate the number of approved ects (at the beginning of execution year)
 - Refactor: Upgraded dependency of fenixedu-academic-core

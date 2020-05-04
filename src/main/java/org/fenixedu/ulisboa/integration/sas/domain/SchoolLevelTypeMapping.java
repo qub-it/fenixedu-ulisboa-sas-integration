@@ -3,6 +3,7 @@ package org.fenixedu.ulisboa.integration.sas.domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.SchoolLevelType;
@@ -35,7 +36,7 @@ public class SchoolLevelTypeMapping extends SchoolLevelTypeMapping_Base {
 
             @Override
             public void deleting(DegreeType object) {
-                object.getSchoolLevelTypeMapping().delete();
+                Optional.ofNullable(object.getSchoolLevelTypeMapping()).ifPresent(sltm -> sltm.delete());
             }
         });
     }

@@ -87,7 +87,7 @@ public class AbstractFillScholarshipService {
 
     public static final String REGIME_FULL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo integral";
 
-    public static final String REGIME_PARTIAL_TIME = "TempaddDatao parcial";
+    public static final String REGIME_PARTIAL_TIME = "Tempo parcial";
 
     public static final String REGIME_PARTIAL_TIME_WORKING_STUDENT = "Trabalhador estudante tempo parcial";
 

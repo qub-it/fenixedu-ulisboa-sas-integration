@@ -1,3 +1,4 @@
+3.3.6 (30-06-2020)
 - Fix: Delete SchoolLevelTypeMapping of DegreeType only if it exists
 - Fix: REGIME_PARTIAL_TIME - spelling error
 

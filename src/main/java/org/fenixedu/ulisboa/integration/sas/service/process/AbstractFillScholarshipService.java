@@ -26,6 +26,7 @@ import org.fenixedu.academic.domain.student.RegistrationServices;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academic.domain.student.curriculum.CreditsReasonType;
 import org.fenixedu.academic.domain.student.registrationStates.RegistrationState;
+import org.fenixedu.academic.domain.student.registrationStates.RegistrationStateType;
 import org.fenixedu.academic.domain.student.services.StatuteServices;
 import org.fenixedu.academic.domain.studentCurriculum.CurriculumLine;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
@@ -382,7 +383,13 @@ public class AbstractFillScholarshipService {
 
         final RegistrationState lastRegistrationState = registration.getLastRegistrationState(requestYear);
         if (lastRegistrationState != null && !lastRegistrationState.isActive()) {
-            addWarning(bean, false, "message.warning.registration.is.not.active", requestYear.getQualifiedName());
+
+            if (lastRegistrationState.getStateType() == RegistrationStateType.CANCELED) {
+                addWarning(bean, false, "message.warning.registration.is.canceled",
+                        lastRegistrationState.getStateDate().toLocalDate().toString("yyyy-MM-dd"));
+            } else {
+                addWarning(bean, false, "message.warning.registration.is.not.active", requestYear.getQualifiedName());
+            }
         }
 
         if (firstYearOfCycle && !isFirstTimeInCycle(registration, requestYear)) {

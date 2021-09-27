@@ -31,6 +31,7 @@ public class ActiveStudentBean implements Serializable {
     String regime;
     // Due to shared degrees, a student may be frequenting a school, but the payment is performed in another school
     Boolean isPayingSchool;
+    private String email;
 
     public Boolean getIsPayingSchool() {
         return isPayingSchool != null ? isPayingSchool : false;
@@ -223,5 +224,13 @@ public class ActiveStudentBean implements Serializable {
 
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

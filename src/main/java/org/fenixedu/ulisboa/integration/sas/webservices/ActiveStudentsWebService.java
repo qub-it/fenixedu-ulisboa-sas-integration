@@ -307,6 +307,8 @@ public class ActiveStudentsWebService extends BennuWebService {
             YearMonthDay dateOfBirthYearMonthDay = student.getPerson().getDateOfBirthYearMonthDay();
             activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");
 
+            activeStudentBean.setEmail(student.getPerson().getDefaultEmailAddressValue());
+            
             Country country = student.getPerson().getCountry();
             activeStudentBean.setOriginCountry(country != null ? country.getLocalizedName().getContent(Locale.getDefault()) : "");
             activeStudentBean.setOriginCountryCode(country != null ? country.getCode() : "");

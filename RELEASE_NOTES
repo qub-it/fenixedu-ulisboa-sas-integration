@@ -1,3 +1,5 @@
+- Improvment: Added email to ActiveStudentBean ( #UL-REIT-2523 )
+
 3.3.8 (06-10-2020)
 - Improvement: when a student cancel the registration, the date is written in observations field  
 

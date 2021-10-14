@@ -1,3 +1,5 @@
+Bug fix: calculate the list of registrations for a specific degree cycle ( #UL-FP-721 )
+
 3.3.9 (27-09-2021)
 - Improvment: Added email to ActiveStudentBean ( #UL-REIT-2523 )
 

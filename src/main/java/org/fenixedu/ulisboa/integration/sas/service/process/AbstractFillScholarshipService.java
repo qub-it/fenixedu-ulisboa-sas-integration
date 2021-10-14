@@ -594,7 +594,12 @@ public class AbstractFillScholarshipService {
     }
 
     static protected List<Registration> getCycleRegistrations(final Registration registration) {
-        return registration.getStudent().getRegistrationsByDegreeTypes(registration.getDegreeType()).stream()
+        final Collection<DegreeType> degreeTypesToCheck = DegreeType.all()
+                .filter(dt -> dt.getFirstOrderedCycleType() == registration.getDegreeType().getFirstOrderedCycleType())
+                .collect(Collectors.toSet());
+        final Collection<Registration> degreesToProcess = registration.getStudent().getRegistrationsSet().stream()
+                .filter(r -> degreeTypesToCheck.contains(r.getDegreeType())).collect(Collectors.toSet());
+        return degreesToProcess.stream()
                 .filter(r -> r.getStartExecutionYear().isBeforeOrEquals(registration.getStartExecutionYear()))
                 .flatMap(r -> Stream.concat(Stream.of(r), Stream.of(RegistrationServices.getRootRegistration(r)))).distinct()
                 .sorted(Registration.COMPARATOR_BY_START_DATE).collect(Collectors.toList());

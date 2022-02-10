@@ -16,7 +16,6 @@ import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.datacontract.schemas._2004._07.sicabe_contracts.AlterarDadosAcademicosContratualizacaoRequest;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.academic.domain.person.IDDocumentType;
@@ -60,9 +59,6 @@ import pt.dges.schemas.data.sicabe.v1.ResultadoEstadoCandidatura;
 import pt.dges.schemas.data.sicabe.v1.TipoDocumentoIdentificacao;
 import pt.dges.schemas.data.sicabe.v1.TipoRegime;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicos;
-import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage;
-import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage;
-import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeBusinessMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeErrorMessageFaultFaultMessage;
 import pt.dges.schemas.services.sicabe.v1.DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeValidationMessageFaultFaultMessage;
@@ -602,7 +598,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 sendFirstTimeAcademicData(c);
             } else {
                 sendOtherAcademicData(c);
-                sendContratualizationAcademicData(c);
             }
 
             c.changeState(SasScholarshipCandidacyState.SENT);
@@ -615,10 +610,7 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
                 | DadosAcademicosAlterarDadosAcademicosPrimeiraVezSicabeValidationMessageFaultFaultMessage
                 | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeBusinessMessageFaultFaultMessage
                 | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeErrorMessageFaultFaultMessage
-                | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeValidationMessageFaultFaultMessage
-                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage
-                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage
-                | DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage e) {
+                | DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeValidationMessageFaultFaultMessage e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -735,43 +727,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         return idCandidatura;
     }
 
-    private void sendContratualizationAcademicData(SasScholarshipCandidacy candidacy)
-            throws DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeBusinessMessageFaultFaultMessage,
-            DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeErrorMessageFaultFaultMessage,
-            DadosAcademicosAlterarDadosAcademicosContratualizacaoSicabeValidationMessageFaultFaultMessage {
-
-        final SasScholarshipData data = candidacy.getSasScholarshipData();
-
-        org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory factory =
-                new org.datacontract.schemas._2004._07.sicabe_contracts.ObjectFactory();
-
-        AlterarDadosAcademicosContratualizacaoRequest request = new AlterarDadosAcademicosContratualizacaoRequest();
-
-        request.setCodigoCurso(factory.createAlterarDadosAcademicosContratualizacaoRequestCodigoCurso(
-                data.getSasScholarshipCandidacy().getDegreeCode()));
-        request.setCodigoInstituicaoEnsino(candidacy.getInstitutionCode());
-        request.setDataInscricaoAnoLectivo(createXMLGregorianCalendar(data.getEnrolmentDate()));
-
-        IdentificadorCandidatura idCandidatura =
-                createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(),
-                        candidacy.getDocIdNumber(), candidacy.getDocIdType(), candidacy.getFiscalNumber());
-        request.setIdentificadorCandidatura(idCandidatura);
-
-        request.setIInscritoAnoLectivoActual(data.getEnroled());
-        request.setMesPrimeiroPagamento(Integer.valueOf(data.getFirstMonthExecutionYear()));
-        request.setNumeroAluno(factory.createAlterarDadosAcademicosContratualizacaoRequestNumeroAluno(
-                candidacy.getRegistration().getNumber().toString()));
-        request.setNumeroECTSActualmenteInscrito(candidacy.getSasScholarshipData().getNumberOfEnrolledECTS());
-        request.setNumeroMesesPropina(data.getNumberOfMonthsExecutionYear());
-        request.setNumeroOcorrenciasMudancaCurso(data.getNumberOfDegreeChanges());
-        request.setPresenteAnoMudouDeCurso(data.getHasMadeDegreeChangeOnCurrentYear());
-        request.setRegime(convertRegimeCandidacy(data.getRegime()));
-        request.setCodRegimeIngresso(Integer.valueOf(data.getIngressionRegime()));
-        request.setValorPropina(data.getGratuityAmount());
-
-        getClient().alterarDadosAcademicosContratualizacao(request);
-    }
-
     private void sendOtherAcademicData(SasScholarshipCandidacy candidacy)
             throws DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeBusinessMessageFaultFaultMessage,
             DadosAcademicosAlterarDadosAcademicosRestantesCasosSicabeErrorMessageFaultFaultMessage,
@@ -792,8 +747,6 @@ public class SicabeExternalService extends BennuWebServiceClient<DadosAcademicos
         IdentificadorCandidatura idCandidatura =
                 createIdentificadorCandidaturaData(candidacy.getExecutionYear().getAcademicInterval().getStart().getYear(),
                         candidacy.getDocIdNumber(), candidacy.getDocIdType(), candidacy.getFiscalNumber());
-        request.setIdentificadorCandidatura(idCandidatura);
-
         request.setIdentificadorCandidatura(idCandidatura);
         request.setIInscritoAnoLectivoActual(data.getEnroled());
         request.setMesPrimeiroPagamento(data.getFirstMonthExecutionYear());

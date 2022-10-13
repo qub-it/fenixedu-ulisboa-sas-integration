@@ -40,7 +40,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         Predicate<Degree> hasSchoolLevel = degree -> degree.getDegreeType().getSchoolLevelTypeMapping() != null;
         Predicate<Degree> isActiveDegree =
                 degree -> degree.getDegreeCurricularPlansExecutionYears().stream().anyMatch(ey -> ey.isCurrent());
-        
+
         List<ActiveDegreeBean> collect = Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel.and(isActiveDegree))
                 .map(d -> populateActiveDegree(d)).collect(Collectors.toList());
         collect.add(getFreeCoursesPlaceholder());
@@ -51,14 +51,14 @@ public class ActiveDegreesWebService extends BennuWebService {
     private ActiveDegreeBean populateActiveDegree(Degree degree) {
         ActiveDegreeBean activeDegreeBean = new ActiveDegreeBean();
 
-        ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+        ExecutionYear currentExecutionYear = ExecutionYear.findCurrent(degree.getCalendar());
 
         activeDegreeBean.setDegreeCode(degree.getCode());
         activeDegreeBean.setDesignation(normalizeString(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault())));
 
         SchoolLevelTypeMapping schoolLevelTypeMapping = degree.getDegreeType().getSchoolLevelTypeMapping();
-        activeDegreeBean.setSchoolLevel(schoolLevelTypeMapping != null ? schoolLevelTypeMapping.getSchoolLevel()
-                .getLocalizedName() : "");
+        activeDegreeBean
+                .setSchoolLevel(schoolLevelTypeMapping != null ? schoolLevelTypeMapping.getSchoolLevel().getLocalizedName() : "");
         //TODO analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycles(getDegreeCycles(degree));
 
@@ -82,7 +82,7 @@ public class ActiveDegreesWebService extends BennuWebService {
     }
 
     private List<CycleBean> getDegreeCycles(Degree degree) {
-        ExecutionYear currentExecutionYear = ExecutionYear.readCurrentExecutionYear();
+        ExecutionYear currentExecutionYear = ExecutionYear.findCurrent(degree.getCalendar());
         List<DegreeCurricularPlan> degreeCurricularPlansForYear = degree.getDegreeCurricularPlansForYear(currentExecutionYear);
         DegreeCurricularPlan currentDegreeCurricularPlan = null;
         if (!degreeCurricularPlansForYear.isEmpty()) {

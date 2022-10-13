@@ -1,3 +1,5 @@
+- Bug fix: Support for multiple academic calendars 
+
 3.4.0 (12-05-2022)
 - Refactor: Move SAS/SICABE integration code to legal pt 
 

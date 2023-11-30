@@ -19,7 +19,7 @@
 	<name>ULisboa SAS Integration</name>
 
 	<properties>
-		<version.org.fenixedu.bennu>6.2.2-FORK</version.org.fenixedu.bennu>
+		<version.org.fenixedu.bennu>6.3.0-FORK</version.org.fenixedu.bennu>
 	</properties>
 
 	<build>
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
 			<artifactId>fenixedu-academic-core</artifactId>
-			<version>42.1.0</version>
+			<version>44.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>org.fenixedu.ulisboa</groupId>
 			<artifactId>fenixedu-ulisboa-specifications</artifactId>
-			<version>7.3.2</version>
+			<version>7.4.0</version>
 			<exclusions>
 	            <exclusion>
 	                <groupId>xml-apis</groupId>

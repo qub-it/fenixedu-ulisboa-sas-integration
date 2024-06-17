@@ -13,7 +13,7 @@
 
 	<groupId>org.fenixedu.ulisboa</groupId>
 	<artifactId>fenixedu-ulisboa-sas-integration</artifactId>
-	<version>3.4.1</version>
+	<version>3.5.0</version>
 	<packaging>jar</packaging>
 
 	<name>ULisboa SAS Integration</name>
@@ -57,7 +57,7 @@
 			<dependency>
 				<groupId>com.qubit.solution.fenixedu</groupId>
 				<artifactId>fenixedu-oss-dependency-management</artifactId>
-				<version>169</version>
+				<version>175</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>

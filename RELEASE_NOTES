@@ -1,3 +1,5 @@
+- Refactor: Remove usage of ITreasuryBridgeAPI#isToPayTuition [#qubIT-Fenix-6565]
+
 3.5.0 (17-06-2024)
 - Improvement: Adds fenixedu OSS DM [#qubIT-Omnis-4736]
 - Improvement: Performs release for jdk 17 [#qubIT-Omnis-4737]

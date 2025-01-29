@@ -22,6 +22,7 @@ import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.student.RegistrationServices;
 import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
+import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
@@ -308,7 +309,7 @@ public class ActiveStudentsWebService extends BennuWebService {
             activeStudentBean.setDateOfBirth(dateOfBirthYearMonthDay != null ? dateOfBirthYearMonthDay.toString() : "");
 
             activeStudentBean.setEmail(student.getPerson().getDefaultEmailAddressValue());
-            
+
             Country country = student.getPerson().getCountry();
             activeStudentBean.setOriginCountry(country != null ? country.getLocalizedName().getContent(Locale.getDefault()) : "");
             activeStudentBean.setOriginCountryCode(country != null ? country.getCode() : "");
@@ -345,11 +346,10 @@ public class ActiveStudentsWebService extends BennuWebService {
                     LocalDate enrolmentDate = getEnrolmentDate(registration, currentExecutionYear);
                     activeStudentBean.setDateOfRegistration(enrolmentDate != null ? enrolmentDate.toString() : "");
                     activeStudentBean.setRegime(registration.getRegimeType(currentExecutionYear).toString());
-                    boolean toPayTuition =
-                            TreasuryBridgeAPIFactory.implementation().isToPayTuition(registration, currentExecutionYear);
+                    boolean toPayTuition = TuitionServices.isToPayRegistrationTuition(registration, currentExecutionYear);
                     activeStudentBean.setIsPayingSchool(toPayTuition);
-                    activeStudentBean.setCurricularYear(Integer
-                            .toString(RegistrationServices.getCurricularYear(registration, currentExecutionYear).getResult()));
+                    activeStudentBean.setCurricularYear(Integer.toString(
+                            RegistrationServices.getCurricularYear(registration, currentExecutionYear).getResult()));
                 }
 
                 if (sortedExecutionYears.size() > 1) {
@@ -357,8 +357,8 @@ public class ActiveStudentsWebService extends BennuWebService {
                     activeStudentBean.setPreviousExecutionYear(previousExecutionYear.getName());
                     activeStudentBean.setEnroledECTTotalInPreviousYear(
                             Double.toString(registration.getEnrolmentsEcts(previousExecutionYear)));
-                    activeStudentBean
-                            .setApprovedECTTotalInPreviousYear(getApprovedEcts(registration, previousExecutionYear).toString());
+                    activeStudentBean.setApprovedECTTotalInPreviousYear(
+                            getApprovedEcts(registration, previousExecutionYear).toString());
                 }
 
             } else {
@@ -401,8 +401,8 @@ public class ActiveStudentsWebService extends BennuWebService {
 
     private boolean isToday(LocalDate b) {
         LocalDate now = LocalDate.now();
-        return now.year().get() == b.year().get() && now.monthOfYear().get() == b.monthOfYear().get()
-                && now.dayOfMonth().get() == b.dayOfMonth().get();
+        return now.year().get() == b.year().get() && now.monthOfYear().get() == b.monthOfYear().get() && now.dayOfMonth()
+                .get() == b.dayOfMonth().get();
     }
 
 }

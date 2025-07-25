@@ -15,10 +15,10 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.SchoolLevelType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academic.domain.student.personaldata.EducationLevelType;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
+import org.fenixedu.ulisboa.integration.sas.domain.EducationLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveDegreeBean;
 import org.fenixedu.ulisboa.integration.sas.dto.CycleBean;
 
@@ -29,6 +29,7 @@ public class ActiveDegreesWebService extends BennuWebService {
     //We need a placeholder to represent courses without a related school level
     static final String FREE_COURSES_CODE = "XXXXX";
     private static final String FREE_COURSES_DESIGNATION = "Formação Livre";
+    private static final String UNKNOWN = "UNKNOWN";
 
     @WebMethod
     public Collection<ActiveDegreeBean> getActiveDegrees() {
@@ -37,11 +38,12 @@ public class ActiveDegreesWebService extends BennuWebService {
 
     //Consider moving this logic to a different place
     private Collection<ActiveDegreeBean> populateActiveDegrees() {
-        Predicate<Degree> hasSchoolLevel = degree -> degree.getDegreeType().getSchoolLevelTypeMapping() != null;
+        Predicate<Degree> hasEducationLevel = degree -> degree.getDegreeType().getEducationLevelTypeMapping() != null;
         Predicate<Degree> isActiveDegree =
                 degree -> degree.getDegreeCurricularPlansExecutionYears().stream().anyMatch(ey -> ey.isCurrent());
 
-        List<ActiveDegreeBean> collect = Bennu.getInstance().getDegreesSet().stream().filter(hasSchoolLevel.and(isActiveDegree))
+        List<ActiveDegreeBean> collect =
+                Bennu.getInstance().getDegreesSet().stream().filter(hasEducationLevel.and(isActiveDegree))
                 .map(d -> populateActiveDegree(d)).collect(Collectors.toList());
         collect.add(getFreeCoursesPlaceholder());
 
@@ -56,9 +58,10 @@ public class ActiveDegreesWebService extends BennuWebService {
         activeDegreeBean.setDegreeCode(degree.getCode());
         activeDegreeBean.setDesignation(normalizeString(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault())));
 
-        SchoolLevelTypeMapping schoolLevelTypeMapping = degree.getDegreeType().getSchoolLevelTypeMapping();
-        activeDegreeBean
-                .setSchoolLevel(schoolLevelTypeMapping != null ? schoolLevelTypeMapping.getSchoolLevel().getLocalizedName() : "");
+        EducationLevelTypeMapping educationLevelTypeMapping = degree.getDegreeType().getEducationLevelTypeMapping();
+        activeDegreeBean.setEducationLevel(
+                educationLevelTypeMapping != null ? educationLevelTypeMapping.getEducationLevelType().getName()
+                        .getContent() : "");
         //TODO analyse how to represent a degree with multiple cycles        
         activeDegreeBean.setCycles(getDegreeCycles(degree));
 
@@ -142,7 +145,9 @@ public class ActiveDegreesWebService extends BennuWebService {
         freeCoursesPlaceHolder.setOficialCode("");
         freeCoursesPlaceHolder.setCycles(Collections.<CycleBean> emptyList());
         freeCoursesPlaceHolder.setDuration("-1");
-        freeCoursesPlaceHolder.setSchoolLevel(SchoolLevelType.UNKNOWN.getLocalizedName());
+
+        EducationLevelType unknown = EducationLevelType.findByCode(UNKNOWN).get();
+        freeCoursesPlaceHolder.setEducationLevel(unknown.getName().getContent());
 
         return freeCoursesPlaceHolder;
     }

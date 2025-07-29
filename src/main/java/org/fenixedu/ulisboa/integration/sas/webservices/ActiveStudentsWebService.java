@@ -21,10 +21,9 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.student.RegistrationServices;
 import org.fenixedu.academic.domain.student.Student;
-import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.ulisboa.integration.sas.domain.SchoolLevelTypeMapping;
+import org.fenixedu.ulisboa.integration.sas.domain.EducationLevelTypeMapping;
 import org.fenixedu.ulisboa.integration.sas.dto.ActiveStudentBean;
 import org.fenixedu.ulisboa.specifications.ULisboaConfiguration;
 import org.fenixedu.ulisboa.specifications.service.StudentActive;
@@ -47,6 +46,10 @@ public class ActiveStudentsWebService extends BennuWebService {
     private static SoftReference<Collection<ActiveStudentBean>> cache = null;
     private static long timestamp = 0;
     private static final String THREAD_NAME = "ActiveStudenBean cache updater";
+    private static final String DEGREE = "DEGREE";
+    private static final String MASTER_DEGREE = "MASTER_DEGREE";
+    private static final String MASTER_DEGREE_INTEGRATED = "MASTER_DEGREE_INTEGRATED";
+    private static final String DOCTORATE_DEGREE = "DOCTORATE_DEGREE";
 
     private static final Atomic atomic = new Atomic() {
 
@@ -71,17 +74,18 @@ public class ActiveStudentsWebService extends BennuWebService {
 
         @Override
         public int compare(Registration o1, Registration o2) {
-            SchoolLevelTypeMapping schoolLevelType = o1.getDegree().getDegreeType().getSchoolLevelTypeMapping();
-            SchoolLevelTypeMapping schoolLevelType2 = o2.getDegree().getDegreeType().getSchoolLevelTypeMapping();
-            return getOrderSchoolLevelType(schoolLevelType).compareTo(getOrderSchoolLevelType(schoolLevelType2));
+            EducationLevelTypeMapping educationLevelTypeMapping = o1.getDegree().getDegreeType().getEducationLevelTypeMapping();
+            EducationLevelTypeMapping educationLevelTypeMapping2 = o2.getDegree().getDegreeType().getEducationLevelTypeMapping();
+            return getOrderEducationLevelType(educationLevelTypeMapping).compareTo(
+                    getOrderEducationLevelType(educationLevelTypeMapping2));
         }
 
-        private Integer getOrderSchoolLevelType(SchoolLevelTypeMapping schoolLevelType) {
-            if (schoolLevelType == null) {
+        private Integer getOrderEducationLevelType(EducationLevelTypeMapping educationLevelTypeMapping) {
+            if (educationLevelTypeMapping == null || educationLevelTypeMapping.getEducationLevelType() == null) {
                 return 5;
             }
 
-            switch (schoolLevelType.getSchoolLevel()) {
+            switch (educationLevelTypeMapping.getEducationLevelType().getCode()) {
             case DEGREE:
                 return 1;
             case MASTER_DEGREE:
@@ -330,8 +334,8 @@ public class ActiveStudentsWebService extends BennuWebService {
 
                 Registration registration = activeRegistrations.iterator().next();
                 activeStudentBean.setStudentCode(Integer.toString(registration.getNumber()));
-                SchoolLevelTypeMapping schoolLevelTypeMapping = registration.getDegreeType().getSchoolLevelTypeMapping();
-                if (schoolLevelTypeMapping == null) {
+                EducationLevelTypeMapping educationLevelTypeMapping = registration.getDegreeType().getEducationLevelTypeMapping();
+                if (educationLevelTypeMapping == null) {
                     //Consider all courses without school level type mapping as the free course 
                     activeStudentBean.setDegreeCode(ActiveDegreesWebService.FREE_COURSES_CODE);
                 } else {

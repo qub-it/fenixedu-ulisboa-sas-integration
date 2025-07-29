@@ -1,3 +1,4 @@
+3.5.2 (29-07-2025)
 - Refactor: Mark ClearDailyEnrolmentsIndexingTask as deprecated [#qubIT-Fenix-7271]
 - Refactor: Replaces SchoolLevelTypeMappings with EducationLevelTypeMappings [#qubIT-Fenix-7009]
 

@@ -7,7 +7,7 @@ import java.util.List;
 public class ActiveDegreeBean implements Serializable {
     String degreeCode;
     String designation;
-    String educationLevel;
+    String schoolLevel;
     List<CycleBean> cycles;
     String duration;
     String oficialCode;
@@ -28,12 +28,12 @@ public class ActiveDegreeBean implements Serializable {
         this.designation = designation;
     }
 
-    public String getEducationLevel() {
-        return educationLevel != null ? educationLevel : "";
+    public String getSchoolLevel() {
+        return schoolLevel != null ? schoolLevel : "";
     }
 
-    public void setEducationLevel(String educationLevel) {
-        this.educationLevel = educationLevel;
+    public void setSchoolLevel(String schoolLevel) {
+        this.schoolLevel = schoolLevel;
     }
 
     public List<CycleBean> getCycles() {

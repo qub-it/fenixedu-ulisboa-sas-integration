@@ -59,7 +59,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         activeDegreeBean.setDesignation(normalizeString(degree.getNameFor(currentExecutionYear).getContent(Locale.getDefault())));
 
         EducationLevelTypeMapping educationLevelTypeMapping = degree.getDegreeType().getEducationLevelTypeMapping();
-        activeDegreeBean.setEducationLevel(
+        activeDegreeBean.setSchoolLevel(
                 educationLevelTypeMapping != null ? educationLevelTypeMapping.getEducationLevelType().getName()
                         .getContent() : "");
         //TODO analyse how to represent a degree with multiple cycles        
@@ -147,7 +147,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         freeCoursesPlaceHolder.setDuration("-1");
 
         EducationLevelType unknown = EducationLevelType.findByCode(UNKNOWN).get();
-        freeCoursesPlaceHolder.setEducationLevel(unknown.getName().getContent());
+        freeCoursesPlaceHolder.setSchoolLevel(unknown.getName().getContent());
 
         return freeCoursesPlaceHolder;
     }

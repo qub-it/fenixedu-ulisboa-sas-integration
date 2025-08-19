@@ -29,7 +29,6 @@ public class ActiveDegreesWebService extends BennuWebService {
     //We need a placeholder to represent courses without a related school level
     static final String FREE_COURSES_CODE = "XXXXX";
     private static final String FREE_COURSES_DESIGNATION = "Formação Livre";
-    private static final String UNKNOWN = "UNKNOWN";
 
     @WebMethod
     public Collection<ActiveDegreeBean> getActiveDegrees() {
@@ -146,7 +145,7 @@ public class ActiveDegreesWebService extends BennuWebService {
         freeCoursesPlaceHolder.setCycles(Collections.<CycleBean> emptyList());
         freeCoursesPlaceHolder.setDuration("-1");
 
-        EducationLevelType unknown = EducationLevelType.findByCode(UNKNOWN).get();
+        EducationLevelType unknown = EducationLevelType.findByCode(EducationLevelType.UNKNOWN).get();
         freeCoursesPlaceHolder.setSchoolLevel(unknown.getName().getContent());
 
         return freeCoursesPlaceHolder;

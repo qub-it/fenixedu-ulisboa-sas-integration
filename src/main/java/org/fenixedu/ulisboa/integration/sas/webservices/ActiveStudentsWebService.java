@@ -305,7 +305,7 @@ public class ActiveStudentsWebService extends BennuWebService {
                 activeStudentBean.setCardNumber(card.get().getCardNumber());
             }
 
-            activeStudentBean.setIdentificationNumber(student.getPerson().getDocumentIdNumber());
+            activeStudentBean.setIdentificationNumber(student.getPerson().getDefaultIdentificationDocument().getValue());
             activeStudentBean.setFiscalCountryCode(
                     student.getPerson().getFiscalCountry() != null ? student.getPerson().getFiscalCountry().getCode() : "");
             activeStudentBean.setFiscalIdentificationNumber(student.getPerson().getSocialSecurityNumber());

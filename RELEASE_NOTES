@@ -1,3 +1,5 @@
+- Refactor: Remove IDDocumentType references [#qubIT-Fenix-6491]
+
 3.5.4 (28-08-2025)
 - Refactor: Use static RAIDES code constants [#qubIT-Fenix-7009]
 

@@ -318,7 +318,7 @@ public class ActiveStudentsWebService extends BennuWebService {
             activeStudentBean.setOriginCountry(country != null ? country.getLocalizedName().getContent(Locale.getDefault()) : "");
             activeStudentBean.setOriginCountryCode(country != null ? country.getCode() : "");
 
-            List<Registration> activeRegistrations = student.getActiveRegistrations();
+            List<Registration> activeRegistrations = student.getActiveRegistrationStream().toList();
             if (!activeRegistrations.isEmpty()) {
                 if (activeRegistrations.size() > 1) {
                     // This ordering is needed because SAS need to get the most relevant course. 

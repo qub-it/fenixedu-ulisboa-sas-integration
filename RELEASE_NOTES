@@ -1,3 +1,5 @@
+- Refactor: Align Degree#getNameFor with the AcademicInterval refactor [#qubIT-Fenix-9217]
+
 3.5.6 (03-09-2026)
 - Refactor: Replace deprecated Student#getActiveRegistrations with getActiveRegistrationStream [#qubIT-Fenix-8839]
 

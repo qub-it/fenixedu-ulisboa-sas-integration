@@ -1,8 +1,8 @@
 package org.fenixedu.ulisboa.integration.sas.servlet;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
 import org.fenixedu.ulisboa.integration.sas.service.DailyEnrolmentsIndexing;
 import org.fenixedu.ulisboa.integration.sas.webservices.ActiveStudentsWebService;

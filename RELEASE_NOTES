@@ -1,3 +1,5 @@
+- Refactor: Replaces Registration deprecated methods references [#qubIT-Fenix-9383]
+
 3.5.8 (09-10-2026)
 - Bug fix: Correcting issue with failure to send studends with more than one registration in the ActiveStudentsWebService [#UL-REIT-5249]
 

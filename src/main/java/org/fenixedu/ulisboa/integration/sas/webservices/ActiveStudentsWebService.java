@@ -342,7 +342,7 @@ public class ActiveStudentsWebService extends BennuWebService {
                     activeStudentBean.setDegreeCode(registration.getDegree().getCode());
                     activeStudentBean.setOficialDegreeCode(registration.getDegree().getMinistryCode());
                 }
-                ArrayList<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
+                List<ExecutionYear> sortedExecutionYears = getSortedExecutionYears(registration);
                 if (sortedExecutionYears.size() > 0) {
                     ExecutionYear currentExecutionYear = sortedExecutionYears.get(sortedExecutionYears.size() - 1);
                     activeStudentBean.setCurrentExecutionYear(currentExecutionYear.getName());
@@ -388,11 +388,9 @@ public class ActiveStudentsWebService extends BennuWebService {
                 .map(e -> e.getEctsCredits()).reduce((n1, n2) -> n1 + n2).orElse(0.0);
     }
 
-    private static ArrayList<ExecutionYear> getSortedExecutionYears(Registration firstRegistration) {
-        ArrayList<ExecutionYear> arrayList = new ArrayList<>();
-        arrayList.addAll(firstRegistration.getEnrolmentsExecutionYears());
-        arrayList.sort((e1, e2) -> e1.compareTo(e2));
-        return arrayList;
+    private static List<ExecutionYear> getSortedExecutionYears(Registration firstRegistration) {
+        return firstRegistration.getEnrolmentsExecutionYearStream().sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
     }
 
     private List<Student> getStudentsWithCardsIssuedToday() {

@@ -1,3 +1,5 @@
+- Bug fix: Correcting issue with failure to send studends with more than one registration in the ActiveStudentsWebService [#UL-REIT-5249]
+
 3.5.7 (07-09-2026)
 - Refactor: Align Degree#getNameFor with the AcademicInterval refactor [#qubIT-Fenix-9217]
 

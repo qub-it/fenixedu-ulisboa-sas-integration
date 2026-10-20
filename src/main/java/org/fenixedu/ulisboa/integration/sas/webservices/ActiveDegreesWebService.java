@@ -8,8 +8,8 @@ import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebService;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Degree;
